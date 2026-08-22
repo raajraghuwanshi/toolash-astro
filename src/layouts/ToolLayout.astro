@@ -1,0 +1,144 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { tools, categoryMeta, type Tool } from '../data/tools';
+
+export interface Props {
+  tool: Tool;
+  relatedTools?: Tool[];
+}
+
+const { tool, relatedTools: propRelated } = Astro.props;
+const meta = categoryMeta[tool.category];
+const related = propRelated ?? tools.filter(t => t.category === tool.category && t.slug !== tool.slug).slice(0, 4);
+---
+
+<BaseLayout
+  title={tool.title}
+  description={tool.metaDescription}
+  keywords={tool.keywords}
+>
+  <Navbar />
+  <SearchModal />
+
+  <main>
+    <!-- Tool Hero / Header -->
+    <div class="tool-hero" style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`}>
+      <div class="container">
+        <nav class="breadcrumb">
+          <a href="/">Home</a>
+          <i class="fas fa-chevron-right"></i>
+          <a href={`/#${tool.category}`}>{meta.label}</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>{tool.name}</span>
+        </nav>
+        <div class="tool-hero-inner">
+          <div class="tool-hero-icon">{tool.icon}</div>
+          <div>
+            <div class="tool-hero-cat">{meta.emoji} {meta.label}</div>
+            <h1 class="font-display tool-hero-title">{tool.name}</h1>
+            <p class="tool-hero-desc">{tool.description}</p>
+            <div class="tool-hero-badges">
+              <span class="badge badge-free"><i class="fas fa-circle-check"></i> 100% Free</span>
+              <span class="badge" style="background:#EFF6FF; color:#2563EB"><i class="fas fa-browser"></i> Browser-Based</span>
+              <span class="badge" style="background:#F5F3FF; color:#7C3AED"><i class="fas fa-user-slash"></i> No Sign-up</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool Content -->
+    <div class="tool-body">
+      <div class="container">
+        <div class="tool-content-card">
+          <slot />
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Tools -->
+    {related.length > 0 && (
+      <section class="related-tools">
+        <div class="container">
+          <h2 class="related-title font-display">More {meta.label} Tools</h2>
+          <div class="related-grid">
+            {related.map(t => <ToolCard tool={t} />)}
+          </div>
+        </div>
+      </section>
+    )}
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .tool-hero {
+    background: var(--cat-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 0 36px;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--txt-muted);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .breadcrumb a { color: var(--txt-muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--brand); }
+  .breadcrumb i { font-size: 10px; opacity: .5; }
+  .breadcrumb span { color: var(--txt); font-weight: 600; }
+
+  .tool-hero-inner { display: flex; align-items: flex-start; gap: 20px; }
+  .tool-hero-icon {
+    font-size: 48px;
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+    border: 1.5px solid var(--border);
+  }
+  .tool-hero-cat { font-size: 13px; font-weight: 600; color: var(--cat-color); margin-bottom: 6px; }
+  .tool-hero-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: #0F172A; margin-bottom: 8px; }
+  .tool-hero-desc { font-size: 15px; color: #475569; margin-bottom: 14px; }
+  .tool-hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .tool-body { padding: 32px 0 60px; }
+  .tool-content-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .related-tools { padding: 60px 0; background: var(--bg-soft); }
+  .related-title { font-size: 1.6rem; font-weight: 800; color: #0F172A; margin-bottom: 24px; }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .tool-hero-inner { flex-direction: column; }
+    .tool-hero-icon { width: 64px; height: 64px; font-size: 32px; }
+    .tool-content-card { padding: 20px 16px; }
+    .related-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .related-grid { grid-template-columns: 1fr; }
+  }
+</style>

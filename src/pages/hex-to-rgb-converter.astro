@@ -1,0 +1,173 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'hex-to-rgb-converter')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="hex-wrap">
+    <div class="hex-input-section">
+      <div class="hex-preview-row">
+        <div class="color-preview" id="color-preview" style="background:#3B82F6"></div>
+        <div class="hex-inputs">
+          <div class="hex-field">
+            <label>HEX</label>
+            <div class="hex-input-group">
+              <span class="hex-hash">#</span>
+              <input type="text" id="hex-input" class="hex-input" value="3B82F6" maxlength="6" spellcheck="false" />
+            </div>
+          </div>
+          <div class="hex-field">
+            <label>R</label>
+            <input type="number" id="rgb-r" class="hex-input" min="0" max="255" value="59" />
+          </div>
+          <div class="hex-field">
+            <label>G</label>
+            <input type="number" id="rgb-g" class="hex-input" min="0" max="255" value="130" />
+          </div>
+          <div class="hex-field">
+            <label>B</label>
+            <input type="number" id="rgb-b" class="hex-input" min="0" max="255" value="246" />
+          </div>
+          <div class="hex-field">
+            <label>Color Picker</label>
+            <input type="color" id="color-picker" value="#3B82F6" class="color-picker-input" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hex-outputs" id="hex-outputs">
+      <div class="hex-output-row">
+        <span class="hex-output-label">HEX</span>
+        <code id="out-hex">#3B82F6</code>
+        <button class="copy-btn" data-target="out-hex"><i class="fas fa-copy"></i></button>
+      </div>
+      <div class="hex-output-row">
+        <span class="hex-output-label">RGB</span>
+        <code id="out-rgb">rgb(59, 130, 246)</code>
+        <button class="copy-btn" data-target="out-rgb"><i class="fas fa-copy"></i></button>
+      </div>
+      <div class="hex-output-row">
+        <span class="hex-output-label">HSL</span>
+        <code id="out-hsl">hsl(217, 91%, 60%)</code>
+        <button class="copy-btn" data-target="out-hsl"><i class="fas fa-copy"></i></button>
+      </div>
+      <div class="hex-output-row">
+        <span class="hex-output-label">CSS Variable</span>
+        <code id="out-css">--color: #3B82F6;</code>
+        <button class="copy-btn" data-target="out-css"><i class="fas fa-copy"></i></button>
+      </div>
+      <div class="hex-output-row">
+        <span class="hex-output-label">Tailwind (closest)</span>
+        <code id="out-tw">blue-500</code>
+        <button class="copy-btn" data-target="out-tw"><i class="fas fa-copy"></i></button>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .hex-wrap { display: flex; flex-direction: column; gap: 24px; }
+  .hex-preview-row { display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .color-preview { width: 120px; height: 120px; border-radius: var(--radius-lg); border: 1.5px solid var(--border); box-shadow: var(--shadow-md); flex-shrink: 0; transition: background .2s; }
+  .hex-inputs { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; flex: 1; }
+  .hex-field { display: flex; flex-direction: column; gap: 6px; }
+  .hex-field label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .05em; }
+  .hex-input-group { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-soft); }
+  .hex-hash { padding: 0 8px; font-size: 14px; font-weight: 700; color: var(--txt-muted); }
+  .hex-input {
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--txt);
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    width: 80px;
+    transition: border-color .15s;
+  }
+  .hex-input-group .hex-input { border: none; background: transparent; width: 70px; padding-left: 0; }
+  .hex-input:focus { border-color: var(--brand); }
+  .color-picker-input { width: 50px; height: 42px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; padding: 2px; background: var(--bg-soft); }
+  .hex-outputs { display: flex; flex-direction: column; gap: 10px; }
+  .hex-output-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); }
+  .hex-output-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; width: 100px; flex-shrink: 0; }
+  .hex-output-row code { flex: 1; font-family: 'Courier New', monospace; font-size: 14px; color: var(--txt); }
+  .copy-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; color: var(--txt-muted); cursor: pointer; font-size: 13px; transition: all .15s; }
+  .copy-btn:hover { border-color: var(--brand); color: var(--brand); }
+</style>
+
+<script>
+  function hexToRgb(hex: string): [number,number,number] | null {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return null;
+    return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
+  }
+  function rgbToHsl(r: number, g: number, b: number): [number,number,number] {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    let h = 0, s = 0, l = (max+min)/2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch(max) {
+        case r: h = ((g-b)/d + (g<b?6:0)) / 6; break;
+        case g: h = ((b-r)/d + 2) / 6; break;
+        case b: h = ((r-g)/d + 4) / 6; break;
+      }
+    }
+    return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
+  }
+  function componentToHex(c: number): string { return c.toString(16).padStart(2,'0').toUpperCase(); }
+
+  function updateFromHex(hex: string) {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return;
+    const [r,g,b] = rgb;
+    const [h,s,l] = rgbToHsl(r,g,b);
+    const hexUp = hex.toUpperCase().replace('#','');
+    (document.getElementById('hex-input') as HTMLInputElement).value = hexUp;
+    (document.getElementById('rgb-r') as HTMLInputElement).value = String(r);
+    (document.getElementById('rgb-g') as HTMLInputElement).value = String(g);
+    (document.getElementById('rgb-b') as HTMLInputElement).value = String(b);
+    (document.getElementById('color-picker') as HTMLInputElement).value = '#' + hex.replace('#','').toLowerCase();
+    (document.getElementById('color-preview') as HTMLElement).style.background = '#' + hexUp;
+    document.getElementById('out-hex')!.textContent = '#' + hexUp;
+    document.getElementById('out-rgb')!.textContent = `rgb(${r}, ${g}, ${b})`;
+    document.getElementById('out-hsl')!.textContent = `hsl(${h}, ${s}%, ${l}%)`;
+    document.getElementById('out-css')!.textContent = `--color: #${hexUp};`;
+    document.getElementById('out-tw')!.textContent = `/* ${h}° / Custom */`;
+  }
+
+  document.getElementById('hex-input')?.addEventListener('input', (e) => {
+    const val = (e.target as HTMLInputElement).value;
+    if (val.length === 6) updateFromHex(val);
+  });
+
+  document.getElementById('color-picker')?.addEventListener('input', (e) => {
+    updateFromHex((e.target as HTMLInputElement).value.replace('#',''));
+  });
+
+  ['rgb-r','rgb-g','rgb-b'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => {
+      const r = parseInt((document.getElementById('rgb-r') as HTMLInputElement).value) || 0;
+      const g = parseInt((document.getElementById('rgb-g') as HTMLInputElement).value) || 0;
+      const b = parseInt((document.getElementById('rgb-b') as HTMLInputElement).value) || 0;
+      updateFromHex(componentToHex(r) + componentToHex(g) + componentToHex(b));
+    });
+  });
+
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const target = (btn as HTMLElement).dataset.target!;
+      const text = document.getElementById(target)!.textContent!;
+      await navigator.clipboard.writeText(text);
+      btn.innerHTML = '<i class="fas fa-check"></i>';
+      setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1500);
+    });
+  });
+</script>

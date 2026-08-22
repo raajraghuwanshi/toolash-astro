@@ -1,0 +1,139 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'emi-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="emi-wrap">
+    <div class="emi-form">
+      <div class="emi-field">
+        <label for="emi-principal">Loan Amount (₹)</label>
+        <input type="number" id="emi-principal" class="emi-input" placeholder="500000" value="500000" />
+      </div>
+      <div class="emi-field">
+        <label for="emi-rate">Annual Interest Rate (%)</label>
+        <input type="number" id="emi-rate" class="emi-input" placeholder="8.5" value="8.5" step="0.1" />
+      </div>
+      <div class="emi-field">
+        <label for="emi-tenure">Loan Tenure (Months)</label>
+        <input type="number" id="emi-tenure" class="emi-input" placeholder="60" value="60" />
+      </div>
+      <button class="btn btn-primary" id="emi-calc" style="align-self:flex-end; padding:12px 28px;">
+        <i class="fas fa-calculator"></i> Calculate EMI
+      </button>
+    </div>
+
+    <div id="emi-result" class="emi-result" style="display:none">
+      <div class="emi-highlight">
+        <div class="emi-highlight-label">Monthly EMI</div>
+        <div class="emi-highlight-value" id="emi-monthly">₹0</div>
+      </div>
+      <div class="emi-stats">
+        <div class="emi-stat">
+          <span class="emi-stat-label">Principal Amount</span>
+          <strong id="emi-principal-out">₹0</strong>
+        </div>
+        <div class="emi-stat">
+          <span class="emi-stat-label">Total Interest</span>
+          <strong id="emi-interest-out" style="color:#EF4444">₹0</strong>
+        </div>
+        <div class="emi-stat">
+          <span class="emi-stat-label">Total Payment</span>
+          <strong id="emi-total-out" style="color:#2563EB">₹0</strong>
+        </div>
+        <div class="emi-stat">
+          <span class="emi-stat-label">Interest Rate</span>
+          <strong id="emi-rate-out">0%</strong>
+        </div>
+      </div>
+      <div class="emi-donut-wrap">
+        <svg viewBox="0 0 200 200" class="emi-donut" id="emi-donut">
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#EFF6FF" stroke-width="28"/>
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#2563EB" stroke-width="28" stroke-dasharray="439.8" stroke-dashoffset="0" id="donut-principal" style="transform: rotate(-90deg); transform-origin: center;"/>
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#EF4444" stroke-width="28" stroke-dasharray="439.8" stroke-dashoffset="0" id="donut-interest" style="transform: rotate(-90deg); transform-origin: center;"/>
+        </svg>
+        <div class="emi-donut-legend">
+          <div><span class="legend-dot" style="background:#2563EB"></span> Principal</div>
+          <div><span class="legend-dot" style="background:#EF4444"></span> Interest</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .emi-wrap { display: flex; flex-direction: column; gap: 24px; }
+  .emi-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 16px; align-items: end; }
+  .emi-field { display: flex; flex-direction: column; gap: 6px; }
+  .emi-field label { font-size: 14px; font-weight: 600; color: var(--txt); }
+  .emi-input {
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .emi-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .emi-result { animation: fadeIn .4s ease; display: flex; flex-direction: column; gap: 16px; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+  .emi-highlight { background: linear-gradient(135deg, #2563EB, #7C3AED); color: #fff; padding: 24px; border-radius: var(--radius-lg); text-align: center; }
+  .emi-highlight-label { font-size: 14px; font-weight: 600; opacity: .8; margin-bottom: 8px; }
+  .emi-highlight-value { font-size: 3rem; font-weight: 900; font-family: 'Outfit', sans-serif; }
+  .emi-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .emi-stat { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; }
+  .emi-stat-label { font-size: 12px; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; font-weight: 600; display: block; margin-bottom: 6px; }
+  .emi-stat strong { font-size: 16px; font-weight: 800; color: var(--txt); font-family: 'Outfit', sans-serif; }
+  .emi-donut-wrap { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 16px; }
+  .emi-donut { width: 160px; height: 160px; }
+  .emi-donut-legend { display: flex; flex-direction: column; gap: 10px; font-size: 14px; font-weight: 600; color: var(--txt); }
+  .emi-donut-legend div { display: flex; align-items: center; gap: 8px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+  @media (max-width: 768px) { .emi-form { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .emi-form { grid-template-columns: 1fr; } .emi-stats { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<script>
+  const fmt = (n: number) => '₹' + Math.round(n).toLocaleString('en-IN');
+  const circ = 2 * Math.PI * 70; // 439.82
+
+  function calc() {
+    const P = parseFloat((document.getElementById('emi-principal') as HTMLInputElement).value);
+    const annualRate = parseFloat((document.getElementById('emi-rate') as HTMLInputElement).value);
+    const n = parseInt((document.getElementById('emi-tenure') as HTMLInputElement).value);
+
+    if (!P || !annualRate || !n) return;
+
+    const r = annualRate / 12 / 100;
+    const emi = r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    const total = emi * n;
+    const interest = total - P;
+
+    document.getElementById('emi-monthly')!.textContent = fmt(emi);
+    document.getElementById('emi-principal-out')!.textContent = fmt(P);
+    document.getElementById('emi-interest-out')!.textContent = fmt(interest);
+    document.getElementById('emi-total-out')!.textContent = fmt(total);
+    document.getElementById('emi-rate-out')!.textContent = `${annualRate}%`;
+
+    // Donut chart
+    const principalPct = P / total;
+    const principalDash = circ * principalPct;
+    const interestDash = circ * (1 - principalPct);
+    const donutP = document.getElementById('donut-principal')!;
+    const donutI = document.getElementById('donut-interest')!;
+    donutP.setAttribute('stroke-dasharray', `${principalDash} ${circ}`);
+    donutI.setAttribute('stroke-dasharray', `${interestDash} ${circ}`);
+    donutI.setAttribute('stroke-dashoffset', String(-principalDash));
+
+    document.getElementById('emi-result')!.style.display = '';
+  }
+
+  document.getElementById('emi-calc')?.addEventListener('click', calc);
+  calc(); // Auto calculate with defaults
+</script>

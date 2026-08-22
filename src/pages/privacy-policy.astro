@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+---
+
+<BaseLayout
+  title="Privacy Policy – Toolarsh"
+  description="Toolarsh privacy policy detailing data collection, browser processing, and cookie policy."
+>
+  <Navbar />
+  <SearchModal />
+
+  <main class="privacy-page">
+    <div class="container">
+      <div class="privacy-card">
+        <h1 class="font-display privacy-title">Privacy Policy</h1>
+        <p class="privacy-meta">Last updated: January 2026</p>
+
+        <section class="privacy-section">
+          <h2>1. Overview</h2>
+          <p>
+            At Toolarsh (toolarsh.com), we respect your privacy and are committed to protecting it. Most of our tools process your data directly within your web browser using client-side JavaScript. This means your text, files, and inputs are never uploaded or stored on our servers.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h2>2. Data Collection</h2>
+          <p>
+            We do not require user accounts, registration, or personal information to use Toolarsh. We may collect standard non-personally identifiable web analytics (such as page views, browser type, and country) to improve site performance and user experience.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h2>3. Client-Side Processing</h2>
+          <p>
+            Tools like Word Counter, Case Converter, Remove Duplicates, Password Generator, and Calculators run entirely within your local browser runtime. No data entered into these tools is transmitted to any external server.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h2>4. Cookies & Third-Party Services</h2>
+          <p>
+            Toolarsh may use third-party services such as Google Analytics or advertising networks that place cookies to serve relevant ads. You can manage or disable cookies at any time through your browser settings.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h2>5. Contact Us</h2>
+          <p>
+            If you have questions about this privacy policy, please contact us via our <a href="/contact">Contact Page</a>.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .privacy-page { padding: 60px 0 80px; }
+  .privacy-card { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-xl); padding: 40px; max-width: 840px; margin: 0 auto; box-shadow: var(--shadow-sm); }
+  .privacy-title { font-size: 2.4rem; font-weight: 900; color: #0F172A; margin-bottom: 6px; }
+  .privacy-meta { font-size: 13px; color: var(--txt-muted); margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+  .privacy-section { margin-bottom: 28px; }
+  .privacy-section h2 { font-size: 18px; font-weight: 700; color: #0F172A; margin-bottom: 10px; font-family: 'Outfit', sans-serif; }
+  .privacy-section p { font-size: 15px; color: #475569; line-height: 1.7; }
+  .privacy-section a { color: var(--brand); text-decoration: underline; }
+</style>

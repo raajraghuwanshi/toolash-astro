@@ -1,0 +1,256 @@
+---
+---
+
+<style>
+  .site-footer {
+    background: #0F172A;
+    color: #94A3B8;
+    padding: 64px 0 0;
+    margin-top: 80px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 56px;
+  }
+  /* Brand column */
+  .footer-brand { display: flex; flex-direction: column; gap: 16px; }
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+    text-decoration: none;
+  }
+  .footer-logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #2563EB, #7C3AED);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .footer-tagline { font-size: 14px; color: #64748B; line-height: 1.65; max-width: 260px; }
+  .footer-stats { display: flex; gap: 20px; }
+  .footer-stat .num { font-size: 18px; font-weight: 800; color: #60A5FA; display: block; }
+  .footer-stat .lbl { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: .05em; }
+  .footer-social { display: flex; gap: 8px; }
+  .social-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid #1E293B;
+    background: #1E293B;
+    color: #64748B;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all .15s;
+  }
+  .social-btn:hover { border-color: #2563EB; color: #60A5FA; transform: translateY(-2px); }
+  /* Link columns */
+  .footer-col-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #60A5FA;
+    margin-bottom: 16px;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a {
+    font-size: 13.5px;
+    color: #64748B;
+    text-decoration: none;
+    transition: color .12s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .footer-links a::before { content: '›'; color: #334155; transition: color .12s; }
+  .footer-links a:hover { color: #E2E8F0; }
+  .footer-links a:hover::before { color: #2563EB; }
+  /* Bottom bar */
+  .footer-bottom {
+    border-top: 1px solid #1E293B;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-copy { font-size: 13px; color: #475569; }
+  .footer-copy .heart { color: #F87171; }
+  .footer-bottom-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; }
+  .footer-bottom-links a { font-size: 13px; color: #475569; text-decoration: none; transition: color .12s; }
+  .footer-bottom-links a:hover { color: #94A3B8; }
+  /* Newsletter */
+  .footer-newsletter {
+    border-top: 1px solid #1E293B;
+    border-bottom: 1px solid #1E293B;
+    padding: 28px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .newsletter-copy h3 { font-size: 16px; font-weight: 700; color: #F1F5F9; margin-bottom: 4px; }
+  .newsletter-copy p { font-size: 13.5px; color: #64748B; }
+  .newsletter-form { display: flex; gap: 10px; }
+  .newsletter-form input {
+    width: 240px;
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #E2E8F0;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .newsletter-form input::placeholder { color: #475569; }
+  .newsletter-form input:focus { border-color: #2563EB; }
+  .newsletter-form button {
+    background: #2563EB;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background .15s, transform .15s;
+    white-space: nowrap;
+  }
+  .newsletter-form button:hover { background: #1D4ED8; transform: translateY(-1px); }
+
+  @media (max-width: 980px) {
+    .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .footer-brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; padding-left: 16px; padding-right: 16px; }
+    .footer-newsletter { flex-direction: column; align-items: flex-start; padding-left: 16px; padding-right: 16px; }
+    .newsletter-form { width: 100%; flex-direction: column; }
+    .newsletter-form input { width: 100%; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; padding-left: 16px; padding-right: 16px; }
+    .footer-bottom-links { gap: 12px; }
+  }
+</style>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <!-- Brand -->
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <div class="footer-logo-icon">🧰</div>
+        Toolarsh<span style="color:#2563EB">.</span>
+      </a>
+      <p class="footer-tagline">Free, fast browser tools for developers and everyday tasks — no installs, no signups, just open and use.</p>
+      <div class="footer-stats">
+        <div class="footer-stat"><span class="num">35+</span><span class="lbl">Tools</span></div>
+        <div class="footer-stat"><span class="num">100%</span><span class="lbl">Free</span></div>
+        <div class="footer-stat"><span class="num">0</span><span class="lbl">Signups</span></div>
+      </div>
+      <div class="footer-social">
+        <a class="social-btn" href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a class="social-btn" href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a class="social-btn" href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <a class="social-btn" href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+
+    <!-- Writing & Text -->
+    <div class="footer-col">
+      <div class="footer-col-title">Writing & Text</div>
+      <ul class="footer-links">
+        <li><a href="/word-counter">Word Counter</a></li>
+        <li><a href="/text-case-converter">Case Converter</a></li>
+        <li><a href="/remove-duplicates">Remove Duplicates</a></li>
+        <li><a href="/color-contrast-checker">Color Contrast</a></li>
+        <li><a href="/keyboard-tester">Keyboard Tester</a></li>
+        <li><a href="/compare">Text Compare</a></li>
+      </ul>
+    </div>
+
+    <!-- Generators -->
+    <div class="footer-col">
+      <div class="footer-col-title">Generators</div>
+      <ul class="footer-links">
+        <li><a href="/uuid-generator">UUID Generator</a></li>
+        <li><a href="/qr-code-generator">QR Code Generator</a></li>
+        <li><a href="/barcode-generator">Barcode Generator</a></li>
+        <li><a href="/random-password-generator">Password Generator</a></li>
+        <li><a href="/random-email-generator">Email Generator</a></li>
+        <li><a href="/username-generator">Username Generator</a></li>
+        <li><a href="/business-name-generator">Business Name Gen</a></li>
+        <li><a href="/stylish-name">Stylish Name Gen</a></li>
+      </ul>
+    </div>
+
+    <!-- Calculators -->
+    <div class="footer-col">
+      <div class="footer-col-title">Calculators</div>
+      <ul class="footer-links">
+        <li><a href="/age-calculator">Age Calculator</a></li>
+        <li><a href="/emi-calculator">EMI Calculator</a></li>
+        <li><a href="/bmi-calculator">BMI Calculator</a></li>
+        <li><a href="/percentage-calculator">Percentage Calc</a></li>
+        <li><a href="/bitumen-calculator">Bitumen Calc</a></li>
+        <li><a href="/gematria-calculator">Gematria Calc</a></li>
+        <li><a href="/bottleneck-calculator">Bottleneck Calc</a></li>
+        <li><a href="/cgpa-calculator">CGPA Calculator</a></li>
+      </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div class="footer-col">
+      <div class="footer-col-title">Downloads</div>
+      <ul class="footer-links">
+        <li><a href="/video-downloader">Video Downloader</a></li>
+        <li><a href="/vsco-downloader">VSCO Downloader</a></li>
+        <li><a href="/thumbnail-downloader">Thumbnail DL</a></li>
+        <li><a href="/instagram-downloader">Instagram DL</a></li>
+        <li><a href="/studocu-downloader">Studocu DL</a></li>
+        <li><a href="/issuu-downloader">Issuu DL</a></li>
+        <li><a href="/coursehero-downloader">CourseHero DL</a></li>
+        <li><a href="/youtube-to-mp3-converter">YouTube to MP3</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Newsletter -->
+  <div class="footer-newsletter">
+    <div class="newsletter-copy">
+      <h3>Get new tools in your inbox</h3>
+      <p>One short email when we ship something useful. No spam, unsubscribe anytime.</p>
+    </div>
+    <form class="newsletter-form" onsubmit="return false;">
+      <input type="email" placeholder="you@example.com" required />
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Toolarsh. All rights reserved. Built with <span class="heart">♥</span> for the web.</p>
+    <ul class="footer-bottom-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/privacy-policy">Privacy</a></li>
+    </ul>
+  </div>
+</footer>

@@ -1,0 +1,44 @@
+---
+import type { Tool } from '../data/tools';
+
+export interface Props {
+  tool: Tool;
+}
+
+const { tool } = Astro.props;
+const catColors: Record<string, string> = {
+  writing: 'var(--writing-color)',
+  security: 'var(--security-color)',
+  generators: 'var(--gen-color)',
+  calculators: 'var(--calc-color)',
+  converters: 'var(--conv-color)',
+  media: 'var(--media-color)',
+};
+const catBgs: Record<string, string> = {
+  writing: 'var(--writing-bg)',
+  security: 'var(--security-bg)',
+  generators: 'var(--gen-bg)',
+  calculators: 'var(--calc-bg)',
+  converters: 'var(--conv-bg)',
+  media: 'var(--media-bg)',
+};
+
+const color = catColors[tool.category] ?? 'var(--brand)';
+const bg = catBgs[tool.category] ?? 'var(--brand-light)';
+---
+
+<a
+  href={`/${tool.slug}`}
+  class="tool-card"
+  style={`--card-color: ${color}`}
+  title={tool.name}
+>
+  <div class="tool-card-icon" style={`background: ${bg}; color: ${color}`}>
+    <i class={`fas ${tool.faIcon}`}></i>
+  </div>
+  <h3>{tool.name}</h3>
+  <p>{tool.description}</p>
+  <span class="tool-card-link">
+    Use tool <i class="fas fa-arrow-right" style="font-size:11px"></i>
+  </span>
+</a>

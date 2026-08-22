@@ -1,0 +1,248 @@
+---
+import { tools } from '../data/tools';
+
+const toolsJson = JSON.stringify(tools.map(t => ({
+  slug: t.slug,
+  name: t.name,
+  description: t.description,
+  category: t.category,
+  faIcon: t.faIcon,
+  color: t.color,
+  keywords: t.keywords ?? '',
+})));
+
+const catColors: Record<string, string> = {
+  writing: '#7C3AED',
+  security: '#059669',
+  generators: '#EA580C',
+  calculators: '#2563EB',
+  converters: '#0891B2',
+  media: '#DC2626',
+};
+const catBgs: Record<string, string> = {
+  writing: '#F5F3FF',
+  security: '#ECFDF5',
+  generators: '#FFF7ED',
+  calculators: '#EFF6FF',
+  converters: '#ECFEFF',
+  media: '#FEF2F2',
+};
+---
+
+<!-- Search Overlay -->
+<div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Search tools">
+  <div class="search-modal">
+    <div class="search-modal-input">
+      <i class="fas fa-search search-icon"></i>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search 35+ free tools (e.g. Word Counter, QR Code, BMI)..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="search-clear-input" class="search-clear-btn" title="Clear input" style="display:none;">
+        <i class="fas fa-xmark"></i>
+      </button>
+      <button id="search-close-btn" class="search-esc-btn">
+        ESC
+      </button>
+    </div>
+
+    <div class="search-modal-results" id="search-results">
+      <!-- Results or popular items rendered via JS -->
+    </div>
+
+    <div class="search-modal-footer">
+      <span><kbd>↑</kbd> <kbd>↓</kbd> Navigate</span>
+      <span><kbd>↵</kbd> Select</span>
+      <span><kbd>ESC</kbd> Close</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .search-icon { font-size: 16px; color: var(--txt-muted); flex-shrink: 0; }
+  .search-clear-btn {
+    border: none;
+    background: transparent;
+    color: var(--txt-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .search-clear-btn:hover { color: var(--txt); background: var(--bg-soft); }
+  .search-esc-btn {
+    color: var(--txt-muted);
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--bg-soft);
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .search-modal-footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 20px;
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--txt-muted);
+  }
+  .search-modal-footer kbd {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-family: inherit;
+  }
+</style>
+
+<script define:vars={{ toolsJson, catColors, catBgs }}>
+  const tools = JSON.parse(toolsJson);
+  const overlay = document.getElementById('search-overlay');
+  const input = document.getElementById('search-input');
+  const results = document.getElementById('search-results');
+  const closeBtn = document.getElementById('search-close-btn');
+  const clearBtn = document.getElementById('search-clear-input');
+
+  let activeIndex = -1;
+
+  function openSearch() {
+    if (!overlay) return;
+    overlay.classList.add('open');
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    if (clearBtn) clearBtn.style.display = 'none';
+    renderResults('');
+  }
+
+  function closeSearch() {
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    if (input) input.value = '';
+    activeIndex = -1;
+  }
+
+  // Expose globally so buttons anywhere can trigger search easily
+  window.openSearchModal = openSearch;
+
+  overlay?.addEventListener('click', (e) => {
+    if (e.target === overlay) closeSearch();
+  });
+  closeBtn?.addEventListener('click', closeSearch);
+  clearBtn?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+      if (clearBtn) clearBtn.style.display = 'none';
+      renderResults('');
+    }
+  });
+
+  function renderResults(query) {
+    activeIndex = -1;
+    const q = query.trim().toLowerCase();
+
+    if (clearBtn) {
+      clearBtn.style.display = q ? 'block' : 'none';
+    }
+
+    if (!q) {
+      const popular = tools.filter(t => ['word-counter', 'random-password-generator', 'uuid-generator', 'age-calculator', 'bmi-calculator', 'qr-code-generator', 'hex-to-rgb-converter', 'language-translator'].includes(t.slug));
+      renderItems(popular.length ? popular : tools.slice(0, 8), '⚡ Popular Tools');
+      return;
+    }
+
+    const matched = tools.filter(t =>
+      t.name.toLowerCase().includes(q) ||
+      t.description.toLowerCase().includes(q) ||
+      t.category.toLowerCase().includes(q) ||
+      (t.keywords && t.keywords.toLowerCase().includes(q))
+    ).slice(0, 10);
+
+    if (matched.length === 0) {
+      if (results) {
+        results.innerHTML = `
+          <div class="search-empty" style="text-align:center; padding:36px 20px; color:var(--txt-muted); font-size:14px;">
+            <i class="fas fa-magnifying-glass" style="font-size:32px; opacity:.3; display:block; margin-bottom:10px;"></i>
+            No tools found for "<strong>${escapeHtml(query)}</strong>".
+          </div>`;
+      }
+      return;
+    }
+    renderItems(matched, `${matched.length} result${matched.length > 1 ? 's' : ''} found`);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+  }
+
+  function renderItems(items, label) {
+    const color = (cat) => catColors[cat] || '#2563EB';
+    const bg = (cat) => catBgs[cat] || '#EFF6FF';
+
+    if (!results) return;
+
+    results.innerHTML = `
+      <div style="padding: 10px 12px 6px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--txt-muted);">${label}</div>
+      ${items.map((t, index) => `
+        <a class="search-result-item" href="/${t.slug}" data-index="${index}">
+          <div class="search-result-icon" style="background: ${bg(t.category)}; color: ${color(t.category)}">
+            <i class="fas ${t.faIcon}"></i>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <strong style="display:block; font-size:14px; color:var(--txt);">${t.name}</strong>
+            <span style="display:block; font-size:12px; color:var(--txt-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.description}</span>
+          </div>
+          <i class="fas fa-arrow-right" style="font-size:12px; color:var(--txt-dim); margin-left:auto;"></i>
+        </a>
+      `).join('')}
+    `;
+  }
+
+  input?.addEventListener('input', (e) => {
+    renderResults(e.target.value);
+  });
+
+  // Keyboard Navigation inside search modal
+  input?.addEventListener('keydown', (e) => {
+    const items = results?.querySelectorAll('.search-result-item');
+    if (!items || items.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = (activeIndex + 1) % items.length;
+      updateActiveItem(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = (activeIndex - 1 + items.length) % items.length;
+      updateActiveItem(items);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIndex >= 0 && items[activeIndex]) {
+        (items[activeIndex]).click();
+      } else if (items[0]) {
+        (items[0]).click();
+      }
+    }
+  });
+
+  function updateActiveItem(items) {
+    items.forEach((item, idx) => {
+      if (idx === activeIndex) {
+        item.classList.add('active');
+        item.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.classList.remove('active');
+      }
+    });
+  }
+</script>

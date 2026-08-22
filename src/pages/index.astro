@@ -1,0 +1,537 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { tools, categoryMeta, type Category } from '../data/tools';
+
+const categories: Category[] = ['writing', 'security', 'generators', 'calculators', 'converters', 'media'];
+
+const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, description: t.description, category: t.category })));
+---
+
+<BaseLayout
+  title="Toolarsh – 35+ Free Online Tools, Calculators & Converters"
+  description="Free online calculators, converters, generators, downloaders, and text tools. No sign-up, no installs — fast, accurate results right in your browser."
+  keywords="free online tools, online calculators, converters, generators, downloader tools, text tools, toolarsh"
+>
+  <Navbar />
+  <SearchModal />
+
+  <main>
+    <!-- ══════════ HERO ══════════ -->
+    <section class="hero">
+      <div class="hero-bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+      </div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i class="fas fa-circle-check" style="color:#22C55E"></i>
+            Free forever &middot; No sign-up required
+          </div>
+
+          <h1 class="hero-title font-display">
+            Every tool you need,<br/>
+            <span class="hero-gradient">completely free.</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            35+ browser-based utilities for writing, security, generators,<br class="hide-mobile"/>
+            calculators, converters, and media — all in one place.
+          </p>
+
+          <!-- Search bar -->
+          <div class="hero-search-wrap">
+            <div class="hero-search-bar" id="hero-search-trigger">
+              <i class="fas fa-search hero-search-icon"></i>
+              <span class="hero-search-placeholder">Search for a tool… (Word Counter, QR Code, BMI…)</span>
+              <kbd class="hero-kbd">Ctrl + K</kbd>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <strong>35+</strong>
+              <span>Free Tools</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="hero-stat">
+              <strong>100%</strong>
+              <span>Browser-Based</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="hero-stat">
+              <strong>0</strong>
+              <span>Sign-ups Needed</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="hero-stat">
+              <strong>∞</strong>
+              <span>Usage Limit</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ CATEGORY CARDS ══════════ -->
+    <section class="categories-section">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-label"><i class="fas fa-th-large"></i> Browse by category</p>
+          <h2>Everything you need in one place</h2>
+          <p class="section-desc">Pick a category below to jump straight to the tools you need.</p>
+        </div>
+        <div class="category-grid">
+          {categories.map(cat => {
+            const meta = categoryMeta[cat];
+            const count = tools.filter(t => t.category === cat).length;
+            return (
+              <a class="category-card" href={`#${cat}`} style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`}>
+                <div class="cat-card-icon">{meta.emoji}</div>
+                <h3>{meta.label}</h3>
+                <p>{meta.description}</p>
+                <div class="cat-card-footer">
+                  <span class="cat-count">{count} tools</span>
+                  <span class="cat-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ALL TOOLS ══════════ -->
+    <section class="tools-section" id="all-tools">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-label"><i class="fas fa-toolbox"></i> All tools</p>
+          <h2>Pick your tool, start instantly</h2>
+          <p class="section-desc">No downloads. No account. Just open a tool and go.</p>
+        </div>
+
+        <!-- Filter pills -->
+        <div class="filter-bar" role="tablist" aria-label="Filter tools by category">
+          <button class="filter-pill active" data-filter="all" role="tab">
+            <i class="fas fa-th-large"></i> All
+          </button>
+          {categories.map(cat => (
+            <button class="filter-pill" data-filter={cat} role="tab">
+              {categoryMeta[cat].emoji} {categoryMeta[cat].label}
+            </button>
+          ))}
+        </div>
+
+        <!-- Tool grid -->
+        <div class="tools-grid" id="tools-grid">
+          {tools.map(tool => (
+            <div class="tool-grid-item" data-category={tool.category}>
+              <ToolCard tool={tool} />
+            </div>
+          ))}
+        </div>
+
+        <!-- No results (hidden by default) -->
+        <div class="no-results" id="no-results" style="display:none">
+          <i class="fas fa-face-sad-tear"></i>
+          <p>No tools in this category yet.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ CATEGORY SECTIONS ══════════ -->
+    {categories.map(cat => {
+      const meta = categoryMeta[cat];
+      const catTools = tools.filter(t => t.category === cat);
+      return (
+        <section class="cat-section" id={cat}>
+          <div class="container">
+            <div class="cat-section-header" style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`}>
+              <div class="cat-section-badge">
+                <span class="cat-section-emoji">{meta.emoji}</span>
+                <span>{meta.label}</span>
+              </div>
+              <p class="cat-section-desc">{meta.description}</p>
+            </div>
+            <div class="tools-grid">
+              {catTools.map(tool => <ToolCard tool={tool} />)}
+            </div>
+          </div>
+        </section>
+      );
+    })}
+
+    <!-- ══════════ STATS BANNER ══════════ -->
+    <section class="stats-banner">
+      <div class="container">
+        <div class="stats-banner-grid">
+          <div class="stats-banner-item">
+            <div class="stats-icon" style="background:#EFF6FF; color:#2563EB"><i class="fas fa-toolbox"></i></div>
+            <strong>35+</strong>
+            <span>Free Tools</span>
+          </div>
+          <div class="stats-banner-item">
+            <div class="stats-icon" style="background:#ECFDF5; color:#059669"><i class="fas fa-shield-halved"></i></div>
+            <strong>100%</strong>
+            <span>Private & Secure</span>
+          </div>
+          <div class="stats-banner-item">
+            <div class="stats-icon" style="background:#FFF7ED; color:#EA580C"><i class="fas fa-bolt"></i></div>
+            <strong>Instant</strong>
+            <span>Results in Browser</span>
+          </div>
+          <div class="stats-banner-item">
+            <div class="stats-icon" style="background:#F5F3FF; color:#7C3AED"><i class="fas fa-user-slash"></i></div>
+            <strong>Zero</strong>
+            <span>Account Needed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ FAQ ══════════ -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-label"><i class="fas fa-circle-question"></i> FAQ</p>
+          <h2>Frequently Asked Questions</h2>
+          <p class="section-desc">Everything you need to know about Toolarsh.</p>
+        </div>
+        <div class="faq-list" id="faq-list">
+          {[
+            { q: "Are all tools on Toolarsh.com free to use?", a: "Yes. Every tool available on Toolarsh.com is completely free to use. Our goal is to provide fast, reliable, and easy-to-use online tools without subscriptions, hidden fees, or registration requirements." },
+            { q: "Do I need to create an account to use Toolarsh?", a: "No. You can use all Toolarsh tools without creating an account. Simply visit the website, choose the tool you need, and start using it immediately." },
+            { q: "What types of online tools are available on Toolarsh?", a: "Toolarsh offers a growing collection of text tools, calculators, converters, generators, developer tools, image tools, productivity tools, and many other useful online utilities." },
+            { q: "Is my information secure while using Toolarsh?", a: "Yes. Many Toolarsh tools process data directly in your browser, helping keep your files and personal information private unless a particular service clearly states otherwise." },
+            { q: "Can I use Toolarsh on my smartphone or tablet?", a: "Absolutely. Toolarsh is fully responsive and works smoothly on desktops, laptops, tablets, and smartphones." },
+            { q: "How often are new tools added to Toolarsh?", a: "We regularly introduce new tools and improve existing ones to provide the best possible experience for our users." },
+            { q: "Why should I choose Toolarsh over other online tool websites?", a: "Toolarsh focuses on speed, simplicity, privacy, and reliability. Our tools are designed to be accurate, easy to use, and accessible from any device." },
+            { q: "Are there any usage limits on Toolarsh?", a: "Most Toolarsh tools have no daily usage limits, allowing unlimited access whenever you need them." },
+            { q: "How does Toolarsh remain free for everyone?", a: "Toolarsh is supported through advertising and other revenue sources, allowing us to continue offering high-quality online tools free of charge." },
+          ].map((faq, i) => (
+            <div class="faq-item" id={`faq-${i}`}>
+              <button class="faq-question" aria-expanded="false" aria-controls={`faq-answer-${i}`}>
+                <span>{faq.q}</span>
+                <div class="faq-icon"><i class="fas fa-plus"></i></div>
+              </button>
+              <div class="faq-answer" id={`faq-answer-${i}`} role="region">
+                <p>{faq.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* ── Hero ──────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #F0F5FF 0%, #ffffff 60%);
+    padding: 80px 0 72px;
+    text-align: center;
+  }
+  .hero-bg-blobs { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: .35;
+  }
+  .blob-1 { width: 500px; height: 500px; background: #BFDBFE; top: -150px; left: -100px; }
+  .blob-2 { width: 400px; height: 400px; background: #DDD6FE; top: -80px; right: -120px; }
+  .blob-3 { width: 300px; height: 300px; background: #BBF7D0; bottom: -100px; left: 50%; transform: translateX(-50%); }
+  .hero-content { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #15803D;
+    background: #DCFCE7;
+    border: 1px solid #BBF7D0;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+  .hero-title {
+    font-size: clamp(2.4rem, 5vw + 1rem, 4rem);
+    font-weight: 900;
+    color: #0F172A;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+  }
+  .hero-gradient {
+    background: linear-gradient(135deg, #2563EB, #7C3AED, #EC4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-subtitle {
+    font-size: 18px;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+  .hide-mobile { display: inline; }
+
+  /* Hero search */
+  .hero-search-wrap { max-width: 580px; margin: 0 auto 36px; }
+  .hero-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 2px solid #E5E7EB;
+    border-radius: 100px;
+    padding: 14px 14px 14px 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,.07);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .hero-search-bar:hover {
+    border-color: #2563EB;
+    box-shadow: 0 4px 24px rgba(37,99,235,.15);
+  }
+  .hero-search-icon { font-size: 16px; color: #9CA3AF; flex-shrink: 0; }
+  .hero-search-placeholder { flex: 1; font-size: 15px; color: #9CA3AF; text-align: left; }
+  .hero-kbd {
+    font-size: 11px;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 3px 8px;
+    color: #6B7280;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Stats */
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat strong { display: block; font-size: 22px; font-weight: 800; color: #0F172A; }
+  .hero-stat span { font-size: 13px; color: #64748B; }
+  .stat-divider { width: 1px; height: 36px; background: #E5E7EB; }
+
+  /* ── Categories ────────────────────────────────────── */
+  .categories-section { padding: 80px 0; background: var(--bg-soft); }
+  .section-header { text-align: center; margin-bottom: 40px; }
+  .section-label { margin-bottom: 10px; }
+  .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); color: #0F172A; margin-bottom: 10px; font-family: 'Outfit', sans-serif; font-weight: 800; }
+  .section-desc { font-size: 16px; color: #64748B; }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .category-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    text-decoration: none;
+    transition: all .22s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .category-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--cat-color);
+    border-radius: 0 0 4px 4px;
+    transform: scaleX(0);
+    transition: transform .22s ease;
+    transform-origin: left;
+  }
+  .category-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: transparent; }
+  .category-card:hover::before { transform: scaleX(1); }
+
+  .cat-card-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--cat-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+  }
+  .category-card h3 { font-size: 17px; font-weight: 700; color: #0F172A; font-family: 'Outfit', sans-serif; }
+  .category-card p { font-size: 13.5px; color: #64748B; flex: 1; line-height: 1.5; }
+  .cat-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+  .cat-count { font-size: 12px; font-weight: 700; color: var(--cat-color); background: var(--cat-bg); padding: 3px 10px; border-radius: 100px; }
+  .cat-arrow { width: 28px; height: 28px; background: var(--cat-bg); color: var(--cat-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: transform .15s; }
+  .category-card:hover .cat-arrow { transform: translateX(3px); }
+
+  /* ── Tools Section ─────────────────────────────────── */
+  .tools-section { padding: 80px 0; }
+
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .tool-grid-item { transition: opacity .2s, transform .2s; }
+  .tool-grid-item.hidden { display: none; }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--txt-muted);
+    font-size: 16px;
+  }
+  .no-results i { font-size: 40px; opacity: .3; display: block; margin-bottom: 12px; }
+
+  /* ── Category Sections ─────────────────────────────── */
+  .cat-section { padding: 60px 0; }
+  .cat-section:nth-child(even) { background: var(--bg-soft); }
+  .cat-section-header { margin-bottom: 32px; }
+  .cat-section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--cat-bg);
+    color: var(--cat-color);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 10px;
+  }
+  .cat-section-emoji { font-size: 18px; }
+  .cat-section-desc { font-size: 15px; color: #64748B; margin-top: 6px; }
+
+  /* ── Stats Banner ──────────────────────────────────── */
+  .stats-banner { padding: 80px 0; background: #0F172A; }
+  .stats-banner-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    text-align: center;
+  }
+  .stats-banner-item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .stats-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .stats-banner-item strong { font-size: 28px; font-weight: 800; color: #fff; font-family: 'Outfit', sans-serif; }
+  .stats-banner-item span { font-size: 14px; color: #64748B; }
+
+  /* ── FAQ ───────────────────────────────────────────── */
+  .faq-section { padding: 80px 0; }
+  .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+  /* ── Responsive ────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .tools-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .hero { padding: 56px 0 48px; }
+    .hero-subtitle { font-size: 16px; }
+    .hide-mobile { display: none; }
+    .hero-stats { gap: 20px; }
+    .stat-divider { display: none; }
+    .category-grid { grid-template-columns: 1fr 1fr; }
+    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-banner-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .category-grid { grid-template-columns: 1fr; }
+    .tools-grid { grid-template-columns: 1fr; }
+    .stats-banner-grid { grid-template-columns: 1fr 1fr; }
+    .hero-title { font-size: 2rem; }
+  }
+</style>
+
+<script>
+  // Hero search → open modal
+  document.getElementById('hero-search-trigger')?.addEventListener('click', () => {
+    if (typeof (window as any).openSearchModal === 'function') {
+      (window as any).openSearchModal();
+    } else {
+      document.getElementById('search-overlay')?.classList.add('open');
+      (document.getElementById('search-input') as HTMLInputElement)?.focus();
+    }
+  });
+
+  // Filter tabs
+  const pills = document.querySelectorAll('.filter-pill');
+  const items = document.querySelectorAll('.tool-grid-item');
+  const noResults = document.getElementById('no-results');
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const filter = (pill as HTMLElement).dataset.filter ?? 'all';
+
+      pills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+
+      let visible = 0;
+      items.forEach(item => {
+        const cat = (item as HTMLElement).dataset.category ?? '';
+        const show = filter === 'all' || cat === filter;
+        (item as HTMLElement).style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      if (noResults) noResults.style.display = visible === 0 ? '' : 'none';
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item?.classList.contains('open');
+
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(el => {
+        el.classList.remove('open');
+        el.querySelector('.faq-question')?.setAttribute('aria-expanded', 'false');
+      });
+
+      // Open clicked if it wasn't open
+      if (!isOpen) {
+        item?.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+</script>

@@ -1,0 +1,470 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'language-translator')!;
+
+const languages = [
+  { code: 'en', name: 'English' },
+  { code: 'hi', name: 'Hindi' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' },
+  { code: 'it', name: 'Italian' },
+  { code: 'pt', name: 'Portuguese' },
+  { code: 'ru', name: 'Russian' },
+  { code: 'zh', name: 'Chinese (Simplified)' },
+  { code: 'ja', name: 'Japanese' },
+  { code: 'ko', name: 'Korean' },
+  { code: 'ar', name: 'Arabic' },
+  { code: 'bn', name: 'Bengali' },
+  { code: 'nl', name: 'Dutch' },
+  { code: 'pl', name: 'Polish' },
+  { code: 'sv', name: 'Swedish' },
+  { code: 'no', name: 'Norwegian' },
+  { code: 'da', name: 'Danish' },
+  { code: 'fi', name: 'Finnish' },
+  { code: 'tr', name: 'Turkish' },
+  { code: 'id', name: 'Indonesian' },
+  { code: 'ms', name: 'Malay' },
+  { code: 'vi', name: 'Vietnamese' },
+  { code: 'th', name: 'Thai' },
+  { code: 'uk', name: 'Ukrainian' },
+  { code: 'cs', name: 'Czech' },
+  { code: 'sk', name: 'Slovak' },
+  { code: 'ro', name: 'Romanian' },
+  { code: 'hu', name: 'Hungarian' },
+  { code: 'el', name: 'Greek' },
+  { code: 'he', name: 'Hebrew' },
+  { code: 'fa', name: 'Persian' },
+  { code: 'ur', name: 'Urdu' },
+  { code: 'ta', name: 'Tamil' },
+  { code: 'te', name: 'Telugu' },
+  { code: 'ml', name: 'Malayalam' },
+  { code: 'kn', name: 'Kannada' },
+  { code: 'mr', name: 'Marathi' },
+  { code: 'gu', name: 'Gujarati' },
+  { code: 'pa', name: 'Punjabi' },
+  { code: 'af', name: 'Afrikaans' },
+  { code: 'sq', name: 'Albanian' },
+  { code: 'az', name: 'Azerbaijani' },
+  { code: 'be', name: 'Belarusian' },
+  { code: 'bs', name: 'Bosnian' },
+  { code: 'bg', name: 'Bulgarian' },
+  { code: 'ca', name: 'Catalan' },
+  { code: 'hr', name: 'Croatian' },
+  { code: 'et', name: 'Estonian' },
+  { code: 'tl', name: 'Filipino' },
+  { code: 'ka', name: 'Georgian' },
+  { code: 'lv', name: 'Latvian' },
+  { code: 'lt', name: 'Lithuanian' },
+  { code: 'mk', name: 'Macedonian' },
+  { code: 'mt', name: 'Maltese' },
+  { code: 'sr', name: 'Serbian' },
+  { code: 'sl', name: 'Slovenian' },
+  { code: 'sw', name: 'Swahili' },
+  { code: 'cy', name: 'Welsh' },
+  { code: 'is', name: 'Icelandic' },
+  { code: 'ga', name: 'Irish' },
+  { code: 'lb', name: 'Luxembourgish' },
+  { code: 'ne', name: 'Nepali' },
+  { code: 'si', name: 'Sinhala' },
+  { code: 'mn', name: 'Mongolian' },
+  { code: 'my', name: 'Myanmar (Burmese)' },
+  { code: 'km', name: 'Khmer' },
+  { code: 'lo', name: 'Lao' },
+  { code: 'uz', name: 'Uzbek' },
+  { code: 'kk', name: 'Kazakh' },
+  { code: 'hy', name: 'Armenian' },
+];
+---
+
+<ToolLayout tool={tool}>
+  <div class="tr-wrap">
+
+    <!-- Language selectors -->
+    <div class="tr-lang-bar">
+      <div class="tr-lang-field">
+        <label class="tr-label" for="tr-from">Translate from</label>
+        <select id="tr-from" class="tr-select">
+          {languages.map(l => (
+            <option value={l.code} selected={l.code === 'en'}>{l.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <button class="tr-swap-btn" id="tr-swap" title="Swap languages" aria-label="Swap languages">
+        <i class="fas fa-arrows-left-right"></i>
+      </button>
+
+      <div class="tr-lang-field">
+        <label class="tr-label" for="tr-to">Translate to</label>
+        <select id="tr-to" class="tr-select">
+          {languages.map(l => (
+            <option value={l.code} selected={l.code === 'hi'}>{l.name}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <!-- Text areas -->
+    <div class="tr-panels">
+      <!-- Input -->
+      <div class="tr-panel">
+        <div class="tr-panel-header">
+          <span class="tr-panel-title" id="tr-from-label">English</span>
+          <div class="tr-panel-actions">
+            <button class="tr-icon-btn" id="tr-clear-input" title="Clear"><i class="fas fa-xmark"></i></button>
+            <button class="tr-icon-btn" id="tr-copy-input" title="Copy source"><i class="fas fa-copy"></i></button>
+          </div>
+        </div>
+        <textarea
+          id="tr-input"
+          class="tr-textarea"
+          placeholder="Type or paste text to translate…"
+          rows="8"
+          maxlength="5000"
+        ></textarea>
+        <div class="tr-char-count"><span id="tr-char-count">0</span> / 5000</div>
+      </div>
+
+      <!-- Output -->
+      <div class="tr-panel tr-panel-output">
+        <div class="tr-panel-header">
+          <span class="tr-panel-title" id="tr-to-label">Hindi</span>
+          <div class="tr-panel-actions">
+            <button class="tr-icon-btn" id="tr-copy-output" title="Copy translation"><i class="fas fa-copy"></i></button>
+          </div>
+        </div>
+        <div id="tr-output" class="tr-output-area">
+          <span class="tr-placeholder">Translation will appear here…</span>
+        </div>
+        <div class="tr-status" id="tr-status"></div>
+      </div>
+    </div>
+
+    <!-- Translate button -->
+    <div class="tr-actions">
+      <button class="btn btn-primary tr-translate-btn" id="tr-translate-btn">
+        <i class="fas fa-language"></i> Translate
+      </button>
+      <div class="tr-powered">
+        Powered by <strong>MyMemory</strong> – free, no sign-up required
+      </div>
+    </div>
+
+    <!-- Quick language chips -->
+    <div class="tr-quick-langs">
+      <span class="tr-quick-label">Quick translate to:</span>
+      <div class="tr-chips">
+        <button class="tr-chip" data-to="es">🇪🇸 Spanish</button>
+        <button class="tr-chip" data-to="fr">🇫🇷 French</button>
+        <button class="tr-chip" data-to="de">🇩🇪 German</button>
+        <button class="tr-chip" data-to="ar">🇸🇦 Arabic</button>
+        <button class="tr-chip" data-to="zh">🇨🇳 Chinese</button>
+        <button class="tr-chip" data-to="ja">🇯🇵 Japanese</button>
+        <button class="tr-chip" data-to="pt">🇧🇷 Portuguese</button>
+        <button class="tr-chip" data-to="ru">🇷🇺 Russian</button>
+        <button class="tr-chip" data-to="ko">🇰🇷 Korean</button>
+        <button class="tr-chip" data-to="hi">🇮🇳 Hindi</button>
+      </div>
+    </div>
+
+  </div>
+</ToolLayout>
+
+<style>
+  .tr-wrap { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Language bar */
+  .tr-lang-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .tr-lang-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
+  .tr-label { font-size: 13px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
+  .tr-select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    outline: none;
+    transition: border-color .15s;
+    appearance: auto;
+  }
+  .tr-select:focus { border-color: var(--brand); }
+  .tr-swap-btn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--brand);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all .15s;
+    box-shadow: var(--shadow-sm);
+  }
+  .tr-swap-btn:hover { background: var(--brand); color: #fff; border-color: var(--brand); transform: rotate(180deg); }
+
+  /* Panels */
+  .tr-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tr-panel {
+    display: flex;
+    flex-direction: column;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: #fff;
+    transition: border-color .15s;
+  }
+  .tr-panel:focus-within { border-color: var(--brand); }
+  .tr-panel-output { border-color: #BAE6FD; background: #F0F9FF; }
+  .tr-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--border);
+  }
+  .tr-panel-output .tr-panel-header { background: #E0F2FE; border-bottom-color: #BAE6FD; }
+  .tr-panel-title { font-size: 13px; font-weight: 700; color: var(--txt-muted); }
+  .tr-panel-actions { display: flex; gap: 4px; }
+  .tr-icon-btn {
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--txt-muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    transition: all .12s;
+  }
+  .tr-icon-btn:hover { background: var(--bg-soft); color: var(--brand); }
+  .tr-textarea {
+    flex: 1;
+    width: 100%;
+    min-height: 200px;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: vertical;
+    line-height: 1.65;
+  }
+  .tr-char-count {
+    padding: 6px 16px;
+    font-size: 12px;
+    color: var(--txt-dim);
+    border-top: 1px solid var(--border);
+    text-align: right;
+  }
+  .tr-output-area {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 15px;
+    color: var(--txt);
+    min-height: 200px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .tr-placeholder { color: var(--txt-dim); font-style: italic; }
+  .tr-status { padding: 6px 16px; font-size: 12px; color: var(--txt-dim); border-top: 1px solid #BAE6FD; min-height: 30px; }
+
+  /* Actions */
+  .tr-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .tr-translate-btn { padding: 12px 36px; font-size: 15px; }
+  .tr-powered { font-size: 12px; color: var(--txt-muted); }
+
+  /* Loading state */
+  .tr-loading { display: flex; align-items: center; gap: 8px; color: var(--brand); font-size: 14px; }
+  .tr-spinner { width: 16px; height: 16px; border: 2px solid #C7D2FE; border-top-color: var(--brand); border-radius: 50%; animation: spin .6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Quick language chips */
+  .tr-quick-langs { padding: 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .tr-quick-label { font-size: 13px; font-weight: 600; color: var(--txt-muted); display: block; margin-bottom: 10px; }
+  .tr-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tr-chip {
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--txt-muted);
+    cursor: pointer;
+    transition: all .15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .tr-chip:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
+
+  @media (max-width: 640px) {
+    .tr-panels { grid-template-columns: 1fr; }
+    .tr-lang-bar { flex-direction: column; }
+    .tr-swap-btn { align-self: center; transform: rotate(90deg); }
+    .tr-swap-btn:hover { transform: rotate(270deg); }
+  }
+</style>
+
+<script>
+  const langNames: Record<string, string> = {
+    en: 'English', hi: 'Hindi', es: 'Spanish', fr: 'French', de: 'German',
+    it: 'Italian', pt: 'Portuguese', ru: 'Russian', zh: 'Chinese (Simplified)',
+    ja: 'Japanese', ko: 'Korean', ar: 'Arabic', bn: 'Bengali', nl: 'Dutch',
+    pl: 'Polish', sv: 'Swedish', no: 'Norwegian', da: 'Danish', fi: 'Finnish',
+    tr: 'Turkish', id: 'Indonesian', ms: 'Malay', vi: 'Vietnamese', th: 'Thai',
+    uk: 'Ukrainian', cs: 'Czech', sk: 'Slovak', ro: 'Romanian', hu: 'Hungarian',
+    el: 'Greek', he: 'Hebrew', fa: 'Persian', ur: 'Urdu', ta: 'Tamil',
+    te: 'Telugu', ml: 'Malayalam', kn: 'Kannada', mr: 'Marathi', gu: 'Gujarati',
+    pa: 'Punjabi', af: 'Afrikaans', az: 'Azerbaijani', bg: 'Bulgarian',
+    ca: 'Catalan', hr: 'Croatian', et: 'Estonian', tl: 'Filipino', ka: 'Georgian',
+    lv: 'Latvian', lt: 'Lithuanian', mk: 'Macedonian', mt: 'Maltese',
+    sr: 'Serbian', sl: 'Slovenian', sw: 'Swahili', cy: 'Welsh', is: 'Icelandic',
+    ga: 'Irish', ne: 'Nepali', si: 'Sinhala', mn: 'Mongolian', my: 'Myanmar (Burmese)',
+    km: 'Khmer', lo: 'Lao', uz: 'Uzbek', kk: 'Kazakh', hy: 'Armenian',
+    be: 'Belarusian', bs: 'Bosnian', sq: 'Albanian', lb: 'Luxembourgish',
+  };
+
+  const fromSel = document.getElementById('tr-from') as HTMLSelectElement;
+  const toSel = document.getElementById('tr-to') as HTMLSelectElement;
+  const input = document.getElementById('tr-input') as HTMLTextAreaElement;
+  const output = document.getElementById('tr-output')!;
+  const status = document.getElementById('tr-status')!;
+  const fromLabel = document.getElementById('tr-from-label')!;
+  const toLabel = document.getElementById('tr-to-label')!;
+  const charCount = document.getElementById('tr-char-count')!;
+
+  // Update panel labels
+  function updateLabels() {
+    fromLabel.textContent = langNames[fromSel.value] ?? fromSel.value;
+    toLabel.textContent = langNames[toSel.value] ?? toSel.value;
+  }
+  fromSel.addEventListener('change', updateLabels);
+  toSel.addEventListener('change', updateLabels);
+  updateLabels();
+
+  // Character count
+  input.addEventListener('input', () => {
+    charCount.textContent = input.value.length.toString();
+  });
+
+  // Swap
+  document.getElementById('tr-swap')?.addEventListener('click', () => {
+    const tmpFrom = fromSel.value;
+    const tmpFromText = output.innerText.trim();
+    fromSel.value = toSel.value;
+    toSel.value = tmpFrom;
+    if (tmpFromText && !tmpFromText.startsWith('Translation')) {
+      input.value = tmpFromText;
+      charCount.textContent = input.value.length.toString();
+      output.innerHTML = '<span class="tr-placeholder">Translation will appear here…</span>';
+    }
+    updateLabels();
+  });
+
+  // Clear input
+  document.getElementById('tr-clear-input')?.addEventListener('click', () => {
+    input.value = '';
+    charCount.textContent = '0';
+    output.innerHTML = '<span class="tr-placeholder">Translation will appear here…</span>';
+    status.textContent = '';
+  });
+
+  // Copy input
+  document.getElementById('tr-copy-input')?.addEventListener('click', async () => {
+    if (!input.value) return;
+    await navigator.clipboard.writeText(input.value);
+    const btn = document.getElementById('tr-copy-input')!;
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1800);
+  });
+
+  // Copy output
+  document.getElementById('tr-copy-output')?.addEventListener('click', async () => {
+    const text = output.innerText.trim();
+    if (!text || text.startsWith('Translation')) return;
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('tr-copy-output')!;
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1800);
+  });
+
+  // Quick chip clicks
+  document.querySelectorAll('.tr-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const to = (chip as HTMLElement).dataset.to!;
+      toSel.value = to;
+      updateLabels();
+      if (input.value.trim()) translate();
+    });
+  });
+
+  // Translate function
+  async function translate() {
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
+
+    const from = fromSel.value;
+    const to = toSel.value;
+    if (from === to) {
+      output.textContent = text;
+      status.textContent = 'Source and target language are the same.';
+      return;
+    }
+
+    // Show loading
+    output.innerHTML = '<div class="tr-loading"><div class="tr-spinner"></div> Translating…</div>';
+    status.textContent = '';
+
+    try {
+      const langPair = `${from}|${to}`;
+      const encodedText = encodeURIComponent(text);
+      const url = `https://api.mymemory.translated.net/get?q=${encodedText}&langpair=${langPair}`;
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      if (data.responseStatus === 200) {
+        const translated = data.responseData.translatedText;
+        output.textContent = translated;
+        status.textContent = `Translated from ${langNames[from] ?? from} → ${langNames[to] ?? to}`;
+      } else {
+        throw new Error(data.responseDetails || 'Translation failed');
+      }
+    } catch (err: any) {
+      output.innerHTML = `<span style="color:#EF4444"><i class="fas fa-circle-exclamation"></i> Translation failed: ${err.message}. Please try again.</span>`;
+      status.textContent = '';
+    }
+  }
+
+  document.getElementById('tr-translate-btn')?.addEventListener('click', translate);
+
+  // Translate on Ctrl+Enter
+  input.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      translate();
+    }
+  });
+</script>

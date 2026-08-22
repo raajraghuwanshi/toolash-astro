@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+---
+
+<BaseLayout
+  title="About Us – Toolarsh"
+  description="Learn about Toolarsh's mission to provide fast, free, and privacy-focused browser tools for everyone."
+>
+  <Navbar />
+  <SearchModal />
+
+  <main class="about-page">
+    <div class="container">
+      <div class="about-hero">
+        <span class="badge badge-free"><i class="fas fa-heart"></i> Built for Everyone</span>
+        <h1 class="font-display about-title">Free, Instant & Private Tools for the Modern Web</h1>
+        <p class="about-subtitle">
+          Toolarsh was created with a simple mission: build fast, clean, zero-friction utilities that help students, developers, and creators get work done without paywalls or sign-ups.
+        </p>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-icon" style="background:#EFF6FF; color:#2563EB"><i class="fas fa-bolt"></i></div>
+          <h3>Lightning Fast</h3>
+          <p>Tools process data instantly in your browser without unnecessary server roundtrips or bloated page loads.</p>
+        </div>
+
+        <div class="about-card">
+          <div class="about-icon" style="background:#ECFDF5; color:#059669"><i class="fas fa-shield-halved"></i></div>
+          <h3>Privacy First</h3>
+          <p>Your inputs remain on your device. We do not store, track, or sell your text, files, or calculations.</p>
+        </div>
+
+        <div class="about-card">
+          <div class="about-icon" style="background:#FFF7ED; color:#EA580C"><i class="fas fa-user-slash"></i></div>
+          <h3>100% Free Forever</h3>
+          <p>No subscriptions, no hidden fees, and no account registrations required. Open any tool and start instantly.</p>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <h2>What We Offer</h2>
+        <p>
+          Our suite covers 35+ utilities across Writing & Text, Security, Generators, Calculators, Converters, and Media downloaders. Whether you're formatting text, generating UUIDs, calculating EMIs, or translating content, Toolarsh is designed to be your default browser toolkit.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .about-page { padding: 60px 0 80px; }
+  .about-hero { text-align: center; max-width: 760px; margin: 0 auto 56px; }
+  .about-title { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900; color: #0F172A; margin: 16px 0; line-height: 1.15; }
+  .about-subtitle { font-size: 17px; color: #475569; line-height: 1.65; }
+  .about-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 56px; }
+  .about-card { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-xl); padding: 28px; text-align: center; }
+  .about-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px; }
+  .about-card h3 { font-size: 18px; font-weight: 700; color: #0F172A; margin-bottom: 8px; font-family: 'Outfit', sans-serif; }
+  .about-card p { font-size: 14px; color: #64748B; line-height: 1.6; }
+  .about-section { background: var(--bg-soft); border-radius: var(--radius-xl); padding: 40px; border: 1.5px solid var(--border); text-align: center; max-width: 800px; margin: 0 auto; }
+  .about-section h2 { font-size: 24px; font-weight: 800; color: #0F172A; margin-bottom: 12px; font-family: 'Outfit', sans-serif; }
+  .about-section p { font-size: 15px; color: #475569; line-height: 1.7; }
+  @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; } }
+</style>

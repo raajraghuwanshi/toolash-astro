@@ -1,0 +1,152 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'text-case-converter')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="cc-wrap">
+    <div class="cc-editor">
+      <label class="cc-label" for="cc-input">Enter your text</label>
+      <textarea id="cc-input" class="cc-textarea" placeholder="Type or paste text here…" rows="6"></textarea>
+    </div>
+
+    <div class="cc-buttons">
+      <button class="cc-btn" data-mode="upper"><i class="fas fa-arrow-up"></i> UPPERCASE</button>
+      <button class="cc-btn" data-mode="lower"><i class="fas fa-arrow-down"></i> lowercase</button>
+      <button class="cc-btn" data-mode="title"><i class="fas fa-t"></i> Title Case</button>
+      <button class="cc-btn" data-mode="sentence"><i class="fas fa-align-left"></i> Sentence case</button>
+      <button class="cc-btn" data-mode="camel"><i class="fas fa-code"></i> camelCase</button>
+      <button class="cc-btn" data-mode="pascal"><i class="fas fa-code"></i> PascalCase</button>
+      <button class="cc-btn" data-mode="snake"><i class="fas fa-minus"></i> snake_case</button>
+      <button class="cc-btn" data-mode="kebab"><i class="fas fa-minus"></i> kebab-case</button>
+      <button class="cc-btn" data-mode="alternate"><i class="fas fa-random"></i> aLtErNaTe</button>
+    </div>
+
+    <div class="cc-output-wrap" id="cc-output-wrap" style="display:none">
+      <label class="cc-label">Result</label>
+      <textarea id="cc-output" class="cc-textarea cc-output-ta" rows="6" readonly></textarea>
+      <div class="cc-actions">
+        <button class="btn btn-ghost" id="cc-copy"><i class="fas fa-copy"></i> Copy</button>
+        <button class="btn btn-ghost" id="cc-clear"><i class="fas fa-trash"></i> Clear</button>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .cc-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .cc-label { font-size: 14px; font-weight: 600; color: var(--txt); display: block; margin-bottom: 8px; }
+  .cc-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    resize: vertical;
+    outline: none;
+    transition: border-color .2s;
+    line-height: 1.65;
+  }
+  .cc-textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .cc-output-ta { background: #F0F9FF; border-color: #BAE6FD; }
+  .cc-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .cc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 11px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--txt-muted);
+    background: var(--bg-soft);
+    cursor: pointer;
+    transition: all .15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .cc-btn:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
+  .cc-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .cc-actions { display: flex; gap: 10px; margin-top: 10px; }
+  .cc-output-wrap { animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+
+  @media (max-width: 500px) { .cc-buttons { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<script>
+  const input = document.getElementById('cc-input') as HTMLTextAreaElement;
+  const output = document.getElementById('cc-output') as HTMLTextAreaElement;
+  const wrap = document.getElementById('cc-output-wrap')!;
+
+  function toTitleCase(str: string) {
+    return str.replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
+  }
+  function toSentenceCase(str: string) {
+    return str.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+  }
+  function toCamelCase(str: string) {
+    return str.toLowerCase().replace(/[^a-z0-9]+(.)/g, (_, c) => c.toUpperCase());
+  }
+  function toPascalCase(str: string) {
+    const c = toCamelCase(str);
+    return c[0]?.toUpperCase() + c.slice(1);
+  }
+  function toSnakeCase(str: string) {
+    return str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+  }
+  function toKebabCase(str: string) {
+    return str.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  }
+  function toAlternate(str: string) {
+    return str.split('').map((c, i) => i % 2 === 0 ? c.toLowerCase() : c.toUpperCase()).join('');
+  }
+
+  const transforms: Record<string, (s: string) => string> = {
+    upper: s => s.toUpperCase(),
+    lower: s => s.toLowerCase(),
+    title: toTitleCase,
+    sentence: toSentenceCase,
+    camel: toCamelCase,
+    pascal: toPascalCase,
+    snake: toSnakeCase,
+    kebab: toKebabCase,
+    alternate: toAlternate,
+  };
+
+  document.querySelectorAll('.cc-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = (btn as HTMLElement).dataset.mode!;
+      const text = input.value;
+      if (!text.trim()) { input.focus(); return; }
+      output.value = transforms[mode](text);
+      wrap.style.display = '';
+      document.querySelectorAll('.cc-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  document.getElementById('cc-copy')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(output.value);
+    const btn = document.getElementById('cc-copy')!;
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy', 2000);
+  });
+
+  document.getElementById('cc-clear')?.addEventListener('click', () => {
+    input.value = '';
+    output.value = '';
+    wrap.style.display = 'none';
+    document.querySelectorAll('.cc-btn').forEach(b => b.classList.remove('active'));
+  });
+</script>
