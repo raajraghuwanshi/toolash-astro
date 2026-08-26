@@ -1,0 +1,338 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'unit-converter')!;
+
+const categories = [
+  { id: 'length', label: 'Length', icon: 'fa-ruler', units: [
+    { id: 'mm', label: 'Millimeter (mm)', factor: 0.001 },
+    { id: 'cm', label: 'Centimeter (cm)', factor: 0.01 },
+    { id: 'm', label: 'Meter (m)', factor: 1 },
+    { id: 'km', label: 'Kilometer (km)', factor: 1000 },
+    { id: 'in', label: 'Inch (in)', factor: 0.0254 },
+    { id: 'ft', label: 'Foot (ft)', factor: 0.3048 },
+    { id: 'yd', label: 'Yard (yd)', factor: 0.9144 },
+    { id: 'mi', label: 'Mile (mi)', factor: 1609.344 },
+    { id: 'nmi', label: 'Nautical mile (nmi)', factor: 1852 },
+  ]},
+  { id: 'weight', label: 'Weight', icon: 'fa-weight-scale', units: [
+    { id: 'mg', label: 'Milligram (mg)', factor: 0.000001 },
+    { id: 'g', label: 'Gram (g)', factor: 0.001 },
+    { id: 'kg', label: 'Kilogram (kg)', factor: 1 },
+    { id: 't', label: 'Metric Ton (t)', factor: 1000 },
+    { id: 'oz', label: 'Ounce (oz)', factor: 0.0283495 },
+    { id: 'lb', label: 'Pound (lb)', factor: 0.453592 },
+    { id: 'st', label: 'Stone (st)', factor: 6.35029 },
+    { id: 'ton', label: 'Short ton (ton)', factor: 907.185 },
+  ]},
+  { id: 'temperature', label: 'Temperature', icon: 'fa-temperature-half', units: [
+    { id: 'c', label: 'Celsius (°C)', factor: 1 },
+    { id: 'f', label: 'Fahrenheit (°F)', factor: 1 },
+    { id: 'k', label: 'Kelvin (K)', factor: 1 },
+  ]},
+  { id: 'area', label: 'Area', icon: 'fa-square', units: [
+    { id: 'mm2', label: 'mm²', factor: 0.000001 },
+    { id: 'cm2', label: 'cm²', factor: 0.0001 },
+    { id: 'm2', label: 'm²', factor: 1 },
+    { id: 'km2', label: 'km²', factor: 1000000 },
+    { id: 'ha', label: 'Hectare (ha)', factor: 10000 },
+    { id: 'in2', label: 'in²', factor: 0.00064516 },
+    { id: 'ft2', label: 'ft²', factor: 0.092903 },
+    { id: 'ac', label: 'Acre (ac)', factor: 4046.86 },
+    { id: 'mi2', label: 'mi²', factor: 2589988 },
+  ]},
+  { id: 'speed', label: 'Speed', icon: 'fa-gauge-high', units: [
+    { id: 'mps', label: 'm/s', factor: 1 },
+    { id: 'kmh', label: 'km/h', factor: 0.277778 },
+    { id: 'mph', label: 'mph', factor: 0.44704 },
+    { id: 'kn', label: 'Knots (kn)', factor: 0.514444 },
+    { id: 'fps', label: 'ft/s', factor: 0.3048 },
+  ]},
+  { id: 'volume', label: 'Volume', icon: 'fa-flask', units: [
+    { id: 'ml', label: 'Milliliter (ml)', factor: 0.001 },
+    { id: 'l', label: 'Liter (l)', factor: 1 },
+    { id: 'm3', label: 'm³', factor: 1000 },
+    { id: 'tsp', label: 'Teaspoon (tsp)', factor: 0.00492892 },
+    { id: 'tbsp', label: 'Tablespoon (tbsp)', factor: 0.0147868 },
+    { id: 'floz', label: 'fl oz', factor: 0.0295735 },
+    { id: 'cup', label: 'Cup', factor: 0.236588 },
+    { id: 'pt', label: 'Pint (pt)', factor: 0.473176 },
+    { id: 'gal', label: 'Gallon (gal)', factor: 3.78541 },
+  ]},
+];
+---
+
+<ToolLayout tool={tool}>
+  <div class="uc-wrap">
+    <!-- Category tabs -->
+    <div class="uc-tabs">
+      {categories.map((cat, i) => (
+        <button class={`uc-tab${i === 0 ? ' active' : ''}`} data-cat={cat.id}>
+          <i class={`fas ${cat.icon}`}></i> {cat.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Converter -->
+    <div class="uc-converter">
+      <div class="uc-row">
+        <div class="uc-field">
+          <label class="uc-label" for="uc-from-val">From</label>
+          <input type="number" id="uc-from-val" class="uc-input" value="1" step="any" />
+          <select id="uc-from-unit" class="uc-select"></select>
+        </div>
+        <button class="uc-swap-btn" id="uc-swap" title="Swap units">
+          <i class="fas fa-arrows-left-right"></i>
+        </button>
+        <div class="uc-field">
+          <label class="uc-label" for="uc-to-val">To</label>
+          <input type="number" id="uc-to-val" class="uc-input" readonly />
+          <select id="uc-to-unit" class="uc-select"></select>
+        </div>
+      </div>
+      <div class="uc-formula" id="uc-formula"></div>
+    </div>
+
+    <!-- All conversions table -->
+    <div class="uc-table-wrap">
+      <div class="uc-table-title">All conversions from <strong id="uc-table-from">1 m</strong></div>
+      <div class="uc-table" id="uc-table"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .uc-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .uc-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .uc-tab {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+    color: var(--txt-muted);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .uc-tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .uc-tab:hover:not(.active) { border-color: var(--brand); color: var(--brand); }
+
+  .uc-converter { padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .uc-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .uc-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 180px; }
+  .uc-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
+  .uc-input {
+    padding: 12px 14px;
+    font-size: 18px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  .uc-input:focus { border-color: var(--brand); }
+  .uc-input[readonly] { background: var(--bg-soft); color: var(--brand); }
+  .uc-select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    outline: none;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .uc-select:focus { border-color: var(--brand); }
+  .uc-swap-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--brand);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all .15s;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 36px;
+  }
+  .uc-swap-btn:hover { background: var(--brand); color: #fff; transform: rotate(180deg); }
+  .uc-formula { margin-top: 12px; font-size: 13px; color: var(--txt-muted); text-align: center; min-height: 20px; }
+
+  .uc-table-wrap { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .uc-table-title { padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13.5px; color: var(--txt); }
+  .uc-table { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .uc-table-row {
+    display: contents;
+  }
+  .uc-cell {
+    padding: 11px 16px;
+    font-size: 13.5px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .uc-cell:nth-child(3n) { border-right: none; }
+  .uc-cell-label { color: var(--txt-muted); font-weight: 600; }
+  .uc-cell-val { color: var(--txt); font-family: 'Courier New', monospace; font-weight: 600; }
+
+  @media (max-width: 500px) { .uc-table { grid-template-columns: repeat(2, 1fr); } .uc-cell:nth-child(3n) { border-right: 1px solid var(--border); } .uc-cell:nth-child(2n) { border-right: none; } }
+</style>
+
+<script>
+  const categories = {
+    length: { units: [
+      { id: 'mm', label: 'Millimeter', short: 'mm', factor: 0.001 },
+      { id: 'cm', label: 'Centimeter', short: 'cm', factor: 0.01 },
+      { id: 'm', label: 'Meter', short: 'm', factor: 1 },
+      { id: 'km', label: 'Kilometer', short: 'km', factor: 1000 },
+      { id: 'in', label: 'Inch', short: 'in', factor: 0.0254 },
+      { id: 'ft', label: 'Foot', short: 'ft', factor: 0.3048 },
+      { id: 'yd', label: 'Yard', short: 'yd', factor: 0.9144 },
+      { id: 'mi', label: 'Mile', short: 'mi', factor: 1609.344 },
+      { id: 'nmi', label: 'Nautical mile', short: 'nmi', factor: 1852 },
+    ]},
+    weight: { units: [
+      { id: 'mg', label: 'Milligram', short: 'mg', factor: 0.000001 },
+      { id: 'g', label: 'Gram', short: 'g', factor: 0.001 },
+      { id: 'kg', label: 'Kilogram', short: 'kg', factor: 1 },
+      { id: 't', label: 'Metric Ton', short: 't', factor: 1000 },
+      { id: 'oz', label: 'Ounce', short: 'oz', factor: 0.0283495 },
+      { id: 'lb', label: 'Pound', short: 'lb', factor: 0.453592 },
+      { id: 'st', label: 'Stone', short: 'st', factor: 6.35029 },
+      { id: 'ton', label: 'Short ton', short: 'ton', factor: 907.185 },
+    ]},
+    temperature: { units: [
+      { id: 'c', label: 'Celsius', short: '°C', factor: 1 },
+      { id: 'f', label: 'Fahrenheit', short: '°F', factor: 1 },
+      { id: 'k', label: 'Kelvin', short: 'K', factor: 1 },
+    ]},
+    area: { units: [
+      { id: 'mm2', label: 'mm²', short: 'mm²', factor: 0.000001 },
+      { id: 'cm2', label: 'cm²', short: 'cm²', factor: 0.0001 },
+      { id: 'm2', label: 'm²', short: 'm²', factor: 1 },
+      { id: 'km2', label: 'km²', short: 'km²', factor: 1000000 },
+      { id: 'ha', label: 'Hectare', short: 'ha', factor: 10000 },
+      { id: 'in2', label: 'in²', short: 'in²', factor: 0.00064516 },
+      { id: 'ft2', label: 'ft²', short: 'ft²', factor: 0.092903 },
+      { id: 'ac', label: 'Acre', short: 'ac', factor: 4046.86 },
+      { id: 'mi2', label: 'mi²', short: 'mi²', factor: 2589988 },
+    ]},
+    speed: { units: [
+      { id: 'mps', label: 'm/s', short: 'm/s', factor: 1 },
+      { id: 'kmh', label: 'km/h', short: 'km/h', factor: 0.277778 },
+      { id: 'mph', label: 'mph', short: 'mph', factor: 0.44704 },
+      { id: 'kn', label: 'Knots', short: 'kn', factor: 0.514444 },
+      { id: 'fps', label: 'ft/s', short: 'ft/s', factor: 0.3048 },
+    ]},
+    volume: { units: [
+      { id: 'ml', label: 'Milliliter', short: 'ml', factor: 0.001 },
+      { id: 'l', label: 'Liter', short: 'l', factor: 1 },
+      { id: 'm3', label: 'm³', short: 'm³', factor: 1000 },
+      { id: 'tsp', label: 'Teaspoon', short: 'tsp', factor: 0.00492892 },
+      { id: 'tbsp', label: 'Tablespoon', short: 'tbsp', factor: 0.0147868 },
+      { id: 'floz', label: 'fl oz', short: 'fl oz', factor: 0.0295735 },
+      { id: 'cup', label: 'Cup', short: 'cup', factor: 0.236588 },
+      { id: 'pt', label: 'Pint', short: 'pt', factor: 0.473176 },
+      { id: 'gal', label: 'Gallon', short: 'gal', factor: 3.78541 },
+    ]},
+  };
+
+  let currentCat = 'length';
+
+  function toBase(val: number, fromId: string, cat: string): number {
+    if (cat === 'temperature') {
+      if (fromId === 'c') return val + 273.15;
+      if (fromId === 'f') return (val - 32) * 5/9 + 273.15;
+      return val;
+    }
+    const unit = (categories as any)[cat].units.find((u: any) => u.id === fromId);
+    return val * unit.factor;
+  }
+
+  function fromBase(kelvin: number, toId: string, cat: string): number {
+    if (cat === 'temperature') {
+      if (toId === 'c') return kelvin - 273.15;
+      if (toId === 'f') return (kelvin - 273.15) * 9/5 + 32;
+      return kelvin;
+    }
+    const unit = (categories as any)[cat].units.find((u: any) => u.id === toId);
+    return kelvin / unit.factor;
+  }
+
+  function fmt(n: number): string {
+    if (Math.abs(n) >= 0.001 && Math.abs(n) < 1e9) {
+      return parseFloat(n.toPrecision(8)).toString();
+    }
+    return n.toExponential(4);
+  }
+
+  function populateSelects(cat: string) {
+    const units = (categories as any)[cat].units;
+    const fromSel = document.getElementById('uc-from-unit') as HTMLSelectElement;
+    const toSel = document.getElementById('uc-to-unit') as HTMLSelectElement;
+    fromSel.innerHTML = units.map((u: any) => `<option value="${u.id}">${u.label}</option>`).join('');
+    toSel.innerHTML = units.map((u: any) => `<option value="${u.id}">${u.label}</option>`).join('');
+    toSel.selectedIndex = 1;
+  }
+
+  function convert() {
+    const fromVal = parseFloat((document.getElementById('uc-from-val') as HTMLInputElement).value);
+    const fromId = (document.getElementById('uc-from-unit') as HTMLSelectElement).value;
+    const toId = (document.getElementById('uc-to-unit') as HTMLSelectElement).value;
+    if (isNaN(fromVal)) return;
+
+    const base = toBase(fromVal, fromId, currentCat);
+    const result = fromBase(base, toId, currentCat);
+    (document.getElementById('uc-to-val') as HTMLInputElement).value = fmt(result);
+
+    const fromUnit = (categories as any)[currentCat].units.find((u: any) => u.id === fromId);
+    const toUnit = (categories as any)[currentCat].units.find((u: any) => u.id === toId);
+    document.getElementById('uc-formula')!.textContent = `${fromVal} ${fromUnit?.short} = ${fmt(result)} ${toUnit?.short}`;
+
+    // Update table
+    const units = (categories as any)[currentCat].units;
+    document.getElementById('uc-table-from')!.textContent = `${fromVal} ${fromUnit?.short}`;
+    document.getElementById('uc-table')!.innerHTML = units.map((u: any) => {
+      const v = fromBase(base, u.id, currentCat);
+      return `<div class="uc-cell uc-cell-label">${u.label}</div><div class="uc-cell uc-cell-val">${fmt(v)}</div><div class="uc-cell" style="color:var(--txt-muted);font-size:12px">${u.short}</div>`;
+    }).join('');
+  }
+
+  document.querySelectorAll('.uc-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.uc-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentCat = (tab as HTMLElement).dataset.cat!;
+      populateSelects(currentCat);
+      convert();
+    });
+  });
+
+  document.getElementById('uc-from-val')?.addEventListener('input', convert);
+  document.getElementById('uc-from-unit')?.addEventListener('change', convert);
+  document.getElementById('uc-to-unit')?.addEventListener('change', convert);
+  document.getElementById('uc-swap')?.addEventListener('click', () => {
+    const fromSel = document.getElementById('uc-from-unit') as HTMLSelectElement;
+    const toSel = document.getElementById('uc-to-unit') as HTMLSelectElement;
+    const tmp = fromSel.value;
+    fromSel.value = toSel.value;
+    toSel.value = tmp;
+    convert();
+  });
+
+  populateSelects('length');
+  convert();
+</script>

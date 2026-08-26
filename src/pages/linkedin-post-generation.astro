@@ -1,0 +1,221 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'linkedin-post-generation')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="lp-wrap">
+    <div class="lp-form">
+      <div class="lp-field">
+        <label for="lp-topic">What do you want to post about?</label>
+        <textarea id="lp-topic" class="lp-textarea" placeholder="e.g. Just got promoted to Senior Engineer after 3 years of hard work…" rows="3"></textarea>
+      </div>
+      <div class="lp-options-grid">
+        <div class="lp-field">
+          <label>Post Type</label>
+          <div class="lp-chips">
+            <label class="lp-chip active"><input type="radio" name="lp-type" value="achievement" checked hidden/> 🏆 Achievement</label>
+            <label class="lp-chip"><input type="radio" name="lp-type" value="lesson" hidden/> 💡 Lesson Learned</label>
+            <label class="lp-chip"><input type="radio" name="lp-type" value="story" hidden/> 📖 Story</label>
+            <label class="lp-chip"><input type="radio" name="lp-type" value="tip" hidden/> ✅ Tips & Advice</label>
+            <label class="lp-chip"><input type="radio" name="lp-type" value="motivation" hidden/> 🔥 Motivational</label>
+            <label class="lp-chip"><input type="radio" name="lp-type" value="opinion" hidden/> 🎯 Opinion</label>
+          </div>
+        </div>
+        <div class="lp-field">
+          <label>Tone</label>
+          <div class="lp-chips">
+            <label class="lp-chip active" data-group="tone"><input type="radio" name="lp-tone" value="professional" checked hidden/> 👔 Professional</label>
+            <label class="lp-chip" data-group="tone"><input type="radio" name="lp-tone" value="casual" hidden/> 😊 Casual</label>
+            <label class="lp-chip" data-group="tone"><input type="radio" name="lp-tone" value="inspiring" hidden/> ✨ Inspiring</label>
+            <label class="lp-chip" data-group="tone"><input type="radio" name="lp-tone" value="bold" hidden/> 💪 Bold</label>
+          </div>
+        </div>
+      </div>
+      <div class="lp-field">
+        <label for="lp-hashtags">Your Industry / Hashtags</label>
+        <input type="text" id="lp-hashtags" class="lp-input" placeholder="e.g. technology, software engineering, career" maxlength="100" />
+      </div>
+      <button class="btn btn-primary" id="lp-generate" style="align-self:flex-start; padding:12px 32px;">
+        <i class="fas fa-wand-magic-sparkles"></i> Generate Post
+      </button>
+    </div>
+
+    <div id="lp-result" class="lp-result" style="display:none">
+      <div class="lp-result-header">
+        <span class="lp-result-label">Generated LinkedIn Post</span>
+        <div class="lp-result-actions">
+          <button class="btn btn-ghost btn-sm" id="lp-regenerate"><i class="fas fa-refresh"></i> Regenerate</button>
+          <button class="btn btn-primary btn-sm" id="lp-copy"><i class="fas fa-copy"></i> Copy Post</button>
+        </div>
+      </div>
+      <div class="lp-post-preview">
+        <div class="lp-avatar">
+          <div class="lp-avatar-circle">YO</div>
+          <div>
+            <div class="lp-avatar-name">Your Name</div>
+            <div class="lp-avatar-title">Your Title • 1st</div>
+            <div class="lp-avatar-time">Just now • 🌐</div>
+          </div>
+        </div>
+        <div class="lp-post-text" id="lp-post-text"></div>
+        <div class="lp-post-footer">
+          <div class="lp-reactions">👍 ❤️ 🎉 <span id="lp-reaction-count">247</span></div>
+          <div class="lp-comments">38 comments • 12 reposts</div>
+        </div>
+      </div>
+      <div class="lp-char-count" id="lp-char-count">0 / 3000 characters</div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .lp-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .lp-form { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .lp-field { display: flex; flex-direction: column; gap: 8px; }
+  .lp-field label { font-size: 13px; font-weight: 700; color: var(--txt); }
+  .lp-textarea, .lp-input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color .2s;
+    resize: vertical;
+  }
+  .lp-textarea:focus, .lp-input:focus { border-color: var(--brand); }
+  .lp-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .lp-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .lp-chip {
+    padding: 7px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--txt-muted);
+    cursor: pointer;
+    transition: all .15s;
+    background: #fff;
+  }
+  .lp-chip.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .lp-chip:hover:not(.active) { border-color: var(--brand); color: var(--brand); }
+
+  .lp-result { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+  .lp-result-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
+  .lp-result-label { font-size: 13px; font-weight: 700; color: var(--txt); }
+  .lp-result-actions { display: flex; gap: 8px; }
+  .btn-sm { padding: 7px 14px; font-size: 12px; }
+
+  .lp-post-preview { padding: 20px; background: #fff; }
+  .lp-avatar { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .lp-avatar-circle { width: 48px; height: 48px; background: linear-gradient(135deg, #2563EB, #7C3AED); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .lp-avatar-name { font-size: 15px; font-weight: 700; color: #000; }
+  .lp-avatar-title { font-size: 12px; color: #666; margin-top: 1px; }
+  .lp-avatar-time { font-size: 11px; color: #999; margin-top: 1px; }
+  .lp-post-text { font-size: 14px; color: #1C1C1C; line-height: 1.6; white-space: pre-line; }
+  .lp-post-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #E2E8F0; font-size: 12px; color: #666; }
+  .lp-reactions { font-size: 14px; }
+
+  .lp-char-count { padding: 8px 16px; background: var(--bg-soft); border-top: 1px solid var(--border); font-size: 12px; color: var(--txt-muted); text-align: right; }
+</style>
+
+<script>
+  const postTemplates = {
+    achievement: {
+      professional: (topic: string, tags: string) => `🎉 Excited to share a milestone: ${topic}
+
+This wouldn't have been possible without the incredible team around me and the challenges that pushed me to grow every single day.
+
+Here's what I've learned along the way:
+→ Consistency beats intensity every time
+→ The right mentor can change everything
+→ Never stop learning
+
+${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#career #growth #milestone'}`,
+      casual: (topic: string, tags: string) => `Really excited about this one! 🙌\n\n${topic}\n\nBig shoutout to everyone who supported me through this journey. You know who you are! 💙\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#achievement #excited'}`,
+      inspiring: (topic: string, tags: string) => `✨ Sometimes the universe aligns perfectly.\n\n${topic}\n\nIf you're working toward something big right now — don't give up. Your moment is coming.\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#inspiration #keepgoing'}`,
+      bold: (topic: string, tags: string) => `I don't usually post about personal wins. But today I will. 🔥\n\n${topic}\n\nHard work is not optional. It's the only path.\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#bold #mindset #success'}`,
+    },
+    lesson: {
+      professional: (topic: string, tags: string) => `💡 A lesson I wish I'd learned earlier:\n\n${topic}\n\nHere are 3 things I'd tell my younger self:\n1. Focus on progress, not perfection\n2. Build relationships before you need them\n3. Your network is your net worth\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#lessonslearned #career #growth'}`,
+      casual: (topic: string, tags: string) => `Real talk: ${topic}\n\nI had to learn this the hard way, but I'm glad I did.\n\nHope this helps someone else avoid my mistakes! 😅\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#learning #advice'}`,
+      inspiring: (topic: string, tags: string) => `Every setback is a setup for something better. ✨\n\nI recently realized: ${topic}\n\nThe biggest lessons come from the hardest moments. What's a lesson that changed your life?\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#growthmindset #inspiration'}`,
+      bold: (topic: string, tags: string) => `Unpopular opinion: ${topic}\n\nMost people won't tell you this. I will.\n\nAgree or disagree? Drop it in the comments. 👇\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#truth #boldtake'}`,
+    },
+    tip: {
+      professional: (topic: string, tags: string) => `📋 ${topic}\n\nHere are 5 practical tips that actually work:\n\n1️⃣ Start with clarity — know your outcome\n2️⃣ Batch similar tasks together\n3️⃣ Schedule focus blocks in your calendar\n4️⃣ Review and reflect weekly\n5️⃣ Done is better than perfect\n\nWhich one resonates most with you?\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#productivity #tips #career'}`,
+      casual: (topic: string, tags: string) => `Quick tips on ${topic} 👇\n\n✅ Tip 1: Keep it simple\n✅ Tip 2: Be consistent\n✅ Tip 3: Track your progress\n✅ Tip 4: Celebrate small wins\n\nSave this for later! 🔖\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#tips #helpful'}`,
+      inspiring: (topic: string, tags: string) => `✨ Want to level up? Here's what nobody tells you about ${topic}:\n\n→ The secret is showing up even when you don't feel like it\n→ Small consistent actions beat occasional bursts\n→ Your environment shapes your habits\n\nWhich tip are you implementing today?\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#motivation #levelup'}`,
+      bold: (topic: string, tags: string) => `STOP doing it the hard way.\n\nHere's the cheat code for ${topic}:\n\n🔥 Step 1: Cut the noise\n🔥 Step 2: Go all in on what works\n🔥 Step 3: Measure ruthlessly\n🔥 Step 4: Scale what's working\n\nThank me later.\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#strategy #winning'}`,
+    },
+    motivation: {
+      professional: (topic: string, tags: string) => `This one's for everyone who feels stuck.\n\n${topic}\n\nSuccess is not a straight line. There will be setbacks, doubts, and hard days.\n\nBut every person who ever made it through had one thing in common: they didn't quit.\n\nKeep going. 💪\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#motivation #mindset #neverquit'}`,
+      bold: (topic: string, tags: string) => `Hard truth: ${topic}\n\nYou either commit or you don't. There's no "sort of trying."\n\nDecide. Execute. Repeat.\n\n🔥\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#hustle #discipline #elite'}`,
+      casual: (topic: string, tags: string) => `Just a reminder on this ${new Date().toLocaleDateString('en',{weekday:'long'})}: ${topic}\n\nYou've got this! 💙\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#positivity #motivation'}`,
+      inspiring: (topic: string, tags: string) => `✨ Somewhere out there, someone is doing what you said was impossible.\n\n${topic}\n\nWhat's one thing you've been putting off that you're going to start today?\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#inspiration #action #believe'}`,
+    },
+    story: {
+      professional: (topic: string, tags: string) => `Story time. 🧵\n\n${topic}\n\nI almost gave up at multiple points. But every time I was about to quit, something happened that pushed me forward.\n\nThe journey was messy. The result was worth it.\n\nWhere are you on your journey right now?\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#story #journey #career'}`,
+      casual: (topic: string, tags: string) => `Okay, let me tell you a story 😄\n\n${topic}\n\nI honestly couldn't believe it when it happened!\n\nHave you ever had a moment like this? Drop it in the comments!\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#story #community'}`,
+      inspiring: (topic: string, tags: string) => `📖 Let me share something I've never posted before.\n\n${topic}\n\nSometimes the most powerful thing you can do is share your truth — even when it feels vulnerable.\n\nIf this resonated with you, share it with someone who needs to hear it. ❤️\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#authentic #story #share'}`,
+      bold: (topic: string, tags: string) => `Let's be real for a second.\n\n${topic}\n\nI'm not here to sugarcoat it. This is the unfiltered version.\n\nLike if this is real. Comment if you've been through something similar.\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#real #raw #bold'}`,
+    },
+    opinion: {
+      professional: (topic: string, tags: string) => `Hot take: ${topic}\n\nI know not everyone will agree with this, and that's okay.\n\nHere's my reasoning:\n→ The data supports it\n→ I've seen it firsthand\n→ The traditional approach is failing\n\nDo you agree or disagree? I'd love to hear your perspective.\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#opinion #industry #debate'}`,
+      bold: (topic: string, tags: string) => `Nobody wants to say it, so I will.\n\n${topic}\n\nControversial? Maybe. True? Absolutely.\n\nTag someone who needs to see this. 👇\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#hottake #truth #boldopinion'}`,
+      casual: (topic: string, tags: string) => `Genuine question for my network:\n\n${topic}\n\nI go back and forth on this. Curious what you all think!\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#question #community #thoughts'}`,
+      inspiring: (topic: string, tags: string) => `I believe: ${topic}\n\nAnd I think if more people believed this, the world would be a better place.\n\nShare if you agree. 🌍\n\n${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).join(' ') : '#beliefs #values #inspiration'}`,
+    },
+  };
+
+  document.querySelectorAll('.lp-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const group = (chip as HTMLElement).dataset.group || 'type';
+      const name = chip.querySelector('input')?.name;
+      if (name) {
+        document.querySelectorAll(`input[name="${name}"]`).forEach(i => {
+          (i.closest('.lp-chip') as HTMLElement)?.classList.remove('active');
+        });
+        chip.classList.add('active');
+      }
+    });
+  });
+
+  function getPost(): string {
+    const topic = (document.getElementById('lp-topic') as HTMLTextAreaElement).value.trim() || 'an exciting new chapter in my career';
+    const type = (document.querySelector('input[name="lp-type"]:checked') as HTMLInputElement)?.value || 'achievement';
+    const tone = (document.querySelector('input[name="lp-tone"]:checked') as HTMLInputElement)?.value || 'professional';
+    const tags = (document.getElementById('lp-hashtags') as HTMLInputElement).value;
+
+    const templates = (postTemplates as any)[type];
+    if (!templates) return 'Unable to generate post. Please try again.';
+    const fn = templates[tone] || templates.professional;
+    return fn(topic, tags);
+  }
+
+  function generate() {
+    const post = getPost();
+    const textEl = document.getElementById('lp-post-text')!;
+    textEl.textContent = post;
+    document.getElementById('lp-char-count')!.textContent = `${post.length} / 3000 characters`;
+    document.getElementById('lp-reaction-count')!.textContent = String(Math.floor(Math.random() * 500) + 50);
+    document.getElementById('lp-result')!.style.display = '';
+  }
+
+  document.getElementById('lp-generate')?.addEventListener('click', generate);
+  document.getElementById('lp-regenerate')?.addEventListener('click', generate);
+  document.getElementById('lp-copy')?.addEventListener('click', async () => {
+    const text = document.getElementById('lp-post-text')!.textContent!;
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('lp-copy')!;
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy Post', 2000);
+  });
+</script>

@@ -1,0 +1,233 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'image-converter')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="ic-wrap">
+    <div class="ic-upload-area" id="ic-upload-area">
+      <input type="file" id="ic-file" accept="image/*" multiple class="ic-file-input" />
+      <div class="ic-upload-content">
+        <div class="ic-upload-icon"><i class="fas fa-image"></i></div>
+        <div class="ic-upload-title">Drop images here or click to browse</div>
+        <div class="ic-upload-sub">Supports JPG, PNG, WEBP, GIF, BMP, SVG</div>
+      </div>
+    </div>
+
+    <div class="ic-options">
+      <div class="ic-opt-field">
+        <label class="ic-opt-label">Convert to</label>
+        <div class="ic-format-tabs">
+          <button class="ic-fmt-btn active" data-fmt="png">PNG</button>
+          <button class="ic-fmt-btn" data-fmt="jpeg">JPG</button>
+          <button class="ic-fmt-btn" data-fmt="webp">WEBP</button>
+          <button class="ic-fmt-btn" data-fmt="bmp">BMP</button>
+        </div>
+      </div>
+      <div class="ic-opt-field">
+        <label class="ic-opt-label">Quality (for JPG/WEBP)</label>
+        <div class="ic-quality-row">
+          <input type="range" id="ic-quality" min="10" max="100" value="90" class="ic-slider" />
+          <span id="ic-quality-val">90%</span>
+        </div>
+      </div>
+      <div class="ic-opt-field">
+        <label class="ic-opt-label">Max Width (optional)</label>
+        <input type="number" id="ic-max-width" class="ic-input" placeholder="Leave blank for original" min="1" max="8192" />
+      </div>
+    </div>
+
+    <div id="ic-queue" class="ic-queue" style="display:none">
+      <div class="ic-queue-header">
+        <span class="ic-queue-title">Images (<span id="ic-queue-count">0</span>)</span>
+        <button class="btn btn-primary btn-sm" id="ic-convert-all"><i class="fas fa-arrows-rotate"></i> Convert All</button>
+      </div>
+      <div class="ic-list" id="ic-list"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .ic-wrap { display: flex; flex-direction: column; gap: 20px; }
+
+  .ic-upload-area {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--bg-soft);
+  }
+  .ic-upload-area:hover, .ic-upload-area.drag-over { border-color: var(--brand); background: var(--brand-light); }
+  .ic-file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .ic-upload-icon { font-size: 40px; color: var(--brand); margin-bottom: 12px; }
+  .ic-upload-title { font-size: 16px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
+  .ic-upload-sub { font-size: 13px; color: var(--txt-muted); }
+
+  .ic-options { display: flex; gap: 16px; flex-wrap: wrap; padding: 16px 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .ic-opt-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 160px; }
+  .ic-opt-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
+  .ic-format-tabs { display: flex; gap: 6px; }
+  .ic-fmt-btn { padding: 8px 16px; font-size: 13px; font-weight: 700; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: #fff; color: var(--txt-muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s; }
+  .ic-fmt-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .ic-quality-row { display: flex; align-items: center; gap: 10px; }
+  .ic-slider { flex: 1; accent-color: var(--brand); cursor: pointer; }
+  #ic-quality-val { font-size: 14px; font-weight: 700; color: var(--brand); min-width: 40px; }
+  .ic-input {
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  .ic-input:focus { border-color: var(--brand); }
+  .btn-sm { padding: 7px 14px; font-size: 12px; }
+
+  .ic-queue { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .ic-queue-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); }
+  .ic-queue-title { font-size: 13px; font-weight: 700; color: var(--txt); }
+  .ic-list { display: flex; flex-direction: column; }
+  .ic-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .ic-item:last-child { border-bottom: none; }
+  .ic-item-thumb { width: 56px; height: 42px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); flex-shrink: 0; background: var(--bg-soft); }
+  .ic-item-info { flex: 1; min-width: 0; }
+  .ic-item-name { font-size: 13px; font-weight: 600; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ic-item-size { font-size: 11px; color: var(--txt-muted); margin-top: 2px; }
+  .ic-item-status { font-size: 12px; margin-top: 3px; }
+  .ic-item-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .ic-dl-btn { padding: 6px 12px; background: var(--brand); color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 6px; transition: background .15s; }
+  .ic-dl-btn:hover { background: #1D4ED8; }
+  .ic-del-btn { padding: 6px; background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--txt-muted); cursor: pointer; font-size: 12px; transition: all .15s; }
+  .ic-del-btn:hover { color: #EF4444; border-color: #EF4444; }
+</style>
+
+<script>
+  let targetFormat = 'png';
+  let files: { file: File; id: number }[] = [];
+  let idCounter = 0;
+
+  document.querySelectorAll('.ic-fmt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ic-fmt-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      targetFormat = (btn as HTMLElement).dataset.fmt!;
+    });
+  });
+
+  const qualitySlider = document.getElementById('ic-quality') as HTMLInputElement;
+  const qualityVal = document.getElementById('ic-quality-val')!;
+  qualitySlider.addEventListener('input', () => qualityVal.textContent = qualitySlider.value + '%');
+
+  const uploadArea = document.getElementById('ic-upload-area')!;
+  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+  uploadArea.addEventListener('drop', (e: DragEvent) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    if (e.dataTransfer?.files) addFiles(e.dataTransfer.files);
+  });
+
+  document.getElementById('ic-file')?.addEventListener('change', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (input.files) addFiles(input.files);
+  });
+
+  function addFiles(fileList: FileList) {
+    for (const file of Array.from(fileList)) {
+      if (!file.type.startsWith('image/')) continue;
+      const id = idCounter++;
+      files.push({ file, id });
+      renderItem({ file, id });
+    }
+    updateCount();
+    document.getElementById('ic-queue')!.style.display = '';
+  }
+
+  function updateCount() {
+    document.getElementById('ic-queue-count')!.textContent = String(files.length);
+  }
+
+  function renderItem({ file, id }: { file: File; id: number }) {
+    const list = document.getElementById('ic-list')!;
+    const div = document.createElement('div');
+    div.className = 'ic-item';
+    div.id = `ic-item-${id}`;
+
+    const url = URL.createObjectURL(file);
+    div.innerHTML = `
+      <img class="ic-item-thumb" src="${url}" alt="${file.name}" />
+      <div class="ic-item-info">
+        <div class="ic-item-name">${file.name}</div>
+        <div class="ic-item-size">${(file.size / 1024).toFixed(1)} KB • ${file.type}</div>
+        <div class="ic-item-status" id="ic-status-${id}">Ready</div>
+      </div>
+      <div class="ic-item-actions">
+        <button class="ic-dl-btn" id="ic-convert-${id}" data-id="${id}"><i class="fas fa-arrows-rotate"></i> Convert</button>
+        <button class="ic-del-btn" data-id="${id}"><i class="fas fa-trash"></i></button>
+      </div>
+    `;
+    list.appendChild(div);
+
+    div.querySelector('.ic-dl-btn')!.addEventListener('click', () => convertItem(id));
+    div.querySelector('.ic-del-btn')!.addEventListener('click', () => {
+      files = files.filter(f => f.id !== id);
+      div.remove();
+      updateCount();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  async function convertItem(id: number): Promise<void> {
+    const item = files.find(f => f.id === id);
+    if (!item) return;
+
+    const statusEl = document.getElementById(`ic-status-${id}`)!;
+    statusEl.innerHTML = '<span style="color:var(--brand)"><i class="fas fa-spinner fa-spin"></i> Converting…</span>';
+
+    const quality = parseInt(qualitySlider.value) / 100;
+    const maxWidth = parseInt((document.getElementById('ic-max-width') as HTMLInputElement).value) || 0;
+
+    const img = new Image();
+    img.src = URL.createObjectURL(item.file);
+    await new Promise(r => img.onload = r);
+
+    const canvas = document.createElement('canvas');
+    let w = img.naturalWidth, h = img.naturalHeight;
+    if (maxWidth && w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+    canvas.width = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext('2d')!;
+    if (targetFormat === 'jpeg' || targetFormat === 'bmp') {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+    }
+    ctx.drawImage(img, 0, 0, w, h);
+
+    const mimeType = `image/${targetFormat}`;
+    canvas.toBlob(blob => {
+      if (!blob) { statusEl.textContent = 'Error'; return; }
+      const outName = item.file.name.replace(/\.[^.]+$/, '') + '.' + (targetFormat === 'jpeg' ? 'jpg' : targetFormat);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = outName;
+      a.click();
+      URL.revokeObjectURL(url);
+      statusEl.innerHTML = `<span style="color:#22C55E">✓ Converted! (${(blob.size/1024).toFixed(1)} KB)</span>`;
+    }, mimeType, quality);
+  }
+
+  document.getElementById('ic-convert-all')?.addEventListener('click', async () => {
+    for (const item of files) await convertItem(item.id);
+  });
+</script>

@@ -1,0 +1,172 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'blood-pressure-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="bp-wrap">
+    <div class="bp-form">
+      <div class="bp-field-group">
+        <div class="bp-field">
+          <label for="bp-sys">Systolic (mmHg)</label>
+          <div class="bp-input-wrap">
+            <input type="number" id="bp-sys" class="bp-input" placeholder="120" min="60" max="300" value="120" />
+            <span class="bp-unit">mmHg</span>
+          </div>
+          <div class="bp-hint">Top number (pressure when heart beats)</div>
+        </div>
+        <div class="bp-separator">/</div>
+        <div class="bp-field">
+          <label for="bp-dia">Diastolic (mmHg)</label>
+          <div class="bp-input-wrap">
+            <input type="number" id="bp-dia" class="bp-input" placeholder="80" min="40" max="200" value="80" />
+            <span class="bp-unit">mmHg</span>
+          </div>
+          <div class="bp-hint">Bottom number (pressure when heart rests)</div>
+        </div>
+      </div>
+      <div class="bp-field">
+        <label for="bp-pulse">Pulse Rate (optional)</label>
+        <div class="bp-input-wrap" style="max-width:200px">
+          <input type="number" id="bp-pulse" class="bp-input" placeholder="72" min="40" max="200" value="72" />
+          <span class="bp-unit">bpm</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="bp-calc" style="align-self:flex-start; padding:12px 32px;">
+        <i class="fas fa-heart-pulse"></i> Check BP
+      </button>
+    </div>
+
+    <div id="bp-result" class="bp-result" style="display:none">
+      <div class="bp-result-main" id="bp-result-main">
+        <div class="bp-result-reading" id="bp-reading"></div>
+        <div class="bp-result-category" id="bp-category"></div>
+        <div class="bp-result-advice" id="bp-advice"></div>
+      </div>
+
+      <div class="bp-scale">
+        <div class="bp-scale-title">Blood Pressure Categories</div>
+        <div class="bp-scale-rows">
+          <div class="bp-scale-row" id="bp-row-normal" data-cat="normal">
+            <div class="bp-scale-dot" style="background:#22C55E"></div>
+            <div class="bp-scale-range">
+              <div class="bp-scale-cat">Normal</div>
+              <div class="bp-scale-nums">Systolic &lt; 120 AND Diastolic &lt; 80</div>
+            </div>
+          </div>
+          <div class="bp-scale-row" id="bp-row-elevated" data-cat="elevated">
+            <div class="bp-scale-dot" style="background:#84CC16"></div>
+            <div class="bp-scale-range">
+              <div class="bp-scale-cat">Elevated</div>
+              <div class="bp-scale-nums">Systolic 120–129 AND Diastolic &lt; 80</div>
+            </div>
+          </div>
+          <div class="bp-scale-row" id="bp-row-high1" data-cat="high1">
+            <div class="bp-scale-dot" style="background:#F59E0B"></div>
+            <div class="bp-scale-range">
+              <div class="bp-scale-cat">High BP Stage 1</div>
+              <div class="bp-scale-nums">Systolic 130–139 OR Diastolic 80–89</div>
+            </div>
+          </div>
+          <div class="bp-scale-row" id="bp-row-high2" data-cat="high2">
+            <div class="bp-scale-dot" style="background:#EF4444"></div>
+            <div class="bp-scale-range">
+              <div class="bp-scale-cat">High BP Stage 2</div>
+              <div class="bp-scale-nums">Systolic ≥ 140 OR Diastolic ≥ 90</div>
+            </div>
+          </div>
+          <div class="bp-scale-row" id="bp-row-crisis" data-cat="crisis">
+            <div class="bp-scale-dot" style="background:#7F1D1D"></div>
+            <div class="bp-scale-range">
+              <div class="bp-scale-cat">Hypertensive Crisis</div>
+              <div class="bp-scale-nums">Systolic &gt; 180 AND/OR Diastolic &gt; 120</div>
+            </div>
+          </div>
+          <div class="bp-scale-row" id="bp-row-low" data-cat="low">
+            <div class="bp-scale-dot" style="background:#3B82F6"></div>
+            <div class="bp-scale-range">
+              <div class="bp-scale-cat">Low Blood Pressure</div>
+              <div class="bp-scale-nums">Systolic &lt; 90 OR Diastolic &lt; 60</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bp-disclaimer">
+        <i class="fas fa-circle-info"></i>
+        <span>This tool is for informational purposes only. Always consult a healthcare professional for medical advice.</span>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .bp-wrap { display: flex; flex-direction: column; gap: 24px; }
+  .bp-form { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .bp-field-group { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .bp-separator { font-size: 2rem; font-weight: 300; color: var(--txt-muted); margin-top: 32px; }
+  .bp-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 160px; }
+  .bp-field label { font-size: 14px; font-weight: 600; color: var(--txt); }
+  .bp-input-wrap { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: #fff; }
+  .bp-input { flex: 1; padding: 12px 14px; font-size: 18px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--txt); background: transparent; border: none; outline: none; width: 80px; }
+  .bp-unit { padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--txt-muted); border-left: 1px solid var(--border); white-space: nowrap; }
+  .bp-hint { font-size: 11px; color: var(--txt-dim); }
+
+  .bp-result { display: flex; flex-direction: column; gap: 20px; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  .bp-result-main { text-align: center; padding: 28px; border-radius: var(--radius-lg); border: 1.5px solid var(--border); }
+  .bp-result-reading { font-size: 3.5rem; font-weight: 900; font-family: 'Outfit', sans-serif; margin-bottom: 8px; }
+  .bp-result-category { font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; }
+  .bp-result-advice { font-size: 14px; color: #475569; max-width: 400px; margin: 0 auto; line-height: 1.5; }
+
+  .bp-scale { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .bp-scale-title { padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--txt); }
+  .bp-scale-rows { display: flex; flex-direction: column; }
+  .bp-scale-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background .15s; }
+  .bp-scale-row:last-child { border-bottom: none; }
+  .bp-scale-row.active { background: #EFF6FF; }
+  .bp-scale-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .bp-scale-cat { font-size: 14px; font-weight: 700; color: var(--txt); }
+  .bp-scale-nums { font-size: 12px; color: var(--txt-muted); margin-top: 2px; }
+
+  .bp-disclaimer { display: flex; gap: 8px; padding: 12px 16px; background: #FFF7ED; border: 1.5px solid #FED7AA; border-radius: var(--radius-sm); font-size: 12.5px; color: #78350F; }
+  .bp-disclaimer i { color: #D97706; flex-shrink: 0; margin-top: 2px; }
+</style>
+
+<script>
+  interface BPCategory { id: string; cat: string; color: string; bg: string; advice: string; }
+
+  function classify(sys: number, dia: number): BPCategory {
+    if (sys > 180 || dia > 120) return { id: 'crisis', cat: 'Hypertensive Crisis', color: '#7F1D1D', bg: '#FEF2F2', advice: 'Seek emergency medical attention immediately.' };
+    if (sys < 90 || dia < 60) return { id: 'low', cat: 'Low Blood Pressure', color: '#1D4ED8', bg: '#EFF6FF', advice: 'You may experience dizziness. Consult a doctor.' };
+    if (sys >= 140 || dia >= 90) return { id: 'high2', cat: 'High Blood Pressure Stage 2', color: '#DC2626', bg: '#FEF2F2', advice: 'Consult a healthcare professional promptly.' };
+    if (sys >= 130 || dia >= 80) return { id: 'high1', cat: 'High Blood Pressure Stage 1', color: '#D97706', bg: '#FFFBEB', advice: 'Lifestyle changes and monitoring are recommended.' };
+    if (sys >= 120 && dia < 80) return { id: 'elevated', cat: 'Elevated', color: '#65A30D', bg: '#F7FEE7', advice: 'Monitor regularly and maintain a healthy lifestyle.' };
+    return { id: 'normal', cat: 'Normal', color: '#15803D', bg: '#F0FDF4', advice: 'Your blood pressure is in a healthy range. Keep it up!' };
+  }
+
+  document.getElementById('bp-calc')?.addEventListener('click', () => {
+    const sys = parseInt((document.getElementById('bp-sys') as HTMLInputElement).value);
+    const dia = parseInt((document.getElementById('bp-dia') as HTMLInputElement).value);
+    if (!sys || !dia) return;
+
+    const result = classify(sys, dia);
+    const main = document.getElementById('bp-result-main')!;
+    main.style.background = result.bg;
+    document.getElementById('bp-reading')!.innerHTML = `<span style="color:${result.color}">${sys}</span><span style="font-size:1.5rem;color:#94A3B8">/</span><span style="color:${result.color}">${dia}</span>`;
+    document.getElementById('bp-category')!.textContent = result.cat;
+    document.getElementById('bp-category')!.style.color = result.color;
+    document.getElementById('bp-advice')!.textContent = result.advice;
+
+    document.querySelectorAll('.bp-scale-row').forEach(row => {
+      row.classList.toggle('active', (row as HTMLElement).dataset.cat === result.id);
+    });
+
+    document.getElementById('bp-result')!.style.display = '';
+  });
+
+  document.getElementById('bp-calc')?.click();
+</script>

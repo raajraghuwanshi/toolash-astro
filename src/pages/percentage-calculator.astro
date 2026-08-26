@@ -1,0 +1,218 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'percentage-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="pct-wrap">
+    <!-- Mode selector -->
+    <div class="pct-modes">
+      <button class="pct-mode-btn active" data-mode="basic">X% of Y</button>
+      <button class="pct-mode-btn" data-mode="what-pct">X is what % of Y</button>
+      <button class="pct-mode-btn" data-mode="change">% Change</button>
+      <button class="pct-mode-btn" data-mode="reverse">Reverse %</button>
+    </div>
+
+    <!-- Basic: X% of Y -->
+    <div class="pct-panel active" id="pct-basic">
+      <div class="pct-form">
+        <div class="pct-field">
+          <label>Percentage (%)</label>
+          <input type="number" id="basic-pct" class="pct-input" placeholder="25" value="25" />
+        </div>
+        <div class="pct-of">% of</div>
+        <div class="pct-field">
+          <label>Number</label>
+          <input type="number" id="basic-num" class="pct-input" placeholder="200" value="200" />
+        </div>
+        <button class="btn btn-primary" id="basic-calc"><i class="fas fa-equals"></i> Calculate</button>
+      </div>
+      <div class="pct-result-box" id="basic-result" style="display:none">
+        <div class="pct-result-num" id="basic-result-val">0</div>
+        <div class="pct-result-label" id="basic-result-label"></div>
+      </div>
+    </div>
+
+    <!-- What percent -->
+    <div class="pct-panel" id="pct-what-pct" style="display:none">
+      <div class="pct-form">
+        <div class="pct-field">
+          <label>Value (X)</label>
+          <input type="number" id="wp-x" class="pct-input" placeholder="50" value="50" />
+        </div>
+        <div class="pct-of">is what % of</div>
+        <div class="pct-field">
+          <label>Total (Y)</label>
+          <input type="number" id="wp-y" class="pct-input" placeholder="200" value="200" />
+        </div>
+        <button class="btn btn-primary" id="wp-calc"><i class="fas fa-equals"></i> Calculate</button>
+      </div>
+      <div class="pct-result-box" id="wp-result" style="display:none">
+        <div class="pct-result-num" id="wp-result-val">0%</div>
+        <div class="pct-result-label" id="wp-result-label"></div>
+      </div>
+    </div>
+
+    <!-- Percentage change -->
+    <div class="pct-panel" id="pct-change" style="display:none">
+      <div class="pct-form">
+        <div class="pct-field">
+          <label>Original Value</label>
+          <input type="number" id="ch-original" class="pct-input" placeholder="100" value="100" />
+        </div>
+        <div class="pct-of">→</div>
+        <div class="pct-field">
+          <label>New Value</label>
+          <input type="number" id="ch-new" class="pct-input" placeholder="150" value="150" />
+        </div>
+        <button class="btn btn-primary" id="ch-calc"><i class="fas fa-equals"></i> Calculate</button>
+      </div>
+      <div class="pct-result-box" id="ch-result" style="display:none">
+        <div class="pct-result-num" id="ch-result-val">0%</div>
+        <div class="pct-result-label" id="ch-result-label"></div>
+      </div>
+    </div>
+
+    <!-- Reverse percent -->
+    <div class="pct-panel" id="pct-reverse" style="display:none">
+      <div class="pct-form">
+        <div class="pct-field">
+          <label>Final Value</label>
+          <input type="number" id="rv-val" class="pct-input" placeholder="80" value="80" />
+        </div>
+        <div class="pct-of">is</div>
+        <div class="pct-field">
+          <label>Percentage (%)</label>
+          <input type="number" id="rv-pct" class="pct-input" placeholder="40" value="40" />
+        </div>
+        <button class="btn btn-primary" id="rv-calc"><i class="fas fa-equals"></i> Find Original</button>
+      </div>
+      <div class="pct-result-box" id="rv-result" style="display:none">
+        <div class="pct-result-num" id="rv-result-val">0</div>
+        <div class="pct-result-label" id="rv-result-label"></div>
+      </div>
+    </div>
+
+    <!-- Quick reference -->
+    <div class="pct-quick">
+      <div class="pct-quick-label">Common percentage shortcuts</div>
+      <div class="pct-quick-grid">
+        <div class="pct-quick-item"><strong>10%</strong> ÷ 10</div>
+        <div class="pct-quick-item"><strong>20%</strong> ÷ 5</div>
+        <div class="pct-quick-item"><strong>25%</strong> ÷ 4</div>
+        <div class="pct-quick-item"><strong>50%</strong> ÷ 2</div>
+        <div class="pct-quick-item"><strong>75%</strong> × 0.75</div>
+        <div class="pct-quick-item"><strong>33%</strong> ÷ 3</div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .pct-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .pct-modes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pct-mode-btn { padding: 9px 16px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-soft); color: var(--txt-muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s; }
+  .pct-mode-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .pct-mode-btn:hover:not(.active) { border-color: var(--brand); color: var(--brand); }
+
+  .pct-form { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .pct-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 120px; }
+  .pct-field label { font-size: 13px; font-weight: 600; color: var(--txt); }
+  .pct-input {
+    padding: 11px 14px;
+    font-size: 16px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color .15s;
+  }
+  .pct-input:focus { border-color: var(--brand); }
+  .pct-of { font-size: 14px; font-weight: 700; color: var(--txt-muted); padding-bottom: 13px; flex-shrink: 0; }
+
+  .pct-result-box { padding: 28px; background: linear-gradient(135deg, #EFF6FF, #F5F3FF); border-radius: var(--radius-lg); text-align: center; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .pct-result-num { font-size: 3.5rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
+  .pct-result-label { font-size: 15px; color: #475569; margin-top: 6px; font-weight: 500; }
+
+  .pct-quick { padding: 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); }
+  .pct-quick-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 12px; }
+  .pct-quick-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .pct-quick-item { padding: 10px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); text-align: center; font-size: 13px; color: var(--txt-muted); }
+  .pct-quick-item strong { display: block; font-size: 15px; color: var(--brand); margin-bottom: 2px; }
+
+  @media (max-width: 600px) { .pct-quick-grid { grid-template-columns: repeat(3, 1fr); } }
+</style>
+
+<script>
+  function showPanel(id: string) {
+    document.querySelectorAll('.pct-panel').forEach(p => (p as HTMLElement).style.display = 'none');
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
+  }
+
+  document.querySelectorAll('.pct-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pct-mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const mode = (btn as HTMLElement).dataset.mode!;
+      document.querySelectorAll('.pct-panel').forEach(p => (p as HTMLElement).style.display = 'none');
+      const panel = document.getElementById(`pct-${mode}`) || document.getElementById(`pct-what-pct`);
+      if (panel) panel.style.display = '';
+    });
+  });
+
+  // Basic
+  document.getElementById('basic-calc')?.addEventListener('click', () => {
+    const pct = parseFloat((document.getElementById('basic-pct') as HTMLInputElement).value);
+    const num = parseFloat((document.getElementById('basic-num') as HTMLInputElement).value);
+    if (isNaN(pct) || isNaN(num)) return;
+    const result = (pct / 100) * num;
+    document.getElementById('basic-result-val')!.textContent = result.toLocaleString(undefined, { maximumFractionDigits: 4 });
+    document.getElementById('basic-result-label')!.textContent = `${pct}% of ${num} = ${result}`;
+    document.getElementById('basic-result')!.style.display = '';
+  });
+
+  // What percent
+  document.getElementById('wp-calc')?.addEventListener('click', () => {
+    const x = parseFloat((document.getElementById('wp-x') as HTMLInputElement).value);
+    const y = parseFloat((document.getElementById('wp-y') as HTMLInputElement).value);
+    if (isNaN(x) || isNaN(y) || y === 0) return;
+    const pct = (x / y) * 100;
+    document.getElementById('wp-result-val')!.textContent = pct.toFixed(2) + '%';
+    document.getElementById('wp-result-label')!.textContent = `${x} is ${pct.toFixed(2)}% of ${y}`;
+    document.getElementById('wp-result')!.style.display = '';
+  });
+
+  // Change
+  document.getElementById('ch-calc')?.addEventListener('click', () => {
+    const orig = parseFloat((document.getElementById('ch-original') as HTMLInputElement).value);
+    const newV = parseFloat((document.getElementById('ch-new') as HTMLInputElement).value);
+    if (isNaN(orig) || isNaN(newV) || orig === 0) return;
+    const change = ((newV - orig) / Math.abs(orig)) * 100;
+    const dir = change >= 0 ? '▲ Increase' : '▼ Decrease';
+    document.getElementById('ch-result-val')!.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+    document.getElementById('ch-result-val')!.style.color = change >= 0 ? '#22C55E' : '#EF4444';
+    document.getElementById('ch-result-label')!.textContent = `${dir} from ${orig} to ${newV}`;
+    document.getElementById('ch-result')!.style.display = '';
+  });
+
+  // Reverse
+  document.getElementById('rv-calc')?.addEventListener('click', () => {
+    const val = parseFloat((document.getElementById('rv-val') as HTMLInputElement).value);
+    const pct = parseFloat((document.getElementById('rv-pct') as HTMLInputElement).value);
+    if (isNaN(val) || isNaN(pct) || pct === 0) return;
+    const orig = val / (pct / 100);
+    document.getElementById('rv-result-val')!.textContent = orig.toLocaleString(undefined, { maximumFractionDigits: 4 });
+    document.getElementById('rv-result-label')!.textContent = `${val} is ${pct}% of ${orig.toFixed(4)}`;
+    document.getElementById('rv-result')!.style.display = '';
+  });
+
+  // Auto calc on page load
+  document.getElementById('basic-calc')?.click();
+</script>

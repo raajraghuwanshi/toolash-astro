@@ -1,0 +1,134 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'thumbnail-downloader')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="td-wrap">
+    <div class="td-input-row">
+      <input type="text" id="td-url" class="td-input" placeholder="Paste YouTube video URL or ID here…" />
+      <button class="btn btn-primary" id="td-fetch">
+        <i class="fas fa-search"></i> Get Thumbnails
+      </button>
+    </div>
+
+    <div class="td-info">
+      <i class="fas fa-circle-info"></i>
+      Works with any YouTube URL format: youtu.be/xxx, youtube.com/watch?v=xxx, or just the video ID
+    </div>
+
+    <div id="td-result" class="td-result" style="display:none">
+      <div class="td-video-info" id="td-video-info"></div>
+      <div class="td-thumbnails" id="td-thumbnails"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .td-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .td-input-row { display: flex; gap: 10px; }
+  .td-input {
+    flex: 1;
+    padding: 13px 16px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .td-input:focus { border-color: var(--brand); }
+  .td-info {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 16px;
+    background: #EFF6FF;
+    border: 1.5px solid #BFDBFE;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: #1E40AF;
+  }
+  .td-info i { flex-shrink: 0; margin-top: 2px; }
+
+  .td-result { display: flex; flex-direction: column; gap: 20px; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+
+  .td-video-info { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .td-video-thumb { width: 80px; height: 56px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+  .td-video-id { font-size: 13px; color: var(--txt-muted); font-family: 'Courier New', monospace; }
+
+  .td-thumbnails { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .td-thumb-card { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; transition: border-color .15s; }
+  .td-thumb-card:hover { border-color: var(--brand); }
+  .td-thumb-card img { width: 100%; display: block; }
+  .td-thumb-meta { padding: 10px 14px; background: var(--bg-soft); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .td-thumb-quality { font-size: 12px; font-weight: 700; color: var(--txt); }
+  .td-thumb-size { font-size: 11px; color: var(--txt-muted); }
+  .td-dl-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; background: var(--brand); color: #fff; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background .15s; }
+  .td-dl-btn:hover { background: #1D4ED8; }
+
+  @media (max-width: 500px) { .td-thumbnails { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  function extractId(url: string): string | null {
+    url = url.trim();
+    // Direct ID
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+    // youtu.be
+    const short = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (short) return short[1];
+    // youtube.com
+    const long = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    if (long) return long[1];
+    // shorts
+    const shorts = url.match(/shorts\/([a-zA-Z0-9_-]{11})/);
+    if (shorts) return shorts[1];
+    return null;
+  }
+
+  document.getElementById('td-fetch')?.addEventListener('click', () => {
+    const urlVal = (document.getElementById('td-url') as HTMLInputElement).value;
+    const id = extractId(urlVal);
+    if (!id) { alert('Could not extract YouTube video ID. Please check the URL.'); return; }
+
+    const qualities = [
+      { label: 'Max Resolution', key: 'maxresdefault', size: '1280×720+' },
+      { label: 'HD (480p)', key: 'sddefault', size: '640×480' },
+      { label: 'High Quality', key: 'hqdefault', size: '480×360' },
+      { label: 'Medium Quality', key: 'mqdefault', size: '320×180' },
+    ];
+
+    document.getElementById('td-video-info')!.innerHTML = `
+      <img class="td-video-thumb" src="https://img.youtube.com/vi/${id}/mqdefault.jpg" alt="Thumbnail" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2256%22><rect fill=%22%23E2E8F0%22 width=%2280%22 height=%2256%22/></svg>'" />
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--txt);margin-bottom:4px">Video ID: ${id}</div>
+        <div class="td-video-id">https://www.youtube.com/watch?v=${id}</div>
+      </div>
+    `;
+
+    document.getElementById('td-thumbnails')!.innerHTML = qualities.map(q => `
+      <div class="td-thumb-card">
+        <img src="https://img.youtube.com/vi/${id}/${q.key}.jpg" alt="${q.label}" loading="lazy" onerror="this.parentElement.style.display='none'" />
+        <div class="td-thumb-meta">
+          <div>
+            <div class="td-thumb-quality">${q.label}</div>
+            <div class="td-thumb-size">${q.size}</div>
+          </div>
+          <a href="https://img.youtube.com/vi/${id}/${q.key}.jpg" download="${id}_${q.key}.jpg" target="_blank" class="td-dl-btn">
+            <i class="fas fa-download"></i> Download
+          </a>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('td-result')!.style.display = '';
+  });
+
+  document.getElementById('td-url')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('td-fetch')?.click();
+  });
+</script>

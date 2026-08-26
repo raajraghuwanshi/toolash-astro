@@ -1,0 +1,195 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'compare')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="cmp-wrap">
+    <div class="cmp-grid">
+      <div class="cmp-col">
+        <label class="cmp-label" for="cmp-left">Original Text</label>
+        <textarea id="cmp-left" class="cmp-textarea" placeholder="Paste original text here…" rows="12" spellcheck="false"></textarea>
+      </div>
+      <div class="cmp-col">
+        <label class="cmp-label" for="cmp-right">Modified Text</label>
+        <textarea id="cmp-right" class="cmp-textarea" placeholder="Paste modified text here…" rows="12" spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <div class="cmp-actions">
+      <button class="btn btn-primary" id="cmp-btn">
+        <i class="fas fa-code-compare"></i> Compare Texts
+      </button>
+      <button class="btn btn-ghost" id="cmp-clear">
+        <i class="fas fa-trash"></i> Clear
+      </button>
+      <label class="cmp-check">
+        <input type="checkbox" id="cmp-ignore-case" /> Ignore case
+      </label>
+      <label class="cmp-check">
+        <input type="checkbox" id="cmp-ignore-whitespace" /> Ignore whitespace
+      </label>
+    </div>
+
+    <div id="cmp-result" class="cmp-result" style="display:none">
+      <div class="cmp-stats" id="cmp-stats"></div>
+      <div class="cmp-diff-grid">
+        <div class="cmp-diff-col">
+          <div class="cmp-diff-header">Original</div>
+          <div class="cmp-diff-content" id="cmp-diff-left"></div>
+        </div>
+        <div class="cmp-diff-col">
+          <div class="cmp-diff-header">Modified</div>
+          <div class="cmp-diff-content" id="cmp-diff-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .cmp-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cmp-col { display: flex; flex-direction: column; gap: 8px; }
+  .cmp-label { font-size: 14px; font-weight: 600; color: var(--txt); }
+  .cmp-textarea {
+    width: 100%;
+    padding: 14px;
+    font-size: 13.5px;
+    font-family: 'Courier New', monospace;
+    color: var(--txt);
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    resize: vertical;
+    outline: none;
+    line-height: 1.7;
+    transition: border-color .2s;
+  }
+  .cmp-textarea:focus { border-color: var(--brand); }
+  .cmp-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .cmp-check { display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--txt); cursor: pointer; }
+  .cmp-check input { accent-color: var(--brand); width: 14px; height: 14px; }
+
+  .cmp-stats {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    padding: 12px 16px;
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--txt-muted);
+  }
+  .cmp-stat-item strong { color: var(--txt); }
+
+  .cmp-diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cmp-diff-col { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .cmp-diff-header { padding: 10px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--txt-muted); }
+  .cmp-diff-content { padding: 14px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+  .diff-added { background: #DCFCE7; color: #166534; border-radius: 2px; }
+  .diff-removed { background: #FEE2E2; color: #991B1B; border-radius: 2px; text-decoration: line-through; }
+  .diff-line-added { background: #F0FDF4; display: block; }
+  .diff-line-removed { background: #FEF2F2; display: block; }
+
+  @media (max-width: 640px) {
+    .cmp-grid { grid-template-columns: 1fr; }
+    .cmp-diff-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  function lcs(a: string[], b: string[]): number[][] {
+    const m = a.length, n = b.length;
+    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (a[i - 1] === b[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+        else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+    return dp;
+  }
+
+  function getDiff(a: string[], b: string[]) {
+    const dp = lcs(a, b);
+    const result: { type: 'same' | 'added' | 'removed'; val: string }[] = [];
+    let i = a.length, j = b.length;
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && a[i - 1] === b[j - 1]) {
+        result.unshift({ type: 'same', val: a[i - 1] });
+        i--; j--;
+      } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+        result.unshift({ type: 'added', val: b[j - 1] });
+        j--;
+      } else {
+        result.unshift({ type: 'removed', val: a[i - 1] });
+        i--;
+      }
+    }
+    return result;
+  }
+
+  function compare() {
+    let left = (document.getElementById('cmp-left') as HTMLTextAreaElement).value;
+    let right = (document.getElementById('cmp-right') as HTMLTextAreaElement).value;
+    const ignoreCase = (document.getElementById('cmp-ignore-case') as HTMLInputElement).checked;
+    const ignoreWS = (document.getElementById('cmp-ignore-whitespace') as HTMLInputElement).checked;
+
+    const normalize = (s: string) => {
+      if (ignoreCase) s = s.toLowerCase();
+      if (ignoreWS) s = s.replace(/\s+/g, ' ').trim();
+      return s;
+    };
+
+    const leftLines = left.split('\n');
+    const rightLines = right.split('\n');
+    const normLeft = leftLines.map(normalize);
+    const normRight = rightLines.map(normalize);
+
+    const diff = getDiff(normLeft, normRight);
+
+    let leftHTML = '';
+    let rightHTML = '';
+    let added = 0, removed = 0, same = 0;
+
+    // Rebuild diff with original lines
+    let li = 0, ri = 0;
+    for (const d of diff) {
+      if (d.type === 'same') {
+        leftHTML += `<span class="diff-line-same">${escHtml(leftLines[li++])}\n</span>`;
+        rightHTML += `<span class="diff-line-same">${escHtml(rightLines[ri++])}\n</span>`;
+        same++;
+      } else if (d.type === 'removed') {
+        leftHTML += `<span class="diff-line-removed">${escHtml(leftLines[li++])}\n</span>`;
+        removed++;
+      } else {
+        rightHTML += `<span class="diff-line-added">${escHtml(rightLines[ri++])}\n</span>`;
+        added++;
+      }
+    }
+
+    document.getElementById('cmp-diff-left')!.innerHTML = leftHTML || '<em style="color:var(--txt-dim)">Empty</em>';
+    document.getElementById('cmp-diff-right')!.innerHTML = rightHTML || '<em style="color:var(--txt-dim)">Empty</em>';
+    document.getElementById('cmp-stats')!.innerHTML = `
+      <span class="cmp-stat-item">Lines added: <strong style="color:#22C55E">${added}</strong></span>
+      <span class="cmp-stat-item">Lines removed: <strong style="color:#EF4444">${removed}</strong></span>
+      <span class="cmp-stat-item">Unchanged: <strong>${same}</strong></span>
+      <span class="cmp-stat-item">Total changes: <strong>${added + removed}</strong></span>
+    `;
+
+    document.getElementById('cmp-result')!.style.display = '';
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  document.getElementById('cmp-btn')?.addEventListener('click', compare);
+  document.getElementById('cmp-clear')?.addEventListener('click', () => {
+    (document.getElementById('cmp-left') as HTMLTextAreaElement).value = '';
+    (document.getElementById('cmp-right') as HTMLTextAreaElement).value = '';
+    document.getElementById('cmp-result')!.style.display = 'none';
+  });
+</script>

@@ -1,0 +1,242 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'snow-day-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="sd-wrap">
+    <div class="sd-form">
+      <div class="sd-form-grid">
+        <div class="sd-field">
+          <label for="sd-snow">Expected Snowfall (inches)</label>
+          <div class="sd-input-wrap">
+            <input type="number" id="sd-snow" class="sd-input" placeholder="6" min="0" max="60" step="0.5" value="6" />
+            <span class="sd-unit">inches</span>
+          </div>
+        </div>
+        <div class="sd-field">
+          <label for="sd-temp">Temperature (°F)</label>
+          <div class="sd-input-wrap">
+            <input type="number" id="sd-temp" class="sd-input" placeholder="28" min="-40" max="40" value="28" />
+            <span class="sd-unit">°F</span>
+          </div>
+        </div>
+        <div class="sd-field">
+          <label for="sd-wind">Wind Speed (mph)</label>
+          <div class="sd-input-wrap">
+            <input type="number" id="sd-wind" class="sd-input" placeholder="15" min="0" max="80" value="15" />
+            <span class="sd-unit">mph</span>
+          </div>
+        </div>
+        <div class="sd-field">
+          <label for="sd-timing">When is it snowing?</label>
+          <select id="sd-timing" class="sd-select">
+            <option value="tonight">Tonight / Overnight</option>
+            <option value="morning">Early Morning</option>
+            <option value="during">During School Hours</option>
+            <option value="already">Already snowing heavily</option>
+          </select>
+        </div>
+        <div class="sd-field">
+          <label for="sd-region">Region / Climate</label>
+          <select id="sd-region" class="sd-select">
+            <option value="south">Southern US (rare snow)</option>
+            <option value="midwest">Midwest / Northeast</option>
+            <option value="mountain">Mountain Region</option>
+            <option value="canada">Canada</option>
+          </select>
+        </div>
+        <div class="sd-field">
+          <label>Ice / Freezing Rain?</label>
+          <div class="sd-checks">
+            <label class="sd-check"><input type="checkbox" id="sd-ice" /> Yes, ice expected</label>
+            <label class="sd-check"><input type="checkbox" id="sd-friday" /> Friday / before holiday</label>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="sd-calc">
+        <i class="fas fa-snowflake"></i> Predict Snow Day
+      </button>
+    </div>
+
+    <div id="sd-result" class="sd-result" style="display:none">
+      <div class="sd-gauge-wrap">
+        <div class="sd-gauge" id="sd-gauge">
+          <div class="sd-gauge-fill" id="sd-gauge-fill"></div>
+          <div class="sd-gauge-center">
+            <div class="sd-pct" id="sd-pct">0%</div>
+            <div class="sd-pct-label">Snow Day</div>
+          </div>
+        </div>
+        <div class="sd-snowflakes" id="sd-snowflakes"></div>
+      </div>
+
+      <div class="sd-verdict" id="sd-verdict">
+        <div class="sd-verdict-emoji" id="sd-emoji">❄️</div>
+        <div>
+          <div class="sd-verdict-title" id="sd-verdict-title">—</div>
+          <div class="sd-verdict-desc" id="sd-verdict-desc"></div>
+        </div>
+      </div>
+
+      <div class="sd-factors" id="sd-factors"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .sd-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .sd-form { display: flex; flex-direction: column; gap: 20px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .sd-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .sd-field { display: flex; flex-direction: column; gap: 8px; }
+  .sd-field label { font-size: 13px; font-weight: 700; color: var(--txt); }
+  .sd-input-wrap { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: #fff; }
+  .sd-input { flex: 1; padding: 11px 12px; font-size: 16px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--txt); background: transparent; border: none; outline: none; width: 70px; }
+  .sd-unit { padding: 0 10px; font-size: 12px; font-weight: 700; color: var(--txt-muted); border-left: 1px solid var(--border); white-space: nowrap; }
+  .sd-select, .sd-checks { padding: 10px 12px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 13.5px; font-family: 'Inter', sans-serif; color: var(--txt); outline: none; cursor: pointer; }
+  .sd-checks { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .sd-check { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+  .sd-check input { accent-color: var(--brand); width: 14px; height: 14px; }
+
+  .sd-result { display: flex; flex-direction: column; gap: 20px; animation: fadeIn .5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  .sd-gauge-wrap { position: relative; display: flex; justify-content: center; align-items: center; }
+  .sd-gauge {
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: conic-gradient(var(--brand) 0deg, var(--border) 0deg);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.8s ease;
+  }
+  .sd-gauge-fill { display: none; }
+  .sd-gauge-center {
+    width: 130px; height: 130px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.08);
+  }
+  .sd-pct { font-size: 2.2rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
+  .sd-pct-label { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; }
+  .sd-snowflakes { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: hidden; border-radius: 8px; }
+  .snowflake { position: absolute; color: #BAE6FD; font-size: 16px; animation: fall linear infinite; }
+  @keyframes fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(220px) rotate(360deg); opacity: 0; } }
+
+  .sd-verdict { display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; border: 1.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg-soft); }
+  .sd-verdict-emoji { font-size: 2.5rem; flex-shrink: 0; }
+  .sd-verdict-title { font-size: 18px; font-weight: 800; color: var(--txt); margin-bottom: 6px; }
+  .sd-verdict-desc { font-size: 14px; color: var(--txt-muted); line-height: 1.5; }
+
+  .sd-factors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sd-factor { padding: 12px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); text-align: center; }
+  .sd-factor-label { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; margin-bottom: 4px; }
+  .sd-factor-val { font-size: 16px; font-weight: 800; }
+
+  @media (max-width: 600px) { .sd-form-grid { grid-template-columns: 1fr 1fr; } .sd-factors { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 400px) { .sd-form-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  function predict(): number {
+    let score = 0;
+    const snow = parseFloat((document.getElementById('sd-snow') as HTMLInputElement).value) || 0;
+    const temp = parseFloat((document.getElementById('sd-temp') as HTMLInputElement).value) || 32;
+    const wind = parseFloat((document.getElementById('sd-wind') as HTMLInputElement).value) || 0;
+    const timing = (document.getElementById('sd-timing') as HTMLSelectElement).value;
+    const region = (document.getElementById('sd-region') as HTMLSelectElement).value;
+    const ice = (document.getElementById('sd-ice') as HTMLInputElement).checked;
+    const friday = (document.getElementById('sd-friday') as HTMLInputElement).checked;
+
+    // Snowfall
+    if (snow >= 12) score += 40;
+    else if (snow >= 8) score += 30;
+    else if (snow >= 6) score += 22;
+    else if (snow >= 4) score += 15;
+    else if (snow >= 2) score += 8;
+    else score += 2;
+
+    // Temperature
+    if (temp < 20) score += 15;
+    else if (temp < 28) score += 10;
+    else if (temp < 34) score += 5;
+
+    // Wind (blizzard conditions)
+    if (wind >= 35) score += 20;
+    else if (wind >= 25) score += 12;
+    else if (wind >= 15) score += 6;
+
+    // Timing
+    if (timing === 'already') score += 20;
+    else if (timing === 'tonight') score += 15;
+    else if (timing === 'morning') score += 10;
+    else score += 3;
+
+    // Region
+    if (region === 'south') score = Math.min(score * 1.5, 95);
+    else if (region === 'mountain') score = Math.max(score * 0.6, score - 20);
+    else if (region === 'canada') score = Math.max(score * 0.5, score - 25);
+
+    // Bonuses
+    if (ice) score += 20;
+    if (friday) score += 8;
+
+    return Math.min(98, Math.round(score));
+  }
+
+  function addSnowflakes(count: number) {
+    const container = document.getElementById('sd-snowflakes')!;
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const sf = document.createElement('div');
+      sf.className = 'snowflake';
+      sf.textContent = '❄';
+      sf.style.left = Math.random() * 100 + '%';
+      sf.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+      sf.style.animationDelay = Math.random() * 2 + 's';
+      sf.style.opacity = String(Math.random() * 0.7 + 0.3);
+      sf.style.fontSize = (Math.random() * 12 + 8) + 'px';
+      container.appendChild(sf);
+    }
+  }
+
+  document.getElementById('sd-calc')?.addEventListener('click', () => {
+    const pct = predict();
+    const snow = parseFloat((document.getElementById('sd-snow') as HTMLInputElement).value) || 0;
+    const wind = parseFloat((document.getElementById('sd-wind') as HTMLInputElement).value) || 0;
+    const temp = parseFloat((document.getElementById('sd-temp') as HTMLInputElement).value) || 32;
+
+    // Gauge animation
+    const gauge = document.getElementById('sd-gauge')!;
+    setTimeout(() => {
+      gauge.style.background = `conic-gradient(#3B82F6 ${pct * 3.6}deg, #E2E8F0 ${pct * 3.6}deg)`;
+    }, 100);
+    document.getElementById('sd-pct')!.textContent = pct + '%';
+
+    let emoji = '☀️', title = '', desc = '';
+    if (pct >= 85) { emoji = '🎉❄️'; title = 'Snow Day Almost Certain!'; desc = 'Stock up on hot cocoa — you\'re almost certainly getting a snow day! Time to build a snowman.'; }
+    else if (pct >= 70) { emoji = '🌨️'; title = 'Very Likely Snow Day!'; desc = 'Conditions are looking very favorable for a snow day. Keep an eye on announcements tonight.'; }
+    else if (pct >= 50) { emoji = '❄️'; title = 'Possible Snow Day'; desc = 'Decent chance! Set two alarms and watch for school cancellation notifications.'; }
+    else if (pct >= 30) { emoji = '🌦️'; title = 'Maybe, Maybe Not'; desc = 'It\'s a coin flip. Conditions might develop enough for delays or a late start.'; }
+    else if (pct >= 15) { emoji = '🙁'; title = 'Unlikely Snow Day'; desc = 'Conditions don\'t favor a snow day. School will probably be in session — sorry!'; }
+    else { emoji = '😞'; title = 'Don\'t Count On It'; desc = 'Very low probability. Focus on your homework and maybe hope for better weather next time.'; }
+
+    document.getElementById('sd-emoji')!.textContent = emoji;
+    document.getElementById('sd-verdict-title')!.textContent = title;
+    document.getElementById('sd-verdict-desc')!.textContent = desc;
+
+    const windChill = temp - (wind * 0.6);
+    document.getElementById('sd-factors')!.innerHTML = `
+      <div class="sd-factor"><div class="sd-factor-label">Snowfall</div><div class="sd-factor-val" style="color:#2563EB">${snow}"</div></div>
+      <div class="sd-factor"><div class="sd-factor-label">Wind Chill</div><div class="sd-factor-val" style="color:#0891B2">${Math.round(windChill)}°F</div></div>
+      <div class="sd-factor"><div class="sd-factor-label">Probability</div><div class="sd-factor-val" style="color:${pct>=60?'#22C55E':pct>=30?'#F59E0B':'#EF4444'}">${pct}%</div></div>
+    `;
+
+    addSnowflakes(Math.floor(pct / 10));
+    document.getElementById('sd-result')!.style.display = '';
+  });
+
+  document.getElementById('sd-calc')?.click();
+</script>

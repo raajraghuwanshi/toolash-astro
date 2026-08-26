@@ -1,0 +1,241 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'keyboard-tester')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="kb-wrap">
+    <div class="kb-info">
+      <i class="fas fa-keyboard"></i>
+      Press any key on your keyboard to test it. Green keys are working, red keys failed to register.
+    </div>
+
+    <div class="kb-status-bar">
+      <div class="kb-last">Last pressed: <strong id="kb-last-key">—</strong></div>
+      <div class="kb-stats">
+        Keys pressed: <strong id="kb-count">0</strong>
+      </div>
+      <button class="btn btn-ghost kb-reset" id="kb-reset"><i class="fas fa-refresh"></i> Reset</button>
+    </div>
+
+    <!-- Keyboard layout -->
+    <div class="kb-board" id="kb-board">
+      <!-- Row 1: Function keys -->
+      <div class="kb-row">
+        <div class="kb-key kb-special" data-key="Escape">Esc</div>
+        <div class="kb-gap"></div>
+        <div class="kb-key" data-key="F1">F1</div>
+        <div class="kb-key" data-key="F2">F2</div>
+        <div class="kb-key" data-key="F3">F3</div>
+        <div class="kb-key" data-key="F4">F4</div>
+        <div class="kb-gap-sm"></div>
+        <div class="kb-key" data-key="F5">F5</div>
+        <div class="kb-key" data-key="F6">F6</div>
+        <div class="kb-key" data-key="F7">F7</div>
+        <div class="kb-key" data-key="F8">F8</div>
+        <div class="kb-gap-sm"></div>
+        <div class="kb-key" data-key="F9">F9</div>
+        <div class="kb-key" data-key="F10">F10</div>
+        <div class="kb-key" data-key="F11">F11</div>
+        <div class="kb-key" data-key="F12">F12</div>
+      </div>
+
+      <!-- Row 2: Numbers -->
+      <div class="kb-row">
+        <div class="kb-key" data-key="`">~</div>
+        <div class="kb-key" data-key="1">1</div>
+        <div class="kb-key" data-key="2">2</div>
+        <div class="kb-key" data-key="3">3</div>
+        <div class="kb-key" data-key="4">4</div>
+        <div class="kb-key" data-key="5">5</div>
+        <div class="kb-key" data-key="6">6</div>
+        <div class="kb-key" data-key="7">7</div>
+        <div class="kb-key" data-key="8">8</div>
+        <div class="kb-key" data-key="9">9</div>
+        <div class="kb-key" data-key="0">0</div>
+        <div class="kb-key" data-key="-">-</div>
+        <div class="kb-key" data-key="=">=</div>
+        <div class="kb-key kb-wide" data-key="Backspace">Back</div>
+      </div>
+
+      <!-- Row 3: QWERTY -->
+      <div class="kb-row">
+        <div class="kb-key kb-wide" data-key="Tab">Tab</div>
+        <div class="kb-key" data-key="q">Q</div>
+        <div class="kb-key" data-key="w">W</div>
+        <div class="kb-key" data-key="e">E</div>
+        <div class="kb-key" data-key="r">R</div>
+        <div class="kb-key" data-key="t">T</div>
+        <div class="kb-key" data-key="y">Y</div>
+        <div class="kb-key" data-key="u">U</div>
+        <div class="kb-key" data-key="i">I</div>
+        <div class="kb-key" data-key="o">O</div>
+        <div class="kb-key" data-key="p">P</div>
+        <div class="kb-key" data-key="[">[</div>
+        <div class="kb-key" data-key="]">]</div>
+        <div class="kb-key kb-wide" data-key="\">\</div>
+      </div>
+
+      <!-- Row 4: ASDF -->
+      <div class="kb-row">
+        <div class="kb-key kb-caps" data-key="CapsLock">Caps</div>
+        <div class="kb-key" data-key="a">A</div>
+        <div class="kb-key" data-key="s">S</div>
+        <div class="kb-key" data-key="d">D</div>
+        <div class="kb-key" data-key="f">F</div>
+        <div class="kb-key" data-key="g">G</div>
+        <div class="kb-key" data-key="h">H</div>
+        <div class="kb-key" data-key="j">J</div>
+        <div class="kb-key" data-key="k">K</div>
+        <div class="kb-key" data-key="l">L</div>
+        <div class="kb-key" data-key=";">;</div>
+        <div class="kb-key" data-key="'">'</div>
+        <div class="kb-key kb-wide2" data-key="Enter">Enter</div>
+      </div>
+
+      <!-- Row 5: ZXCV -->
+      <div class="kb-row">
+        <div class="kb-key kb-shift" data-key="ShiftLeft">Shift</div>
+        <div class="kb-key" data-key="z">Z</div>
+        <div class="kb-key" data-key="x">X</div>
+        <div class="kb-key" data-key="c">C</div>
+        <div class="kb-key" data-key="v">V</div>
+        <div class="kb-key" data-key="b">B</div>
+        <div class="kb-key" data-key="n">N</div>
+        <div class="kb-key" data-key="m">M</div>
+        <div class="kb-key" data-key=",">,</div>
+        <div class="kb-key" data-key=".">.</div>
+        <div class="kb-key" data-key="/">/</div>
+        <div class="kb-key kb-shift" data-key="ShiftRight">Shift</div>
+      </div>
+
+      <!-- Row 6: Bottom -->
+      <div class="kb-row">
+        <div class="kb-key kb-ctrl" data-key="ControlLeft">Ctrl</div>
+        <div class="kb-key kb-meta" data-key="Meta">Win</div>
+        <div class="kb-key kb-alt" data-key="AltLeft">Alt</div>
+        <div class="kb-key kb-space" data-key=" ">Space</div>
+        <div class="kb-key kb-alt" data-key="AltRight">Alt</div>
+        <div class="kb-key kb-ctrl" data-key="ControlRight">Ctrl</div>
+      </div>
+    </div>
+
+    <div class="kb-legend">
+      <div class="kb-legend-item"><span class="kb-legend-dot" style="background:var(--bg-soft);border:1.5px solid var(--border)"></span> Not tested</div>
+      <div class="kb-legend-item"><span class="kb-legend-dot" style="background:#DCFCE7;border:1.5px solid #86EFAC"></span> Working</div>
+      <div class="kb-legend-item"><span class="kb-legend-dot" style="background:#DBEAFE;border:1.5px solid #93C5FD"></span> Currently pressed</div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .kb-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .kb-info {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 16px;
+    background: #EFF6FF;
+    border: 1.5px solid #BFDBFE;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    color: #1E40AF;
+  }
+  .kb-info i { color: var(--brand); margin-top: 2px; flex-shrink: 0; }
+  .kb-status-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 10px 16px; background: var(--bg-soft); border-radius: var(--radius-sm); border: 1.5px solid var(--border); font-size: 14px; color: var(--txt-muted); }
+  .kb-last, .kb-stats { font-size: 14px; }
+  .kb-last strong, .kb-stats strong { color: var(--txt); }
+  .kb-reset { margin-left: auto; }
+
+  .kb-board {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px;
+    background: #1E293B;
+    border-radius: 12px;
+    user-select: none;
+    overflow-x: auto;
+  }
+  .kb-row { display: flex; gap: 5px; align-items: center; min-width: 600px; }
+  .kb-gap { width: 20px; }
+  .kb-gap-sm { width: 10px; }
+
+  .kb-key {
+    min-width: 38px;
+    height: 38px;
+    background: #334155;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #CBD5E1;
+    cursor: default;
+    transition: all .1s;
+    border-bottom: 3px solid #1E293B;
+    font-family: 'Inter', sans-serif;
+    padding: 0 6px;
+    text-align: center;
+  }
+  .kb-key.pressed { background: #DBEAFE; color: #1E40AF; border-color: #93C5FD; border-bottom-color: #60A5FA; }
+  .kb-key.active { background: #DCFCE7; color: #166534; border-color: #86EFAC; border-bottom-color: #4ADE80; }
+  .kb-wide { min-width: 64px; }
+  .kb-wide2 { min-width: 80px; }
+  .kb-caps { min-width: 70px; }
+  .kb-shift { min-width: 90px; }
+  .kb-ctrl { min-width: 52px; }
+  .kb-meta { min-width: 44px; }
+  .kb-alt { min-width: 44px; }
+  .kb-space { flex: 1; min-width: 200px; }
+
+  .kb-legend { display: flex; gap: 20px; flex-wrap: wrap; }
+  .kb-legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--txt-muted); }
+  .kb-legend-dot { width: 18px; height: 18px; border-radius: 4px; display: inline-block; }
+</style>
+
+<script>
+  const pressedKeys = new Set<string>();
+  let count = 0;
+
+  function getKey(e: KeyboardEvent): string {
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') return e.code;
+    if (e.code === 'ControlLeft' || e.code === 'ControlRight') return e.code;
+    if (e.code === 'AltLeft' || e.code === 'AltRight') return e.code;
+    if (e.code === 'MetaLeft' || e.code === 'MetaRight') return 'Meta';
+    return e.key.toLowerCase();
+  }
+
+  function highlight(key: string, cls: string) {
+    const el = document.querySelector(`[data-key="${key}"]`) as HTMLElement;
+    if (el) { el.classList.remove('pressed', 'active'); el.classList.add(cls); }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    e.preventDefault();
+    const key = getKey(e);
+    if (!pressedKeys.has(key)) {
+      count++;
+      document.getElementById('kb-count')!.textContent = String(count);
+    }
+    pressedKeys.add(key);
+    highlight(key, 'pressed');
+    document.getElementById('kb-last-key')!.textContent = e.key === ' ' ? 'Space' : e.key;
+  });
+
+  document.addEventListener('keyup', (e) => {
+    const key = getKey(e);
+    pressedKeys.delete(key);
+    highlight(key, 'active');
+  });
+
+  document.getElementById('kb-reset')?.addEventListener('click', () => {
+    pressedKeys.clear();
+    count = 0;
+    document.getElementById('kb-count')!.textContent = '0';
+    document.getElementById('kb-last-key')!.textContent = '—';
+    document.querySelectorAll('.kb-key').forEach(k => k.classList.remove('pressed', 'active'));
+  });
+</script>

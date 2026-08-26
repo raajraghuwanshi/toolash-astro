@@ -1,0 +1,138 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'gematria-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="gem-wrap">
+    <div class="gem-input-row">
+      <input type="text" id="gem-input" class="gem-input" placeholder="Enter a word, name or phrase…" maxlength="200" />
+      <button class="btn btn-primary" id="gem-calc">
+        <i class="fas fa-star-of-david"></i> Calculate
+      </button>
+    </div>
+
+    <div id="gem-result" class="gem-result" style="display:none">
+      <div class="gem-results-grid" id="gem-results-grid"></div>
+
+      <div class="gem-breakdown" id="gem-breakdown">
+        <div class="gem-breakdown-title">Letter Breakdown (English Ordinal)</div>
+        <div class="gem-letters" id="gem-letters"></div>
+      </div>
+    </div>
+
+    <div class="gem-info">
+      <div class="gem-info-title">About Gematria</div>
+      <p>Gematria is an alphanumeric code of assigning a numerical value to letters. Different ciphers assign different values. This tool calculates multiple common ciphers simultaneously.</p>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .gem-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .gem-input-row { display: flex; gap: 10px; }
+  .gem-input {
+    flex: 1;
+    padding: 13px 16px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .gem-input:focus { border-color: var(--brand); }
+
+  .gem-result { display: flex; flex-direction: column; gap: 20px; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+
+  .gem-results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .gem-cipher {
+    padding: 16px;
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    text-align: center;
+    transition: border-color .15s;
+  }
+  .gem-cipher:hover { border-color: var(--brand); }
+  .gem-cipher-name { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .gem-cipher-val { font-size: 2rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
+
+  .gem-breakdown { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .gem-breakdown-title { padding: 10px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--txt); }
+  .gem-letters { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px; }
+  .gem-letter-item { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 36px; }
+  .gem-letter-char { font-size: 16px; font-weight: 700; color: var(--txt); }
+  .gem-letter-val { font-size: 11px; font-weight: 700; color: var(--brand); background: var(--brand-light); padding: 1px 6px; border-radius: 100px; }
+
+  .gem-info { padding: 14px 16px; background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: var(--radius-sm); }
+  .gem-info-title { font-size: 13px; font-weight: 700; color: #92400E; margin-bottom: 6px; }
+  .gem-info p { font-size: 13px; color: #78350F; line-height: 1.5; }
+
+  @media (max-width: 500px) { .gem-results-grid { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<script>
+  function ordinal(c: string): number {
+    const code = c.toLowerCase().charCodeAt(0);
+    if (code >= 97 && code <= 122) return code - 96;
+    return 0;
+  }
+
+  function reduction(n: number): number {
+    while (n > 9) n = String(n).split('').reduce((a, d) => a + parseInt(d), 0);
+    return n;
+  }
+
+  const ciphers: { name: string; fn: (s: string) => number }[] = [
+    { name: 'English Ordinal', fn: s => [...s.toLowerCase()].reduce((a, c) => a + ordinal(c), 0) },
+    { name: 'Full Reduction', fn: s => [...s.toLowerCase()].reduce((a, c) => a + reduction(ordinal(c)), 0) },
+    { name: 'Reverse Ordinal', fn: s => [...s.toLowerCase()].reduce((a, c) => { const v = ordinal(c); return a + (v > 0 ? 27 - v : 0); }, 0) },
+    { name: 'Reverse Reduction', fn: s => [...s.toLowerCase()].reduce((a, c) => { const v = ordinal(c); return a + (v > 0 ? reduction(27 - v) : 0); }, 0) },
+    { name: 'Septenary', fn: s => {
+      const sep = [0,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,1];
+      return [...s.toLowerCase()].reduce((a,c) => { const v = ordinal(c); return a + (v>0 ? sep[v-1] : 0); }, 0);
+    }},
+    { name: 'Chaldean', fn: s => {
+      const ch: Record<string,number> = {a:1,b:2,c:3,d:4,e:5,f:8,g:3,h:5,i:1,j:1,k:2,l:3,m:4,n:5,o:7,p:8,q:1,r:2,s:3,t:4,u:6,v:6,w:6,x:5,y:1,z:7};
+      return [...s.toLowerCase()].reduce((a,c) => a + (ch[c] || 0), 0);
+    }},
+    { name: 'Pythagorean', fn: s => {
+      const pyth: Record<string,number> = {a:1,b:2,c:3,d:4,e:5,f:6,g:7,h:8,i:9,j:1,k:2,l:3,m:4,n:5,o:6,p:7,q:8,r:9,s:1,t:2,u:3,v:4,w:5,x:6,y:7,z:8};
+      return [...s.toLowerCase()].reduce((a,c) => a + (pyth[c] || 0), 0);
+    }},
+    { name: 'English Extended', fn: s => [...s.toLowerCase()].reduce((a, c) => a + ordinal(c), 0) * 6 },
+    { name: 'Jewish Ordinal', fn: s => [...s.toLowerCase()].reduce((a, c) => a + ordinal(c), 0) },
+  ];
+
+  function calculate() {
+    const text = (document.getElementById('gem-input') as HTMLInputElement).value;
+    if (!text.trim()) return;
+
+    const grid = document.getElementById('gem-results-grid')!;
+    grid.innerHTML = ciphers.map(c => `
+      <div class="gem-cipher">
+        <div class="gem-cipher-name">${c.name}</div>
+        <div class="gem-cipher-val">${c.fn(text)}</div>
+      </div>
+    `).join('');
+
+    const letters = document.getElementById('gem-letters')!;
+    letters.innerHTML = [...text].map(c => {
+      const v = ordinal(c);
+      if (v === 0 && c === ' ') return `<div class="gem-letter-item"><div class="gem-letter-char" style="opacity:.3">·</div></div>`;
+      if (v === 0) return '';
+      return `<div class="gem-letter-item"><div class="gem-letter-char">${c.toUpperCase()}</div><div class="gem-letter-val">${v}</div></div>`;
+    }).join('');
+
+    document.getElementById('gem-result')!.style.display = '';
+  }
+
+  document.getElementById('gem-calc')?.addEventListener('click', calculate);
+  document.getElementById('gem-input')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
+</script>

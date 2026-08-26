@@ -1,0 +1,185 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'bitumen-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="bc-wrap">
+    <div class="bc-form">
+      <div class="bc-form-grid">
+        <div class="bc-field">
+          <label for="bc-length">Road Length</label>
+          <div class="bc-input-group">
+            <input type="number" id="bc-length" class="bc-input" placeholder="1000" min="0" step="any" value="1000" />
+            <span class="bc-unit">meters</span>
+          </div>
+        </div>
+        <div class="bc-field">
+          <label for="bc-width">Road Width</label>
+          <div class="bc-input-group">
+            <input type="number" id="bc-width" class="bc-input" placeholder="7" min="0" step="any" value="7" />
+            <span class="bc-unit">meters</span>
+          </div>
+        </div>
+        <div class="bc-field">
+          <label for="bc-depth">Layer Thickness</label>
+          <div class="bc-input-group">
+            <input type="number" id="bc-depth" class="bc-input" placeholder="50" min="0" step="any" value="50" />
+            <span class="bc-unit">mm</span>
+          </div>
+        </div>
+        <div class="bc-field">
+          <label for="bc-density">Mix Density</label>
+          <div class="bc-input-group">
+            <input type="number" id="bc-density" class="bc-input" placeholder="2400" min="1000" max="3000" step="any" value="2400" />
+            <span class="bc-unit">kg/m³</span>
+          </div>
+        </div>
+        <div class="bc-field">
+          <label for="bc-binder">Binder Content (%)</label>
+          <div class="bc-input-group">
+            <input type="number" id="bc-binder" class="bc-input" placeholder="5" min="1" max="15" step="0.1" value="5" />
+            <span class="bc-unit">%</span>
+          </div>
+        </div>
+        <div class="bc-field">
+          <label for="bc-type">Road Type</label>
+          <select id="bc-type" class="bc-select">
+            <option value="highway">Highway / National Road</option>
+            <option value="urban" selected>Urban Road</option>
+            <option value="rural">Rural / Village Road</option>
+            <option value="parking">Parking Lot</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="bc-calc" style="align-self:flex-start; padding:12px 32px;">
+        <i class="fas fa-road"></i> Calculate
+      </button>
+    </div>
+
+    <div id="bc-result" class="bc-result" style="display:none">
+      <div class="bc-result-grid">
+        <div class="bc-stat bc-stat-main">
+          <div class="bc-stat-val" id="bc-bitumen-kg">0</div>
+          <div class="bc-stat-label">Bitumen Required (kg)</div>
+        </div>
+        <div class="bc-stat">
+          <div class="bc-stat-val" id="bc-bitumen-t">0</div>
+          <div class="bc-stat-label">Bitumen (Metric Tons)</div>
+        </div>
+        <div class="bc-stat">
+          <div class="bc-stat-val" id="bc-mix-vol">0</div>
+          <div class="bc-stat-label">Total Mix Volume (m³)</div>
+        </div>
+        <div class="bc-stat">
+          <div class="bc-stat-val" id="bc-mix-wt">0</div>
+          <div class="bc-stat-label">Total Mix Weight (ton)</div>
+        </div>
+        <div class="bc-stat">
+          <div class="bc-stat-val" id="bc-area">0</div>
+          <div class="bc-stat-label">Road Area (m²)</div>
+        </div>
+        <div class="bc-stat">
+          <div class="bc-stat-val" id="bc-drums">0</div>
+          <div class="bc-stat-label">Bitumen Drums (200L)</div>
+        </div>
+      </div>
+
+      <div class="bc-formula">
+        <div class="bc-formula-title">Calculation Method</div>
+        <p id="bc-formula-text"></p>
+      </div>
+    </div>
+
+    <div class="bc-info">
+      <div class="bc-info-title">ℹ️ Typical Bitumen Content by Road Type</div>
+      <div class="bc-info-grid">
+        <div class="bc-info-item"><strong>Highway:</strong> 5–7% binder, 50–100mm layer</div>
+        <div class="bc-info-item"><strong>Urban Road:</strong> 4–6% binder, 40–60mm layer</div>
+        <div class="bc-info-item"><strong>Rural Road:</strong> 3–5% binder, 25–40mm layer</div>
+        <div class="bc-info-item"><strong>Density:</strong> 2200–2500 kg/m³ typical</div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .bc-wrap { display: flex; flex-direction: column; gap: 24px; }
+  .bc-form { display: flex; flex-direction: column; gap: 20px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .bc-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .bc-field { display: flex; flex-direction: column; gap: 8px; }
+  .bc-field label { font-size: 13px; font-weight: 700; color: var(--txt); }
+  .bc-input-group { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: #fff; }
+  .bc-input { flex: 1; padding: 11px 12px; font-size: 15px; font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--txt); background: transparent; border: none; outline: none; }
+  .bc-unit { padding: 0 10px; font-size: 11px; font-weight: 700; color: var(--txt-muted); border-left: 1px solid var(--border); white-space: nowrap; }
+  .bc-select {
+    padding: 11px 12px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .bc-result { display: flex; flex-direction: column; gap: 16px; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+  .bc-result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .bc-stat { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; }
+  .bc-stat-main { background: linear-gradient(135deg, #1E293B, #334155); border-color: #334155; }
+  .bc-stat-main .bc-stat-val { color: #fff; font-size: 2rem; }
+  .bc-stat-main .bc-stat-label { color: #94A3B8; }
+  .bc-stat-val { font-size: 1.5rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; margin-bottom: 6px; }
+  .bc-stat-label { font-size: 12px; color: var(--txt-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+
+  .bc-formula { padding: 14px 16px; background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: var(--radius-sm); }
+  .bc-formula-title { font-size: 12px; font-weight: 700; color: #166534; text-transform: uppercase; margin-bottom: 6px; }
+  .bc-formula p { font-size: 13px; color: #166534; line-height: 1.5; font-family: 'Courier New', monospace; }
+
+  .bc-info { padding: 14px 16px; background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: var(--radius-sm); }
+  .bc-info-title { font-size: 13px; font-weight: 700; color: #92400E; margin-bottom: 10px; }
+  .bc-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #78350F; }
+
+  @media (max-width: 600px) { .bc-form-grid { grid-template-columns: 1fr 1fr; } .bc-result-grid { grid-template-columns: 1fr 1fr; } .bc-info-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 400px) { .bc-form-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  function fmt(n: number): string { return n >= 1000 ? n.toLocaleString('en-IN', { maximumFractionDigits: 2 }) : n.toFixed(2); }
+
+  document.getElementById('bc-calc')?.addEventListener('click', () => {
+    const length = parseFloat((document.getElementById('bc-length') as HTMLInputElement).value) || 0;
+    const width = parseFloat((document.getElementById('bc-width') as HTMLInputElement).value) || 0;
+    const depthMm = parseFloat((document.getElementById('bc-depth') as HTMLInputElement).value) || 0;
+    const density = parseFloat((document.getElementById('bc-density') as HTMLInputElement).value) || 2400;
+    const binder = parseFloat((document.getElementById('bc-binder') as HTMLInputElement).value) || 5;
+
+    const depthM = depthMm / 1000;
+    const area = length * width;
+    const volume = area * depthM;
+    const mixWeight = volume * density; // kg
+    const bitumenKg = mixWeight * (binder / 100);
+    const bitumenTon = bitumenKg / 1000;
+    const drums = Math.ceil(bitumenKg / (200 * 0.9)); // 200L drum, ~0.9 kg/L for bitumen
+
+    document.getElementById('bc-bitumen-kg')!.textContent = fmt(bitumenKg);
+    document.getElementById('bc-bitumen-t')!.textContent = fmt(bitumenTon);
+    document.getElementById('bc-mix-vol')!.textContent = fmt(volume);
+    document.getElementById('bc-mix-wt')!.textContent = fmt(mixWeight / 1000);
+    document.getElementById('bc-area')!.textContent = fmt(area);
+    document.getElementById('bc-drums')!.textContent = String(drums);
+    document.getElementById('bc-formula-text')!.textContent =
+      `Area = ${length}m × ${width}m = ${area}m²\n` +
+      `Volume = ${area}m² × ${depthM}m = ${volume.toFixed(3)}m³\n` +
+      `Mix Weight = ${volume.toFixed(3)}m³ × ${density}kg/m³ = ${fmt(mixWeight)}kg\n` +
+      `Bitumen = ${fmt(mixWeight)}kg × ${binder}% = ${fmt(bitumenKg)}kg = ${fmt(bitumenTon)} ton`;
+
+    document.getElementById('bc-result')!.style.display = '';
+  });
+
+  document.getElementById('bc-calc')?.click();
+</script>

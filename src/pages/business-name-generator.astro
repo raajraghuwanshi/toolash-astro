@@ -1,0 +1,185 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'business-name-generator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="bn-wrap">
+    <div class="bn-form">
+      <div class="bn-field">
+        <label for="bn-keyword">What is your business about?</label>
+        <input type="text" id="bn-keyword" class="bn-input" placeholder="e.g. coffee, tech, fitness, food…" maxlength="30" value="" />
+      </div>
+      <div class="bn-options">
+        <div class="bn-option-group">
+          <label class="bn-opt-label">Industry / Style</label>
+          <div class="bn-chips-sel">
+            <label class="bn-chip-sel active" data-val="tech"><input type="radio" name="bn-industry" value="tech" checked hidden/> 💻 Tech</label>
+            <label class="bn-chip-sel" data-val="creative"><input type="radio" name="bn-industry" value="creative" hidden/> 🎨 Creative</label>
+            <label class="bn-chip-sel" data-val="food"><input type="radio" name="bn-industry" value="food" hidden/> 🍕 Food</label>
+            <label class="bn-chip-sel" data-val="health"><input type="radio" name="bn-industry" value="health" hidden/> 🏋️ Health</label>
+            <label class="bn-chip-sel" data-val="finance"><input type="radio" name="bn-industry" value="finance" hidden/> 💰 Finance</label>
+            <label class="bn-chip-sel" data-val="retail"><input type="radio" name="bn-industry" value="retail" hidden/> 🛍️ Retail</label>
+            <label class="bn-chip-sel" data-val="any"><input type="radio" name="bn-industry" value="any" hidden/> 🌐 Any</label>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="bn-generate" style="align-self:flex-start; padding:12px 32px;">
+        <i class="fas fa-building"></i> Generate Names
+      </button>
+    </div>
+
+    <div id="bn-results" class="bn-results">
+      <div class="bn-placeholder">Enter a keyword and click Generate to get business name ideas.</div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .bn-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .bn-form { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .bn-field { display: flex; flex-direction: column; gap: 8px; }
+  .bn-field label { font-size: 14px; font-weight: 600; color: var(--txt); }
+  .bn-input {
+    padding: 13px 16px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .bn-input:focus { border-color: var(--brand); }
+  .bn-options { display: flex; flex-direction: column; gap: 10px; }
+  .bn-opt-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; display: block; margin-bottom: 8px; }
+  .bn-chips-sel { display: flex; gap: 8px; flex-wrap: wrap; }
+  .bn-chip-sel {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--txt-muted);
+    cursor: pointer;
+    transition: all .15s;
+    background: #fff;
+  }
+  .bn-chip-sel.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .bn-chip-sel:hover:not(.active) { border-color: var(--brand); color: var(--brand); }
+
+  .bn-results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .bn-placeholder { grid-column: 1/-1; padding: 32px; text-align: center; color: var(--txt-dim); font-size: 14px; font-style: italic; background: var(--bg-soft); border: 1.5px dashed var(--border); border-radius: var(--radius-md); }
+  .bn-item {
+    padding: 16px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: all .15s;
+    cursor: pointer;
+  }
+  .bn-item:hover { border-color: var(--brand); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  .bn-item-name { font-size: 16px; font-weight: 800; color: var(--txt); margin-bottom: 6px; font-family: 'Outfit', sans-serif; }
+  .bn-item-type { font-size: 11px; font-weight: 600; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .bn-item-actions { display: flex; justify-content: space-between; align-items: center; }
+  .bn-copy-btn { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; font-size: 11px; color: var(--txt-muted); cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif; }
+  .bn-copy-btn:hover { border-color: var(--brand); color: var(--brand); }
+  .bn-dot-avail { font-size: 10px; font-weight: 600; color: #22C55E; }
+
+  @media (max-width: 600px) { .bn-results { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 400px) { .bn-results { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const techSuffixes = ['io','Hub','Stack','Labs','Forge','Sync','Nexus','Wave','Edge','Core','Tech','Soft','AI','Data','Cloud'];
+  const creativeSuffixes = ['Studio','Creative','Design','Works','Art','Craft','Agency','Co','Brand','Media'];
+  const foodSuffixes = ['Kitchen','Bites','Eats','Table','Feast','Grill','Bowl','Garden','Fresh','House'];
+  const healthSuffixes = ['Fit','Wellness','Health','Life','Boost','Active','Strong','Vital','Body','Mind'];
+  const financeSuffixes = ['Capital','Wealth','Finance','Trust','Invest','Bank','Fund','Asset','Pro','Plus'];
+  const retailSuffixes = ['Shop','Store','Mart','Place','Goods','Market','Co','World','Zone','Hub'];
+  const anySuffixes = ['Pro','Plus','360','One','Group','Inc','Co','Solutions','Global','Prime'];
+
+  const prefixes = ['Prime','Smart','Fast','Bold','Next','Pure','Max','Top','Best','Nova','Apex','Peak','Elite','True','Real'];
+  const adjectives = ['Brilliant','Dynamic','Crisp','Sharp','Elegant','Swift','Creative','Unique','Modern','Premium'];
+
+  const suffixMap: Record<string, string[]> = {
+    tech: techSuffixes,
+    creative: creativeSuffixes,
+    food: foodSuffixes,
+    health: healthSuffixes,
+    finance: financeSuffixes,
+    retail: retailSuffixes,
+    any: anySuffixes,
+  };
+
+  const nameTypes = [
+    { type: 'Compound', gen: (kw: string, sfx: string[]) => kw + randItem(sfx) },
+    { type: 'Prefix + Keyword', gen: (kw: string, sfx: string[]) => randItem(prefixes) + kw },
+    { type: 'Keyword + Suffix', gen: (kw: string, sfx: string[]) => kw + randItem(sfx) },
+    { type: 'Adj + Keyword', gen: (kw: string, sfx: string[]) => randItem(adjectives) + kw },
+    { type: 'Short & Catchy', gen: (kw: string, sfx: string[]) => kw.slice(0,4) + randItem(sfx).slice(0,3) },
+    { type: 'Branded', gen: (kw: string, sfx: string[]) => kw[0].toUpperCase() + kw.slice(1) + randItem(sfx) },
+  ];
+
+  function randItem<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function capitalize(s: string): string { return s ? s[0].toUpperCase() + s.slice(1).toLowerCase() : ''; }
+
+  function generateNames(keyword: string, industry: string): string[] {
+    const sfx = suffixMap[industry] || anySuffixes;
+    const kw = capitalize(keyword || randItem(['Ace','Nova','Sky','Bold','Prime']));
+    const names: string[] = [];
+    for (const nt of nameTypes) {
+      for (let i = 0; i < 3; i++) {
+        const n = capitalize(nt.gen(kw, sfx));
+        if (!names.includes(n)) names.push(n);
+      }
+    }
+    // Add some extras
+    while (names.length < 18) {
+      const n = capitalize(randItem(prefixes) + kw + randItem(sfx));
+      if (!names.includes(n)) names.push(n);
+    }
+    return names.slice(0, 18);
+  }
+
+  document.querySelectorAll('.bn-chip-sel').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.bn-chip-sel').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+
+  document.getElementById('bn-generate')?.addEventListener('click', () => {
+    const keyword = (document.getElementById('bn-keyword') as HTMLInputElement).value.trim();
+    const industry = (document.querySelector('input[name="bn-industry"]:checked') as HTMLInputElement)?.value || 'any';
+    const names = generateNames(keyword, industry);
+    const container = document.getElementById('bn-results')!;
+
+    container.innerHTML = names.map((name, i) => `
+      <div class="bn-item">
+        <div class="bn-item-name">${name}</div>
+        <div class="bn-item-type">${industry} • ${industry === 'any' ? 'General' : industry.charAt(0).toUpperCase()+industry.slice(1)}</div>
+        <div class="bn-item-actions">
+          <button class="bn-copy-btn" data-name="${name}"><i class="fas fa-copy"></i> Copy</button>
+          <span class="bn-dot-avail">✓ .com likely</span>
+        </div>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.bn-copy-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const name = (btn as HTMLElement).dataset.name!;
+        await navigator.clipboard.writeText(name);
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy', 1500);
+      });
+    });
+  });
+
+  document.getElementById('bn-generate')?.click();
+</script>

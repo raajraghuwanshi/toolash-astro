@@ -1,0 +1,210 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'cgpa-percentage-converter')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="cp-wrap">
+    <div class="cp-tabs">
+      <button class="cp-tab active" data-mode="cgpa-to-pct">CGPA → Percentage</button>
+      <button class="cp-tab" data-mode="pct-to-cgpa">Percentage → CGPA</button>
+    </div>
+
+    <!-- CGPA to Percentage -->
+    <div class="cp-panel" id="cp-cgpa-to-pct">
+      <div class="cp-form">
+        <div class="cp-field">
+          <label for="cp-cgpa">Your CGPA</label>
+          <input type="number" id="cp-cgpa" class="cp-input" placeholder="8.5" min="0" max="10" step="0.01" value="8.5" />
+        </div>
+        <div class="cp-field">
+          <label for="cp-scale">CGPA Scale</label>
+          <select id="cp-scale" class="cp-select">
+            <option value="10">10-point scale</option>
+            <option value="4">4-point scale (GPA)</option>
+          </select>
+        </div>
+        <div class="cp-field">
+          <label for="cp-formula">Formula / University</label>
+          <select id="cp-formula" class="cp-select">
+            <option value="x9.5">CGPA × 9.5 (Anna / VTU / most Indian)</option>
+            <option value="x9">CGPA × 9 (some universities)</option>
+            <option value="x10">CGPA × 10 (10-point direct)</option>
+            <option value="custom">Custom multiplier</option>
+          </select>
+        </div>
+        <div class="cp-field" id="cp-custom-wrap" style="display:none">
+          <label for="cp-multiplier">Custom Multiplier</label>
+          <input type="number" id="cp-multiplier" class="cp-input" placeholder="9.5" step="0.01" value="9.5" />
+        </div>
+        <button class="btn btn-primary" id="cp-convert">
+          <i class="fas fa-arrows-rotate"></i> Convert
+        </button>
+      </div>
+      <div class="cp-result" id="cp-result1" style="display:none">
+        <div class="cp-result-num" id="cp-pct-val">0%</div>
+        <div class="cp-result-label" id="cp-pct-label"></div>
+        <div class="cp-result-grade" id="cp-grade1"></div>
+      </div>
+    </div>
+
+    <!-- Percentage to CGPA -->
+    <div class="cp-panel" id="cp-pct-to-cgpa" style="display:none">
+      <div class="cp-form">
+        <div class="cp-field">
+          <label for="cp-pct">Your Percentage (%)</label>
+          <input type="number" id="cp-pct" class="cp-input" placeholder="85" min="0" max="100" step="0.01" value="85" />
+        </div>
+        <div class="cp-field">
+          <label for="cp-formula2">Formula / University</label>
+          <select id="cp-formula2" class="cp-select">
+            <option value="div9.5">Percentage ÷ 9.5 (Anna / VTU)</option>
+            <option value="div9">Percentage ÷ 9</option>
+            <option value="div10">Percentage ÷ 10</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="cp-convert2">
+          <i class="fas fa-arrows-rotate"></i> Convert
+        </button>
+      </div>
+      <div class="cp-result" id="cp-result2" style="display:none">
+        <div class="cp-result-num" id="cp-cgpa-val">0.00</div>
+        <div class="cp-result-label" id="cp-cgpa-label"></div>
+        <div class="cp-result-grade" id="cp-grade2"></div>
+      </div>
+    </div>
+
+    <!-- Reference table -->
+    <div class="cp-table-wrap">
+      <div class="cp-table-title">CGPA ↔ Percentage Reference Table</div>
+      <div class="cp-table">
+        <div class="cp-th">CGPA (10)</div><div class="cp-th">× 9.5</div><div class="cp-th">× 9</div><div class="cp-th">× 10</div>
+        {[10,9.5,9,8.5,8,7.5,7,6.5,6,5.5,5].map(c => (
+          <>
+            <div class="cp-td">{c}</div>
+            <div class="cp-td">{(c * 9.5).toFixed(1)}%</div>
+            <div class="cp-td">{(c * 9).toFixed(1)}%</div>
+            <div class="cp-td">{(c * 10).toFixed(1)}%</div>
+          </>
+        ))}
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .cp-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .cp-tabs { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; width: fit-content; }
+  .cp-tab { padding: 10px 20px; font-size: 14px; font-weight: 600; color: var(--txt-muted); background: var(--bg-soft); cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all .15s; }
+  .cp-tab.active { background: var(--brand); color: #fff; }
+
+  .cp-form { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .cp-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 160px; }
+  .cp-field label { font-size: 13px; font-weight: 600; color: var(--txt); }
+  .cp-input {
+    padding: 11px 14px;
+    font-size: 16px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  .cp-input:focus { border-color: var(--brand); }
+  .cp-select {
+    padding: 11px 12px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .cp-select:focus { border-color: var(--brand); }
+
+  .cp-result { padding: 28px; background: linear-gradient(135deg, #EFF6FF, #F5F3FF); border-radius: var(--radius-lg); text-align: center; animation: fadeIn .3s ease; border: 1.5px solid var(--border); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+  .cp-result-num { font-size: 3.5rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
+  .cp-result-label { font-size: 14px; color: #475569; margin-top: 6px; }
+  .cp-result-grade { font-size: 15px; font-weight: 700; margin-top: 8px; color: #22C55E; }
+
+  .cp-table-wrap { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .cp-table-title { padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--txt); }
+  .cp-table { display: grid; grid-template-columns: repeat(4, 1fr); overflow-x: auto; }
+  .cp-th { padding: 10px 14px; background: var(--bg-soft); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; }
+  .cp-th:last-child { border-right: none; }
+  .cp-td { padding: 9px 14px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 13.5px; color: var(--txt); font-family: 'Courier New', monospace; }
+  .cp-td:last-child, .cp-td:nth-child(4n) { border-right: none; }
+</style>
+
+<script>
+  document.querySelectorAll('.cp-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const mode = (tab as HTMLElement).dataset.mode!;
+      document.querySelectorAll('.cp-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.cp-panel').forEach(p => (p as HTMLElement).style.display = 'none');
+      document.getElementById(`cp-${mode}`)!.style.display = '';
+    });
+  });
+
+  document.getElementById('cp-formula')?.addEventListener('change', () => {
+    const isCustom = (document.getElementById('cp-formula') as HTMLSelectElement).value === 'custom';
+    (document.getElementById('cp-custom-wrap') as HTMLElement).style.display = isCustom ? '' : 'none';
+  });
+
+  function gradeStr(pct: number): string {
+    if (pct >= 90) return '🏆 Outstanding';
+    if (pct >= 80) return '⭐ Excellent';
+    if (pct >= 70) return '👏 Very Good';
+    if (pct >= 60) return '👍 Good';
+    if (pct >= 50) return 'Average';
+    return 'Below Average';
+  }
+
+  document.getElementById('cp-convert')?.addEventListener('click', () => {
+    const cgpa = parseFloat((document.getElementById('cp-cgpa') as HTMLInputElement).value);
+    const formula = (document.getElementById('cp-formula') as HTMLSelectElement).value;
+    if (isNaN(cgpa)) return;
+
+    let multiplier = 9.5;
+    if (formula === 'x9') multiplier = 9;
+    else if (formula === 'x10') multiplier = 10;
+    else if (formula === 'custom') {
+      multiplier = parseFloat((document.getElementById('cp-multiplier') as HTMLInputElement).value) || 9.5;
+    }
+
+    const pct = Math.min(100, cgpa * multiplier);
+    document.getElementById('cp-pct-val')!.textContent = pct.toFixed(2) + '%';
+    document.getElementById('cp-pct-label')!.textContent = `CGPA ${cgpa} × ${multiplier} = ${pct.toFixed(2)}%`;
+    document.getElementById('cp-grade1')!.textContent = gradeStr(pct);
+    document.getElementById('cp-result1')!.style.display = '';
+  });
+
+  document.getElementById('cp-convert2')?.addEventListener('click', () => {
+    const pct = parseFloat((document.getElementById('cp-pct') as HTMLInputElement).value);
+    const formula = (document.getElementById('cp-formula2') as HTMLSelectElement).value;
+    if (isNaN(pct)) return;
+
+    let divisor = 9.5;
+    if (formula === 'div9') divisor = 9;
+    else if (formula === 'div10') divisor = 10;
+
+    const cgpa = Math.min(10, pct / divisor);
+    document.getElementById('cp-cgpa-val')!.textContent = cgpa.toFixed(2);
+    document.getElementById('cp-cgpa-label')!.textContent = `${pct}% ÷ ${divisor} = CGPA ${cgpa.toFixed(2)}`;
+    document.getElementById('cp-grade2')!.textContent = gradeStr(pct);
+    document.getElementById('cp-result2')!.style.display = '';
+  });
+
+  document.getElementById('cp-convert')?.click();
+</script>

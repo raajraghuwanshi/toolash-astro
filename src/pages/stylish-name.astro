@@ -1,0 +1,157 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'stylish-name')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="sn-wrap">
+    <div class="sn-input-row">
+      <input type="text" id="sn-input" class="sn-input" placeholder="Enter your name or text…" maxlength="50" value="Hello World" />
+      <button class="btn btn-primary" id="sn-generate">
+        <i class="fas fa-star"></i> Generate
+      </button>
+    </div>
+
+    <div class="sn-results" id="sn-results">
+      <!-- generated dynamically -->
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .sn-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .sn-input-row { display: flex; gap: 10px; }
+  .sn-input {
+    flex: 1;
+    padding: 13px 16px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .sn-input:focus { border-color: var(--brand); }
+  .sn-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sn-item {
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color .15s;
+  }
+  .sn-item:hover { border-color: var(--brand); }
+  .sn-item-label { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .05em; }
+  .sn-item-text { font-size: 18px; color: var(--txt); word-break: break-word; line-height: 1.4; }
+  .sn-item-actions { display: flex; justify-content: flex-end; margin-top: 4px; }
+  .sn-copy-btn { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: var(--txt-muted); cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif; }
+  .sn-copy-btn:hover { border-color: var(--brand); color: var(--brand); }
+  @media (max-width: 500px) { .sn-results { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const styles: { name: string; transform: (s: string) => string }[] = [
+    { name: '𝗕𝗼𝗹𝗱', transform: s => [...s].map(c => {
+      const code = c.codePointAt(0)!;
+      if (code >= 65 && code <= 90) return String.fromCodePoint(code + 0x1D400 - 65);
+      if (code >= 97 && code <= 122) return String.fromCodePoint(code + 0x1D41A - 97);
+      if (code >= 48 && code <= 57) return String.fromCodePoint(code + 0x1D7CE - 48);
+      return c;
+    }).join('') },
+    { name: '𝘐𝘵𝘢𝘭𝘪𝘤', transform: s => [...s].map(c => {
+      const code = c.codePointAt(0)!;
+      if (code >= 65 && code <= 90) return String.fromCodePoint(code + 0x1D434 - 65);
+      if (code >= 97 && code <= 122) { if (code === 104) return '𝘩'; return String.fromCodePoint(code + 0x1D44E - 97); }
+      return c;
+    }).join('') },
+    { name: '𝑺𝒄𝒓𝒊𝒑𝒕', transform: s => [...s].map(c => {
+      const code = c.codePointAt(0)!;
+      const scriptMap: Record<number,number> = { 65:0x1D49C,66:0x212C,67:0x1D49E,68:0x1D49F,69:0x2130,70:0x2131,71:0x1D4A2,72:0x210B,73:0x2110,74:0x1D4A5,75:0x1D4A6,76:0x2112,77:0x2133,78:0x1D4A9,79:0x1D4AA,80:0x1D4AB,81:0x1D4AC,82:0x211B,83:0x1D4AE,84:0x1D4AF,85:0x1D4B0,86:0x1D4B1,87:0x1D4B2,88:0x1D4B3,89:0x1D4B4,90:0x1D4B5 };
+      if (scriptMap[code]) return String.fromCodePoint(scriptMap[code]);
+      if (code >= 97 && code <= 122) return String.fromCodePoint(code + 0x1D4B6 - 97);
+      return c;
+    }).join('') },
+    { name: 'ᴄᴏᴍᴘᴀᴄᴛ', transform: s => [...s].map(c => {
+      const m = 'aᴀbᴮcᴄdᴅeᴇfꜰgɢhʜiɪjᴊkᴋlʟmᴍnɴoᴏpᴘqᴏrʀsꜱtᴛuᴜvᴠwᴡxxʏYᴢz'.split('');
+      const lc = c.toLowerCase();
+      const i = 'abcdefghijklmnopqrstuvwxyz'.indexOf(lc);
+      return i >= 0 ? m[i*2+1] : c;
+    }).join('') },
+    { name: '🅒🅘🅡🅒🅛🅔', transform: s => [...s].map(c => {
+      const code = c.codePointAt(0)!;
+      if (code >= 65 && code <= 90) return String.fromCodePoint(0x24B6 + code - 65);
+      if (code >= 97 && code <= 122) return String.fromCodePoint(0x24D0 + code - 97);
+      if (code >= 49 && code <= 57) return ['①','②','③','④','⑤','⑥','⑦','⑧','⑨'][code-49];
+      if (code === 48) return '⓪';
+      return c;
+    }).join('') },
+    { name: 'ᗰᑕ ᔕQᑌᗩᖇE', transform: s => [...s].map(c => {
+      const map: Record<string,string> = {A:'ᗩ',B:'ᗷ',C:'ᑕ',D:'ᗞ',E:'ᗴ',F:'ᖴ',G:'ᘜ',H:'ᕼ',I:'I',J:'ᒍ',K:'K',L:'ᒪ',M:'ᗰ',N:'ᑎ',O:'O',P:'ᑭ',Q:'Q',R:'ᖇ',S:'ᔕ',T:'T',U:'ᑌ',V:'ᐯ',W:'ᗯ',X:'᙭',Y:'Y',Z:'ᘔ'};
+      return map[c.toUpperCase()] || c;
+    }).join('') },
+    { name: 'Ｗｉｄｅ', transform: s => [...s].map(c => {
+      const code = c.codePointAt(0)!;
+      if (code >= 33 && code <= 126) return String.fromCodePoint(code - 33 + 0xFF01);
+      return c;
+    }).join('') },
+    { name: 'ⓈⓉⓎⓁⓔ', transform: s => [...s].map(c => {
+      const map: Record<string,string> = {a:'ɑ',b:'ƀ',c:'ċ',d:'ď',e:'ė',f:'ƒ',g:'ġ',h:'ħ',i:'ĭ',j:'ĵ',k:'ķ',l:'ĺ',m:'ṁ',n:'ñ',o:'ō',p:'ṗ',q:'q',r:'ṙ',s:'ŝ',t:'ṫ',u:'ü',v:'v',w:'ẇ',x:'x',y:'ÿ',z:'ż'};
+      return map[c.toLowerCase()] || c;
+    }).join('') },
+    { name: 'Z̤̫̦͓̓a̫͓͋l̿͟g͖̣o̥̫͆', transform: s => {
+      const z = ['̈','̉','̊','̋','̌','̍','̎','̏','̐','̑','̒','̓','̔'];
+      return [...s].map(c => c + (Math.random()>.5 ? z[Math.floor(Math.random()*z.length)] : '') + (Math.random()>.7 ? z[Math.floor(Math.random()*z.length)] : '')).join('');
+    }},
+    { name: '🅱🅾🅻🅳', transform: s => [...s].map(c => {
+      const map: Record<string,string> = {A:'🅐',B:'🅑',C:'🅒',D:'🅓',E:'🅔',F:'🅕',G:'🅖',H:'🅗',I:'🅘',J:'🅙',K:'🅚',L:'🅛',M:'🅜',N:'🅝',O:'🅞',P:'🅟',Q:'🅠',R:'🅡',S:'🅢',T:'🅣',U:'🅤',V:'🅥',W:'🅦',X:'🅧',Y:'🅨',Z:'🅩'};
+      return map[c.toUpperCase()] || c;
+    }).join('') },
+    { name: '░▒▓ D̷o̷t̷s̷', transform: s => [...s].map(c => c + '̷').join('') },
+    { name: 'U͟n͟d͟e͟r͟l͟i͟n͟e͟', transform: s => [...s].map(c => c + '̲').join('') },
+    { name: '🌟 Star', transform: s => '⭐ ' + [...s].join(' ') + ' ⭐' },
+    { name: '✨ Fancy', transform: s => '✦ ' + s.split('').join('·') + ' ✦' },
+    { name: '꧁꧂ Bracket', transform: s => '꧁' + s + '꧂' },
+    { name: '⟨ Arrow ⟩', transform: s => '⟨ ' + s + ' ⟩' },
+  ];
+
+  function generate() {
+    const text = (document.getElementById('sn-input') as HTMLInputElement).value;
+    if (!text.trim()) return;
+    const results = document.getElementById('sn-results')!;
+    results.innerHTML = styles.map((st, i) => {
+      const transformed = st.transform(text);
+      return `
+        <div class="sn-item">
+          <div class="sn-item-label">${st.name}</div>
+          <div class="sn-item-text" id="sn-text-${i}">${transformed}</div>
+          <div class="sn-item-actions">
+            <button class="sn-copy-btn" data-idx="${i}"><i class="fas fa-copy"></i> Copy</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    results.querySelectorAll('.sn-copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx = (btn as HTMLElement).dataset.idx!;
+        const text = document.getElementById(`sn-text-${idx}`)!.textContent!;
+        await navigator.clipboard.writeText(text);
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy', 1500);
+      });
+    });
+  }
+
+  document.getElementById('sn-generate')?.addEventListener('click', generate);
+  document.getElementById('sn-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') generate();
+  });
+  generate();
+</script>

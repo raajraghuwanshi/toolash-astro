@@ -1,0 +1,511 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'pdf-converter')!;
+---
+
+<ToolLayout tool={tool}>
+  <!-- Load libraries from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" is:inline></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" is:inline></script>
+
+  <div class="pc-wrap">
+    <!-- Mode tabs -->
+    <div class="pc-modes">
+      <button class="pc-mode active" data-mode="img-to-pdf">
+        <i class="fas fa-images"></i>
+        <span>Images → PDF</span>
+      </button>
+      <button class="pc-mode" data-mode="pdf-to-img">
+        <i class="fas fa-file-pdf"></i>
+        <span>PDF → Images</span>
+      </button>
+      <button class="pc-mode" data-mode="text-to-pdf">
+        <i class="fas fa-font"></i>
+        <span>Text → PDF</span>
+      </button>
+    </div>
+
+    <!-- ── Images → PDF ─────────────────────────── -->
+    <div class="pc-panel" id="panel-img-to-pdf">
+      <div class="pc-upload" id="img-upload-area">
+        <input type="file" id="img-files" accept="image/*" multiple class="pc-file-input" />
+        <div class="pc-upload-content">
+          <div class="pc-upload-icon"><i class="fas fa-images"></i></div>
+          <div class="pc-upload-title">Drop images here or click to browse</div>
+          <div class="pc-upload-sub">JPG, PNG, WEBP, BMP, GIF • Multiple files supported</div>
+        </div>
+      </div>
+      <div class="pc-options">
+        <div class="pc-opt">
+          <label class="pc-opt-label">Page Size</label>
+          <select id="img-page-size" class="pc-select">
+            <option value="a4" selected>A4</option>
+            <option value="letter">Letter (US)</option>
+            <option value="a3">A3</option>
+            <option value="a5">A5</option>
+          </select>
+        </div>
+        <div class="pc-opt">
+          <label class="pc-opt-label">Orientation</label>
+          <select id="img-orientation" class="pc-select">
+            <option value="portrait" selected>Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+        </div>
+        <div class="pc-opt">
+          <label class="pc-opt-label">Image Fit</label>
+          <select id="img-fit" class="pc-select">
+            <option value="fit" selected>Fit to page</option>
+            <option value="fill">Fill page (crop)</option>
+            <option value="center">Center (original size)</option>
+          </select>
+        </div>
+        <div class="pc-opt">
+          <label class="pc-opt-label">Margin (mm)</label>
+          <input type="number" id="img-margin" class="pc-input-sm" value="10" min="0" max="50" />
+        </div>
+      </div>
+      <div id="img-queue" class="pc-queue" style="display:none">
+        <div class="pc-queue-header">
+          <span class="pc-queue-count"><span id="img-count">0</span> image(s) selected</span>
+          <div class="pc-queue-actions">
+            <button class="btn btn-ghost btn-sm" id="img-clear">Clear</button>
+            <button class="btn btn-primary btn-sm" id="img-to-pdf-btn"><i class="fas fa-file-pdf"></i> Convert to PDF</button>
+          </div>
+        </div>
+        <div class="pc-thumbs" id="img-thumbs"></div>
+      </div>
+      <div class="pc-progress" id="img-progress" style="display:none">
+        <div class="pc-progress-bar"><div class="pc-progress-fill" id="img-progress-fill"></div></div>
+        <div class="pc-progress-label" id="img-progress-label">Processing…</div>
+      </div>
+    </div>
+
+    <!-- ── PDF → Images ─────────────────────────── -->
+    <div class="pc-panel" id="panel-pdf-to-img" style="display:none">
+      <div class="pc-upload" id="pdf-upload-area">
+        <input type="file" id="pdf-file" accept="application/pdf" class="pc-file-input" />
+        <div class="pc-upload-content">
+          <div class="pc-upload-icon" style="color:#EF4444"><i class="fas fa-file-pdf"></i></div>
+          <div class="pc-upload-title">Drop a PDF here or click to browse</div>
+          <div class="pc-upload-sub">Converts each PDF page to a PNG image</div>
+        </div>
+      </div>
+      <div class="pc-options">
+        <div class="pc-opt">
+          <label class="pc-opt-label">Output Format</label>
+          <select id="pdf-out-format" class="pc-select">
+            <option value="png" selected>PNG</option>
+            <option value="jpeg">JPG</option>
+          </select>
+        </div>
+        <div class="pc-opt">
+          <label class="pc-opt-label">Scale / Quality</label>
+          <select id="pdf-scale" class="pc-select">
+            <option value="1">1× (72 DPI)</option>
+            <option value="2" selected>2× (144 DPI)</option>
+            <option value="3">3× (216 DPI)</option>
+          </select>
+        </div>
+      </div>
+      <div id="pdf-progress" class="pc-progress" style="display:none">
+        <div class="pc-progress-bar"><div class="pc-progress-fill" id="pdf-progress-fill"></div></div>
+        <div class="pc-progress-label" id="pdf-progress-label">Reading PDF…</div>
+      </div>
+      <div id="pdf-pages" class="pc-pages-grid" style="display:none"></div>
+      <div id="pdf-dl-all" style="display:none;text-align:center;margin-top:12px">
+        <button class="btn btn-primary" id="pdf-dl-all-btn"><i class="fas fa-download"></i> Download All as ZIP</button>
+      </div>
+    </div>
+
+    <!-- ── Text → PDF ────────────────────────────── -->
+    <div class="pc-panel" id="panel-text-to-pdf" style="display:none">
+      <div class="pc-text-form">
+        <div class="pc-field">
+          <label class="pc-opt-label">Document Title</label>
+          <input type="text" id="txt-title" class="pc-input-full" placeholder="My Document" value="My Document" />
+        </div>
+        <div class="pc-text-options">
+          <div class="pc-opt">
+            <label class="pc-opt-label">Font Size</label>
+            <input type="number" id="txt-font-size" class="pc-input-sm" value="12" min="8" max="36" />
+          </div>
+          <div class="pc-opt">
+            <label class="pc-opt-label">Page Size</label>
+            <select id="txt-page-size" class="pc-select">
+              <option value="a4" selected>A4</option>
+              <option value="letter">Letter</option>
+            </select>
+          </div>
+          <div class="pc-opt">
+            <label class="pc-opt-label">Line Spacing</label>
+            <select id="txt-spacing" class="pc-select">
+              <option value="1">Single</option>
+              <option value="1.5" selected>1.5×</option>
+              <option value="2">Double</option>
+            </select>
+          </div>
+        </div>
+        <div class="pc-field">
+          <label class="pc-opt-label">Content</label>
+          <textarea id="txt-content" class="pc-textarea" rows="10" placeholder="Type or paste your text content here…
+
+You can use multiple paragraphs. Each paragraph will be wrapped and paginated automatically."></textarea>
+        </div>
+        <button class="btn btn-primary" id="txt-to-pdf-btn" style="align-self:flex-start">
+          <i class="fas fa-file-pdf"></i> Generate PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .pc-wrap { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Modes */
+  .pc-modes { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .pc-mode {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--txt-muted);
+    background: var(--bg-soft);
+    border: none;
+    border-right: 1.5px solid var(--border);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all .15s;
+  }
+  .pc-mode:last-child { border-right: none; }
+  .pc-mode.active { background: var(--brand); color: #fff; }
+  .pc-mode:hover:not(.active) { background: #EFF6FF; color: var(--brand); }
+
+  /* Upload area */
+  .pc-upload {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 52px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--bg-soft);
+  }
+  .pc-upload:hover, .pc-upload.drag-over { border-color: var(--brand); background: var(--brand-light); }
+  .pc-file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .pc-upload-icon { font-size: 44px; color: var(--brand); margin-bottom: 14px; }
+  .pc-upload-title { font-size: 16px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
+  .pc-upload-sub { font-size: 13px; color: var(--txt-muted); }
+
+  /* Options row */
+  .pc-options { display: flex; gap: 14px; flex-wrap: wrap; padding: 16px 18px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .pc-opt { display: flex; flex-direction: column; gap: 6px; }
+  .pc-opt-label { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
+  .pc-select { padding: 8px 12px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--txt); background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; cursor: pointer; transition: border-color .15s; }
+  .pc-select:focus { border-color: var(--brand); }
+  .pc-input-sm { padding: 8px 10px; width: 80px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--txt); background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; }
+
+  /* Queue */
+  .pc-queue { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .pc-queue-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
+  .pc-queue-count { font-size: 13px; font-weight: 700; color: var(--txt); }
+  .pc-queue-actions { display: flex; gap: 8px; }
+  .btn-sm { padding: 7px 14px; font-size: 12px; }
+  .pc-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 14px; }
+  .pc-thumb { position: relative; border-radius: 6px; overflow: hidden; border: 1.5px solid var(--border); }
+  .pc-thumb img { width: 100%; height: 80px; object-fit: cover; display: block; }
+  .pc-thumb-name { font-size: 10px; color: var(--txt-muted); padding: 4px 6px; background: var(--bg-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pc-thumb-del { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; background: rgba(0,0,0,.6); color: #fff; border: none; border-radius: 50%; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+
+  /* Progress */
+  .pc-progress { padding: 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 8px; }
+  .pc-progress-bar { height: 8px; background: var(--border); border-radius: 100px; overflow: hidden; }
+  .pc-progress-fill { height: 100%; background: var(--brand); border-radius: 100px; transition: width .3s ease; width: 0; }
+  .pc-progress-label { font-size: 13px; color: var(--txt-muted); text-align: center; }
+
+  /* PDF → Images grid */
+  .pc-pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+  .pc-page-card { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .pc-page-card canvas { width: 100%; display: block; }
+  .pc-page-footer { padding: 8px 12px; background: var(--bg-soft); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .pc-page-label { font-size: 12px; color: var(--txt-muted); font-weight: 600; }
+  .pc-dl-btn { padding: 5px 10px; background: var(--brand); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; font-family: 'Inter', sans-serif; }
+
+  /* Text → PDF form */
+  .pc-text-form { display: flex; flex-direction: column; gap: 16px; }
+  .pc-field { display: flex; flex-direction: column; gap: 8px; }
+  .pc-input-full { width: 100%; padding: 11px 14px; font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 600; color: var(--txt); background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; transition: border-color .2s; }
+  .pc-input-full:focus { border-color: var(--brand); }
+  .pc-text-options { display: flex; gap: 14px; flex-wrap: wrap; }
+  .pc-textarea { width: 100%; padding: 12px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--txt); background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); outline: none; transition: border-color .2s; resize: vertical; line-height: 1.6; }
+  .pc-textarea:focus { border-color: var(--brand); }
+
+  .pc-panel { display: flex; flex-direction: column; gap: 16px; }
+</style>
+
+<script>
+  // ── Mode switching ───────────────────────────────────────────
+  document.querySelectorAll('.pc-mode').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = (btn as HTMLElement).dataset.mode!;
+      document.querySelectorAll('.pc-mode').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.pc-panel').forEach(p => (p as HTMLElement).style.display = 'none');
+      document.getElementById(`panel-${mode}`)!.style.display = '';
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════════
+  // MODE 1: Images → PDF
+  // ══════════════════════════════════════════════════════════════
+  let imgFiles: { file: File; url: string }[] = [];
+
+  function setupDragDrop(area: HTMLElement, onFiles: (files: FileList) => void) {
+    area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag-over'); });
+    area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
+    area.addEventListener('drop', (e: DragEvent) => {
+      e.preventDefault(); area.classList.remove('drag-over');
+      if (e.dataTransfer?.files) onFiles(e.dataTransfer.files);
+    });
+  }
+
+  setupDragDrop(document.getElementById('img-upload-area')!, (files) => addImgFiles(files));
+
+  document.getElementById('img-files')?.addEventListener('change', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (input.files) addImgFiles(input.files);
+  });
+
+  function addImgFiles(files: FileList) {
+    for (const f of Array.from(files)) {
+      if (!f.type.startsWith('image/')) continue;
+      imgFiles.push({ file: f, url: URL.createObjectURL(f) });
+    }
+    renderImgQueue();
+  }
+
+  function renderImgQueue() {
+    if (imgFiles.length === 0) { document.getElementById('img-queue')!.style.display = 'none'; return; }
+    document.getElementById('img-count')!.textContent = String(imgFiles.length);
+    const thumbs = document.getElementById('img-thumbs')!;
+    thumbs.innerHTML = imgFiles.map((item, i) => `
+      <div class="pc-thumb" id="pc-thumb-${i}">
+        <img src="${item.url}" alt="${item.file.name}" loading="lazy" />
+        <div class="pc-thumb-name">${item.file.name}</div>
+        <button class="pc-thumb-del" data-idx="${i}">✕</button>
+      </div>
+    `).join('');
+    thumbs.querySelectorAll('.pc-thumb-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt((btn as HTMLElement).dataset.idx!);
+        URL.revokeObjectURL(imgFiles[idx].url);
+        imgFiles.splice(idx, 1);
+        renderImgQueue();
+      });
+    });
+    document.getElementById('img-queue')!.style.display = '';
+  }
+
+  document.getElementById('img-clear')?.addEventListener('click', () => {
+    imgFiles.forEach(f => URL.revokeObjectURL(f.url));
+    imgFiles = [];
+    renderImgQueue();
+    (document.getElementById('img-files') as HTMLInputElement).value = '';
+  });
+
+  document.getElementById('img-to-pdf-btn')?.addEventListener('click', async () => {
+    if (imgFiles.length === 0) { alert('Please add at least one image.'); return; }
+
+    const pageSize = (document.getElementById('img-page-size') as HTMLSelectElement).value;
+    const orientation = (document.getElementById('img-orientation') as HTMLSelectElement).value as 'portrait' | 'landscape';
+    const fit = (document.getElementById('img-fit') as HTMLSelectElement).value;
+    const margin = parseInt((document.getElementById('img-margin') as HTMLInputElement).value) || 10;
+
+    const progress = document.getElementById('img-progress')!;
+    const fill = document.getElementById('img-progress-fill')!;
+    const label = document.getElementById('img-progress-label')!;
+    progress.style.display = '';
+
+    const { jsPDF } = (window as any).jspdf;
+    const doc = new jsPDF({ orientation, unit: 'mm', format: pageSize });
+
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const maxW = pageW - margin * 2;
+    const maxH = pageH - margin * 2;
+
+    for (let i = 0; i < imgFiles.length; i++) {
+      label.textContent = `Processing image ${i + 1} of ${imgFiles.length}…`;
+      fill.style.width = `${((i / imgFiles.length) * 100)}%`;
+
+      if (i > 0) doc.addPage(pageSize, orientation);
+
+      await new Promise<void>((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          let imgW = img.naturalWidth, imgH = img.naturalHeight;
+          // Convert px to mm (assuming 96dpi): 1px = 0.2646mm
+          const pxToMm = 0.2646;
+          let drawW = imgW * pxToMm, drawH = imgH * pxToMm;
+
+          if (fit === 'fit' || fit === 'fill') {
+            const scale = fit === 'fit'
+              ? Math.min(maxW / drawW, maxH / drawH)
+              : Math.max(maxW / drawW, maxH / drawH);
+            drawW *= scale; drawH *= scale;
+          }
+
+          const x = margin + (maxW - Math.min(drawW, maxW)) / 2;
+          const y = margin + (maxH - Math.min(drawH, maxH)) / 2;
+
+          const canvas = document.createElement('canvas');
+          canvas.width = imgW; canvas.height = imgH;
+          const ctx = canvas.getContext('2d')!;
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(0, 0, imgW, imgH);
+          ctx.drawImage(img, 0, 0);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+          doc.addImage(dataUrl, 'JPEG', x, y, Math.min(drawW, maxW), Math.min(drawH, maxH));
+          resolve();
+        };
+        img.src = imgFiles[i].url;
+      });
+    }
+
+    fill.style.width = '100%';
+    label.textContent = 'Done! Downloading…';
+    doc.save('converted.pdf');
+    setTimeout(() => { progress.style.display = 'none'; }, 2000);
+  });
+
+  // ══════════════════════════════════════════════════════════════
+  // MODE 2: PDF → Images (using PDF.js)
+  // ══════════════════════════════════════════════════════════════
+  setupDragDrop(document.getElementById('pdf-upload-area')!, (files) => {
+    const f = Array.from(files).find(f => f.type === 'application/pdf');
+    if (f) processPDF(f);
+  });
+
+  document.getElementById('pdf-file')?.addEventListener('change', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (input.files?.[0]) processPDF(input.files[0]);
+  });
+
+  const renderedCanvases: HTMLCanvasElement[] = [];
+
+  async function processPDF(file: File) {
+    const scale = parseFloat((document.getElementById('pdf-scale') as HTMLSelectElement).value) || 2;
+    const outFmt = (document.getElementById('pdf-out-format') as HTMLSelectElement).value;
+
+    const progress = document.getElementById('pdf-progress')!;
+    const fill = document.getElementById('pdf-progress-fill')!;
+    const label = document.getElementById('pdf-progress-label')!;
+    progress.style.display = '';
+    document.getElementById('pdf-pages')!.style.display = 'none';
+    document.getElementById('pdf-dl-all')!.style.display = 'none';
+
+    const pdfjs = (window as any).pdfjsLib;
+    pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+    const numPages = pdfDoc.numPages;
+
+    label.textContent = `Found ${numPages} page(s). Rendering…`;
+    const pagesContainer = document.getElementById('pdf-pages')!;
+    pagesContainer.innerHTML = '';
+    renderedCanvases.length = 0;
+
+    for (let i = 1; i <= numPages; i++) {
+      fill.style.width = `${(i / numPages) * 100}%`;
+      label.textContent = `Rendering page ${i} of ${numPages}…`;
+
+      const page = await pdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(viewport.width);
+      canvas.height = Math.round(viewport.height);
+      const ctx = canvas.getContext('2d')!;
+      await page.render({ canvasContext: ctx, viewport }).promise;
+
+      renderedCanvases.push(canvas);
+
+      const card = document.createElement('div');
+      card.className = 'pc-page-card';
+      card.innerHTML = `<div class="pc-page-footer"><span class="pc-page-label">Page ${i}</span><button class="pc-dl-btn" data-page="${i}" data-fmt="${outFmt}"><i class="fas fa-download"></i> Save</button></div>`;
+      card.insertBefore(canvas, card.firstChild);
+      card.querySelector('.pc-dl-btn')!.addEventListener('click', () => downloadPage(canvas, i, outFmt));
+      pagesContainer.appendChild(card);
+    }
+
+    pagesContainer.style.display = '';
+    document.getElementById('pdf-dl-all')!.style.display = '';
+    progress.style.display = 'none';
+  }
+
+  function downloadPage(canvas: HTMLCanvasElement, page: number, fmt: string) {
+    const a = document.createElement('a');
+    a.download = `page-${page}.${fmt === 'jpeg' ? 'jpg' : 'png'}`;
+    a.href = canvas.toDataURL(`image/${fmt}`, fmt === 'jpeg' ? 0.92 : undefined);
+    a.click();
+  }
+
+  document.getElementById('pdf-dl-all-btn')?.addEventListener('click', async () => {
+    const fmt = (document.getElementById('pdf-out-format') as HTMLSelectElement).value;
+    // If JSZip available via window, use it; otherwise download individually
+    for (let i = 0; i < renderedCanvases.length; i++) {
+      downloadPage(renderedCanvases[i], i + 1, fmt);
+      await new Promise(r => setTimeout(r, 300)); // stagger downloads
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════════
+  // MODE 3: Text → PDF
+  // ══════════════════════════════════════════════════════════════
+  document.getElementById('txt-to-pdf-btn')?.addEventListener('click', () => {
+    const title = (document.getElementById('txt-title') as HTMLInputElement).value || 'Document';
+    const content = (document.getElementById('txt-content') as HTMLTextAreaElement).value;
+    const fontSize = parseInt((document.getElementById('txt-font-size') as HTMLInputElement).value) || 12;
+    const pageSize = (document.getElementById('txt-page-size') as HTMLSelectElement).value;
+    const spacing = parseFloat((document.getElementById('txt-spacing') as HTMLSelectElement).value) || 1.5;
+
+    if (!content.trim()) { alert('Please enter some text content.'); return; }
+
+    const { jsPDF } = (window as any).jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: pageSize });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const maxW = pageW - margin * 2;
+    const lineH = fontSize * 0.352778 * spacing; // pt to mm
+
+    // Title
+    doc.setFontSize(fontSize + 4);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, margin, margin + 5);
+    doc.setFontSize(fontSize);
+    doc.setFont('helvetica', 'normal');
+
+    let y = margin + 14;
+    const lines = content.split('\n');
+
+    for (const line of lines) {
+      const wrapped = doc.splitTextToSize(line || ' ', maxW);
+      for (const wl of wrapped) {
+        if (y + lineH > pageH - margin) { doc.addPage(); y = margin; }
+        doc.text(wl, margin, y);
+        y += lineH;
+      }
+    }
+
+    doc.save(`${title.replace(/\s+/g, '_')}.pdf`);
+  });
+</script>

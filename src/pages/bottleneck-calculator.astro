@@ -1,0 +1,247 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'bottleneck-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="bn-wrap">
+    <div class="bn-form">
+      <div class="bn-field-group">
+        <div class="bn-field">
+          <label for="bn-cpu"><i class="fas fa-microchip" style="color:#2563EB"></i> CPU</label>
+          <select id="bn-cpu" class="bn-select">
+            <optgroup label="Intel">
+              <option value="i3-10100|4|3.6|6">Intel Core i3-10100</option>
+              <option value="i5-10400|6|2.9|12">Intel Core i5-10400</option>
+              <option value="i5-12400|6|2.5|18">Intel Core i5-12400</option>
+              <option value="i7-10700K|8|3.8|30">Intel Core i7-10700K</option>
+              <option value="i7-12700K|12|3.6|45">Intel Core i7-12700K</option>
+              <option value="i9-12900K|16|3.2|65">Intel Core i9-12900K</option>
+              <option value="i9-13900K|24|3.0|85">Intel Core i9-13900K</option>
+              <option value="i5-13600K|14|3.5|50" selected>Intel Core i5-13600K</option>
+            </optgroup>
+            <optgroup label="AMD">
+              <option value="ryzen3-3300X|4|3.8|10">AMD Ryzen 3 3300X</option>
+              <option value="ryzen5-3600|6|3.6|20">AMD Ryzen 5 3600</option>
+              <option value="ryzen5-5600X|6|3.7|35">AMD Ryzen 5 5600X</option>
+              <option value="ryzen7-5800X|8|3.8|55">AMD Ryzen 7 5800X</option>
+              <option value="ryzen9-5900X|12|3.7|75">AMD Ryzen 9 5900X</option>
+              <option value="ryzen9-7900X|12|4.7|90">AMD Ryzen 9 7900X</option>
+              <option value="ryzen7-7700X|8|4.5|70">AMD Ryzen 7 7700X</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="bn-vs">vs</div>
+        <div class="bn-field">
+          <label for="bn-gpu"><i class="fas fa-display" style="color:#7C3AED"></i> GPU</label>
+          <select id="bn-gpu" class="bn-select">
+            <optgroup label="NVIDIA">
+              <option value="GTX1060|16">NVIDIA GTX 1060</option>
+              <option value="GTX1070|28">NVIDIA GTX 1070</option>
+              <option value="RTX2060|40">NVIDIA RTX 2060</option>
+              <option value="RTX2070|50">NVIDIA RTX 2070 Super</option>
+              <option value="RTX3060|55">NVIDIA RTX 3060</option>
+              <option value="RTX3070|70">NVIDIA RTX 3070</option>
+              <option value="RTX3080|85" selected>NVIDIA RTX 3080</option>
+              <option value="RTX3090|95">NVIDIA RTX 3090</option>
+              <option value="RTX4070|80">NVIDIA RTX 4070</option>
+              <option value="RTX4080|92">NVIDIA RTX 4080</option>
+              <option value="RTX4090|100">NVIDIA RTX 4090</option>
+            </optgroup>
+            <optgroup label="AMD">
+              <option value="RX5600XT|35">AMD RX 5600 XT</option>
+              <option value="RX5700XT|50">AMD RX 5700 XT</option>
+              <option value="RX6600|48">AMD RX 6600</option>
+              <option value="RX6700XT|62">AMD RX 6700 XT</option>
+              <option value="RX6800XT|80">AMD RX 6800 XT</option>
+              <option value="RX7900XT|90">AMD RX 7900 XT</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+      <div class="bn-field">
+        <label for="bn-resolution">Target Resolution</label>
+        <div class="bn-res-tabs">
+          <button class="bn-res-btn active" data-res="1080">1080p</button>
+          <button class="bn-res-btn" data-res="1440">1440p</button>
+          <button class="bn-res-btn" data-res="4k">4K</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="bn-calc" style="align-self:flex-start; padding:12px 32px;">
+        <i class="fas fa-microchip"></i> Check Bottleneck
+      </button>
+    </div>
+
+    <div id="bn-result" class="bn-result" style="display:none">
+      <div class="bn-meters">
+        <div class="bn-meter">
+          <div class="bn-meter-label"><i class="fas fa-microchip" style="color:#2563EB"></i> CPU Usage</div>
+          <div class="bn-meter-bar">
+            <div class="bn-meter-fill" id="bn-cpu-fill" style="background:#2563EB"></div>
+          </div>
+          <div class="bn-meter-val" id="bn-cpu-pct"></div>
+        </div>
+        <div class="bn-meter">
+          <div class="bn-meter-label"><i class="fas fa-display" style="color:#7C3AED"></i> GPU Usage</div>
+          <div class="bn-meter-bar">
+            <div class="bn-meter-fill" id="bn-gpu-fill" style="background:#7C3AED"></div>
+          </div>
+          <div class="bn-meter-val" id="bn-gpu-pct"></div>
+        </div>
+      </div>
+
+      <div class="bn-verdict" id="bn-verdict">
+        <div class="bn-verdict-icon" id="bn-verdict-icon">⚠️</div>
+        <div>
+          <div class="bn-verdict-title" id="bn-verdict-title">Analyzing…</div>
+          <div class="bn-verdict-desc" id="bn-verdict-desc"></div>
+        </div>
+      </div>
+
+      <div class="bn-tips" id="bn-tips"></div>
+
+      <div class="bn-disclaimer"><i class="fas fa-circle-info"></i> This is an estimated simulation. Actual performance depends on specific workloads, drivers, RAM speed, and game optimization.</div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .bn-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .bn-form { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .bn-field-group { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .bn-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
+  .bn-field label { font-size: 14px; font-weight: 600; color: var(--txt); display: flex; align-items: center; gap: 6px; }
+  .bn-select {
+    padding: 11px 12px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--txt);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    cursor: pointer;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  .bn-select:focus { border-color: var(--brand); }
+  .bn-vs { font-size: 18px; font-weight: 800; color: var(--txt-muted); padding-bottom: 8px; flex-shrink: 0; }
+  .bn-res-tabs { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; width: fit-content; }
+  .bn-res-btn { padding: 9px 20px; font-size: 14px; font-weight: 700; color: var(--txt-muted); background: #fff; cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all .15s; }
+  .bn-res-btn.active { background: var(--brand); color: #fff; }
+
+  .bn-result { display: flex; flex-direction: column; gap: 16px; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+
+  .bn-meters { display: flex; flex-direction: column; gap: 14px; }
+  .bn-meter { display: flex; align-items: center; gap: 12px; }
+  .bn-meter-label { font-size: 14px; font-weight: 600; color: var(--txt); min-width: 120px; }
+  .bn-meter-bar { flex: 1; height: 14px; background: var(--border); border-radius: 100px; overflow: hidden; }
+  .bn-meter-fill { height: 100%; border-radius: 100px; transition: width .6s ease; width: 0; }
+  .bn-meter-val { font-size: 14px; font-weight: 800; color: var(--txt); min-width: 40px; text-align: right; }
+
+  .bn-verdict {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-soft);
+  }
+  .bn-verdict-icon { font-size: 28px; flex-shrink: 0; }
+  .bn-verdict-title { font-size: 16px; font-weight: 800; color: var(--txt); margin-bottom: 6px; }
+  .bn-verdict-desc { font-size: 14px; color: var(--txt-muted); line-height: 1.5; }
+
+  .bn-tips { display: flex; flex-direction: column; gap: 8px; }
+  .bn-tip { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: #EFF6FF; border: 1.5px solid #BFDBFE; border-radius: var(--radius-sm); font-size: 13px; color: #1E40AF; }
+  .bn-tip i { flex-shrink: 0; margin-top: 2px; }
+
+  .bn-disclaimer { font-size: 12px; color: var(--txt-muted); display: flex; gap: 8px; }
+  .bn-disclaimer i { flex-shrink: 0; margin-top: 2px; }
+</style>
+
+<script>
+  let resolution = '1080';
+
+  document.querySelectorAll('.bn-res-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.bn-res-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      resolution = (btn as HTMLElement).dataset.res!;
+    });
+  });
+
+  document.getElementById('bn-calc')?.addEventListener('click', () => {
+    const cpuVal = (document.getElementById('bn-cpu') as HTMLSelectElement).value;
+    const gpuVal = (document.getElementById('bn-gpu') as HTMLSelectElement).value;
+    const [cpuName, cpuCores, cpuGhz, cpuScore] = cpuVal.split('|');
+    const [gpuName, gpuScore] = gpuVal.split('|');
+
+    const cpuS = parseInt(cpuScore);
+    const gpuS = parseInt(gpuScore);
+
+    // Resolution multiplier: 1080p = CPU-heavy, 4K = GPU-heavy
+    const resMultipliers = { '1080': { cpu: 1.3, gpu: 0.7 }, '1440': { cpu: 1.0, gpu: 1.0 }, '4k': { cpu: 0.7, gpu: 1.3 } };
+    const mult = (resMultipliers as any)[resolution] || { cpu: 1, gpu: 1 };
+
+    const cpuLoad = Math.min(100, Math.round((cpuS / Math.max(cpuS, gpuS)) * 100 * mult.cpu));
+    const gpuLoad = Math.min(100, Math.round((gpuS / Math.max(cpuS, gpuS)) * 100 * mult.gpu));
+
+    // Animate bars
+    setTimeout(() => {
+      (document.getElementById('bn-cpu-fill') as HTMLElement).style.width = `${cpuLoad}%`;
+      (document.getElementById('bn-gpu-fill') as HTMLElement).style.width = `${gpuLoad}%`;
+    }, 100);
+
+    document.getElementById('bn-cpu-pct')!.textContent = `${cpuLoad}%`;
+    document.getElementById('bn-gpu-pct')!.textContent = `${gpuLoad}%`;
+
+    const diff = Math.abs(cpuS - gpuS);
+    const bottleneck = diff / Math.max(cpuS, gpuS) * 100;
+
+    let icon = '✅', title = '', desc = '', tips: string[] = [];
+
+    if (bottleneck < 10) {
+      icon = '✅'; title = 'Excellent Balance!';
+      desc = 'Your CPU and GPU are very well matched. You\'ll experience maximum performance in most games and workloads.';
+    } else if (cpuS < gpuS) {
+      if (bottleneck < 20) {
+        icon = '🟡'; title = 'Minor CPU Bottleneck';
+        desc = `Your CPU is slightly limiting your GPU performance. At ${resolution}p, you may notice small dips in CPU-heavy games.`;
+        tips = ['Increase resolution to shift load to GPU', 'Enable XMP/EXPO in BIOS for RAM speed boost', 'Close background apps to free CPU resources'];
+      } else if (bottleneck < 40) {
+        icon = '🟠'; title = 'Moderate CPU Bottleneck';
+        desc = `Your CPU is holding back your GPU significantly at ${resolution}p. Consider upgrading your CPU for better 1% lows and frame consistency.`;
+        tips = ['Upgrade to a faster CPU with same socket', 'Switch to a higher resolution to reduce CPU load', 'Disable CPU-heavy overlays/programs'];
+      } else {
+        icon = '🔴'; title = 'Severe CPU Bottleneck';
+        desc = `Your CPU is a major limitation for this GPU. You\'re leaving significant GPU performance unused.`;
+        tips = ['Prioritize CPU upgrade', 'Play at 4K to maximize GPU utilization', 'Check if CPU is running at max boost clock'];
+      }
+    } else {
+      if (bottleneck < 20) {
+        icon = '🟡'; title = 'Minor GPU Bottleneck';
+        desc = `Your GPU is slightly limiting performance at ${resolution}p. This is normal and means you can upgrade your GPU for a nice boost.`;
+      } else if (bottleneck < 40) {
+        icon = '🟠'; title = 'Moderate GPU Bottleneck';
+        desc = `Your GPU is noticeably holding back what your CPU can deliver. Consider upgrading your GPU.`;
+        tips = ['Upgrade GPU for better fps', 'Lower graphics settings temporarily', 'Enable DLSS/FSR if available'];
+      } else {
+        icon = '🔴'; title = 'Severe GPU Bottleneck';
+        desc = `Your GPU is significantly limiting performance. Your CPU is being heavily underutilized.`;
+        tips = ['Upgrade to a more powerful GPU', 'Lower resolution or settings to increase fps', 'Enable upscaling technology'];
+      }
+    }
+
+    document.getElementById('bn-verdict-icon')!.textContent = icon;
+    document.getElementById('bn-verdict-title')!.textContent = title;
+    document.getElementById('bn-verdict-desc')!.textContent = desc;
+    document.getElementById('bn-tips')!.innerHTML = tips.map(t => `<div class="bn-tip"><i class="fas fa-lightbulb"></i> ${t}</div>`).join('');
+    document.getElementById('bn-result')!.style.display = '';
+  });
+
+  document.getElementById('bn-calc')?.click();
+</script>

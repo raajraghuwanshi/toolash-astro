@@ -1,0 +1,162 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'random-email-generator')!;
+---
+
+<ToolLayout tool={tool}>
+  <div class="eg-wrap">
+    <div class="eg-controls">
+      <div class="eg-control-row">
+        <label class="eg-label">How many emails? <strong id="eg-count-display">10</strong></label>
+        <input type="range" id="eg-count" min="1" max="50" value="10" class="eg-slider" />
+      </div>
+      <div class="eg-options">
+        <label class="eg-check"><input type="checkbox" id="eg-real-domains" checked /> Use real domains (Gmail, Yahoo…)</label>
+        <label class="eg-check"><input type="checkbox" id="eg-dots" /> Include dots in username</label>
+        <label class="eg-check"><input type="checkbox" id="eg-numbers" checked /> Include numbers</label>
+        <label class="eg-check"><input type="checkbox" id="eg-format-name" /> Real name format (john.doe@…)</label>
+      </div>
+      <div class="eg-actions">
+        <button class="btn btn-primary" id="eg-generate" style="flex:1">
+          <i class="fas fa-refresh"></i> Generate Emails
+        </button>
+        <button class="btn btn-ghost" id="eg-copy-all">
+          <i class="fas fa-copy"></i> Copy All
+        </button>
+        <button class="btn btn-ghost" id="eg-clear">
+          <i class="fas fa-trash"></i> Clear
+        </button>
+      </div>
+    </div>
+
+    <div class="eg-output-wrap">
+      <div class="eg-output-header">
+        <span class="eg-output-label">Generated Emails</span>
+        <span class="eg-output-count" id="eg-output-count">0 emails</span>
+      </div>
+      <div class="eg-list" id="eg-list">
+        <div class="eg-placeholder">Click "Generate Emails" to create random email addresses.</div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .eg-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .eg-controls { display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+  .eg-control-row { display: flex; flex-direction: column; gap: 8px; }
+  .eg-label { font-size: 14px; font-weight: 600; color: var(--txt); }
+  .eg-slider { width: 100%; accent-color: var(--brand); cursor: pointer; }
+  .eg-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .eg-check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--txt); cursor: pointer; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: #fff; transition: border-color .15s; }
+  .eg-check:hover { border-color: var(--brand); }
+  .eg-check input { accent-color: var(--brand); width: 14px; height: 14px; }
+  .eg-actions { display: flex; gap: 10px; }
+
+  .eg-output-wrap { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .eg-output-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); }
+  .eg-output-label { font-size: 13px; font-weight: 700; color: var(--txt); }
+  .eg-output-count { font-size: 12px; font-weight: 600; color: var(--brand); background: var(--brand-light); padding: 2px 8px; border-radius: 100px; }
+  .eg-list { padding: 12px; display: flex; flex-direction: column; gap: 6px; max-height: 400px; overflow-y: auto; }
+  .eg-placeholder { padding: 24px; text-align: center; color: var(--txt-dim); font-size: 14px; font-style: italic; }
+  .eg-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Courier New', monospace;
+    font-size: 13.5px;
+    color: var(--txt);
+    gap: 10px;
+    transition: border-color .15s;
+  }
+  .eg-item:hover { border-color: var(--brand); }
+  .eg-copy-btn { background: none; border: none; color: var(--txt-muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 12px; transition: color .15s; flex-shrink: 0; }
+  .eg-copy-btn:hover { color: var(--brand); }
+
+  @media (max-width: 480px) { .eg-options { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const firstNames = ['james','john','robert','michael','william','david','richard','joseph','thomas','charles','mary','patricia','jennifer','linda','barbara','elizabeth','susan','jessica','sarah','karen','alex','chris','jordan','taylor','morgan','casey','drew','riley','quinn','avery'];
+  const lastNames = ['smith','jones','williams','brown','davis','miller','wilson','moore','taylor','anderson','thomas','jackson','white','harris','martin','garcia','martinez','robinson','clark','rodriguez'];
+  const adjectives = ['happy','cool','fast','smart','bright','bold','dark','swift','lucky','wild'];
+  const nouns = ['cat','dog','bird','wolf','fox','lion','tiger','eagle','shark','bear'];
+  const realDomains = ['gmail.com','yahoo.com','outlook.com','hotmail.com','icloud.com','protonmail.com','mail.com'];
+  const fakeDomains = ['example.com','testmail.org','devnull.io','mailtest.net','randombox.xyz'];
+
+  function randItem<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+  function randNum(min: number, max: number): number { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  function generateEmail(opts: { useDots: boolean; useNumbers: boolean; realDomains: boolean; nameFormat: boolean }): string {
+    let username = '';
+    if (opts.nameFormat) {
+      const f = randItem(firstNames);
+      const l = randItem(lastNames);
+      username = opts.useDots ? `${f}.${l}` : `${f}${l}`;
+      if (opts.useNumbers) username += randNum(1, 99);
+    } else {
+      const a = randItem(adjectives);
+      const n = randItem(nouns);
+      username = opts.useDots ? `${a}.${n}` : `${a}${n}`;
+      if (opts.useNumbers) username += randNum(10, 999);
+    }
+    const domain = opts.realDomains ? randItem(realDomains) : randItem(fakeDomains);
+    return `${username}@${domain}`;
+  }
+
+  const slider = document.getElementById('eg-count') as HTMLInputElement;
+  const display = document.getElementById('eg-count-display')!;
+  slider.addEventListener('input', () => display.textContent = slider.value);
+
+  function generate() {
+    const count = parseInt(slider.value);
+    const useDots = (document.getElementById('eg-dots') as HTMLInputElement).checked;
+    const useNumbers = (document.getElementById('eg-numbers') as HTMLInputElement).checked;
+    const realDoms = (document.getElementById('eg-real-domains') as HTMLInputElement).checked;
+    const nameFormat = (document.getElementById('eg-format-name') as HTMLInputElement).checked;
+
+    const emails = Array.from({ length: count }, () => generateEmail({ useDots, useNumbers, realDomains: realDoms, nameFormat }));
+    const list = document.getElementById('eg-list')!;
+    list.innerHTML = emails.map((e, i) => `
+      <div class="eg-item">
+        <span>${e}</span>
+        <button class="eg-copy-btn" data-email="${e}" title="Copy"><i class="fas fa-copy"></i></button>
+      </div>
+    `).join('');
+    document.getElementById('eg-output-count')!.textContent = `${count} emails`;
+
+    list.querySelectorAll('.eg-copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const email = (btn as HTMLElement).dataset.email!;
+        await navigator.clipboard.writeText(email);
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1500);
+      });
+    });
+  }
+
+  document.getElementById('eg-generate')?.addEventListener('click', generate);
+
+  document.getElementById('eg-copy-all')?.addEventListener('click', async () => {
+    const items = document.querySelectorAll('.eg-item span');
+    if (!items.length) return;
+    const text = Array.from(items).map(i => i.textContent).join('\n');
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('eg-copy-all')!;
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy All', 2000);
+  });
+
+  document.getElementById('eg-clear')?.addEventListener('click', () => {
+    document.getElementById('eg-list')!.innerHTML = '<div class="eg-placeholder">Click "Generate Emails" to create random email addresses.</div>';
+    document.getElementById('eg-output-count')!.textContent = '0 emails';
+  });
+
+  generate();
+</script>
