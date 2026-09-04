@@ -62,5 +62,19 @@ const siteName = 'Toolarsh';
   <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
 
   <slot />
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+    });
+  </script>
 </body>
 </html>

@@ -28,9 +28,9 @@ const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, d
         <div class="blob blob-3"></div>
       </div>
       <div class="container">
-        <div class="hero-content">
+        <div class="hero-content" data-animate="fade-up">
           <div class="hero-badge">
-            <i class="fas fa-circle-check" style="color:#22C55E"></i>
+            <span class="pulse-dot"></span>
             Free forever &middot; No sign-up required
           </div>
 
@@ -80,7 +80,7 @@ const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, d
     </section>
 
     <!-- ══════════ CATEGORY CARDS ══════════ -->
-    <section class="categories-section">
+    <section class="categories-section" data-animate="fade-up">
       <div class="container">
         <div class="section-header">
           <p class="section-label"><i class="fas fa-th-large"></i> Browse by category</p>
@@ -92,7 +92,7 @@ const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, d
             const meta = categoryMeta[cat];
             const count = tools.filter(t => t.category === cat).length;
             return (
-              <a class="category-card" href={`#${cat}`} style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`}>
+              <a class="category-card" href={`#${cat}`} style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`} aria-label={`${meta.label} - ${meta.description}`}>
                 <div class="cat-card-icon">{meta.emoji}</div>
                 <h3>{meta.label}</h3>
                 <p>{meta.description}</p>
@@ -108,7 +108,7 @@ const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, d
     </section>
 
     <!-- ══════════ ALL TOOLS ══════════ -->
-    <section class="tools-section" id="all-tools">
+    <section class="tools-section" id="all-tools" data-animate="fade-up">
       <div class="container">
         <div class="section-header">
           <p class="section-label"><i class="fas fa-toolbox"></i> All tools</p>
@@ -150,7 +150,7 @@ const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, d
       const meta = categoryMeta[cat];
       const catTools = tools.filter(t => t.category === cat);
       return (
-        <section class="cat-section" id={cat}>
+        <section class="cat-section" id={cat} data-animate="fade-up">
           <div class="container">
             <div class="cat-section-header" style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`}>
               <div class="cat-section-badge">
@@ -168,7 +168,7 @@ const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, d
     })}
 
     <!-- ══════════ STATS BANNER ══════════ -->
-    <section class="stats-banner">
+    <section class="stats-banner" data-animate="fade-up">
       <div class="container">
         <div class="stats-banner-grid">
           <div class="stats-banner-item">

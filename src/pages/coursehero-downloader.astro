@@ -1,0 +1,127 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'coursehero-downloader') || {
+  slug: 'coursehero-downloader',
+  name: 'CourseHero Downloader',
+  description: 'Download supported CourseHero study materials for free.',
+  category: 'media',
+  icon: '🎒',
+  faIcon: 'fa-graduation-cap',
+  color: '#DC2626',
+  title: 'CourseHero Downloader – Download Study Files Free | Toolarsh',
+  metaDescription: 'Download supported CourseHero study materials and documents online for free.',
+  keywords: 'coursehero downloader, download coursehero, free coursehero'
+};
+---
+
+<ToolLayout tool={tool}>
+  <div class="dl-box">
+    <div class="dl-form shadow-sm">
+      <div class="dl-input-group">
+        <i class="fas fa-graduation-cap dl-icon" style="color: #7C3AED"></i>
+        <input type="url" id="ch-url" class="dl-input" placeholder="Paste CourseHero Document link... (e.g. https://www.coursehero.com/file/...)" />
+        <button class="btn btn-primary dl-btn" id="ch-btn" style="background: #7C3AED">
+          <i class="fas fa-file-export"></i> Download Study File
+        </button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="dl-result" id="ch-result" style="display:none">
+      <div class="dl-progress-bar" id="ch-progress-bar" style="display:none">
+        <div class="progress-fill" id="ch-progress-fill"></div>
+      </div>
+      <div class="dl-status" id="ch-status">Decrypting CourseHero study document...</div>
+
+      <div class="doc-card" id="ch-card" style="display:none">
+        <div class="doc-preview">
+          <i class="fas fa-graduation-cap"></i>
+          <span>STUDY FILE</span>
+        </div>
+        <div class="doc-info">
+          <h4>CourseHero Homework & Study Guide</h4>
+          <p class="doc-meta">Pages: 14 &bull; Format: High Res PDF &bull; Unblurred Clean Copy</p>
+          <div class="doc-actions">
+            <button class="btn btn-primary" id="ch-download-btn" style="background: #7C3AED"><i class="fas fa-download"></i> Download Unblurred PDF</button>
+            <button class="btn btn-ghost" id="ch-copy-btn"><i class="fas fa-copy"></i> Copy Link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .dl-box { display: flex; flex-direction: column; gap: 24px; }
+  .dl-form { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+  .dl-input-group { display: flex; align-items: center; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-md); padding: 6px 6px 6px 16px; gap: 12px; transition: border-color .2s; }
+  .dl-input-group:focus-within { border-color: #7C3AED; }
+  .dl-icon { font-size: 20px; }
+  .dl-input { flex: 1; border: none; outline: none; font-size: 15px; background: transparent; }
+  .dl-btn { flex-shrink: 0; }
+
+  .dl-result { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
+  .dl-progress-bar { height: 8px; background: #E2E8F0; border-radius: 100px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #7C3AED, #9333EA); transition: width 0.3s ease; }
+  .dl-status { font-size: 14.5px; font-weight: 600; color: #7C3AED; margin-bottom: 16px; }
+
+  .doc-card { display: flex; gap: 20px; text-align: left; background: var(--bg-soft); padding: 20px; border-radius: var(--radius-md); border: 1.5px solid var(--border); align-items: center; }
+  .doc-preview { width: 120px; height: 140px; background: #F5F3FF; color: #7C3AED; border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 36px; flex-shrink: 0; border: 1px solid #DDD6FE; }
+  .doc-preview span { font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .doc-info h4 { font-size: 17px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
+  .doc-meta { font-size: 13.5px; color: #64748B; margin-bottom: 16px; }
+  .doc-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  @media (max-width: 640px) {
+    .dl-input-group { flex-direction: column; padding: 12px; }
+    .dl-input { width: 100%; margin-bottom: 8px; }
+    .dl-btn { width: 100%; }
+    .doc-card { flex-direction: column; text-align: center; }
+    .doc-preview { width: 100%; height: 120px; }
+    .doc-actions { justify-content: center; }
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('ch-btn');
+  const input = document.getElementById('ch-url') as HTMLInputElement;
+  const result = document.getElementById('ch-result');
+  const status = document.getElementById('ch-status');
+  const progressBar = document.getElementById('ch-progress-bar');
+  const progressFill = document.getElementById('ch-progress-fill');
+  const card = document.getElementById('ch-card');
+
+  btn?.addEventListener('click', () => {
+    const url = input?.value.trim();
+    if (!url) {
+      alert('Please enter a CourseHero document link.');
+      return;
+    }
+    if (result) result.style.display = 'block';
+    if (progressBar) progressBar.style.display = 'block';
+    if (card) card.style.display = 'none';
+
+    let progress = 0;
+    if (status) status.textContent = 'Processing document content...';
+    
+    const interval = setInterval(() => {
+      progress += 25;
+      if (progressFill) progressFill.style.width = progress + '%';
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          if (progressBar) progressBar.style.display = 'none';
+          if (status) status.textContent = '✅ CourseHero Study Material Ready!';
+          if (card) card.style.display = 'flex';
+        }, 300);
+      }
+    }, 200);
+  });
+
+  document.getElementById('ch-download-btn')?.addEventListener('click', () => {
+    alert('Demo Download: CourseHero study document saved!');
+  });
+</script>

@@ -32,6 +32,7 @@ const bg = catBgs[tool.category] ?? 'var(--brand-light)';
   class="tool-card"
   style={`--card-color: ${color}`}
   title={tool.name}
+  aria-label={`${tool.name} - ${tool.description}`}
 >
   <div class="tool-card-icon" style={`background: ${bg}; color: ${color}`}>
     <i class={`fas ${tool.faIcon}`}></i>

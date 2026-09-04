@@ -1,0 +1,484 @@
+---
+import type { Tool } from '../data/tools';
+
+export interface Props {
+  tool: Tool;
+  customFaqs?: Array<{ q: string; a: string }>;
+}
+
+const { tool, customFaqs } = Astro.props;
+
+// Category specific step instructions
+const categorySteps: Record<string, Array<{ step: string; title: string; desc: string; icon: string }>> = {
+  writing: [
+    { step: '01', title: 'Paste your Text', desc: 'Copy and paste your content into the editor or type directly into the text area.', icon: 'fa-paste' },
+    { step: '02', title: 'Choose Options', desc: 'Select your desired options, case style, or translation parameters in real time.', icon: 'fa-sliders' },
+    { step: '03', title: 'Copy or Export', desc: 'Instantly get your transformed text with one-click copy to clipboard.', icon: 'fa-copy' }
+  ],
+  security: [
+    { step: '01', title: 'Select Preferences', desc: 'Customize security parameters like password length, symbols, or address types.', icon: 'fa-gears' },
+    { step: '02', title: 'Generate Instantly', desc: 'Click generate to calculate cryptographically secure IDs, emails, or passwords.', icon: 'fa-shield-halved' },
+    { step: '03', title: 'Copy Safely', desc: 'Copy your generated credential securely to your clipboard.', icon: 'fa-lock' }
+  ],
+  generators: [
+    { step: '01', title: 'Enter Input', desc: 'Input your target text, URL, or business keywords into the form.', icon: 'fa-keyboard' },
+    { step: '02', title: 'Generate Content', desc: 'Click generate to instantly render high quality QR codes, barcodes, or names.', icon: 'fa-wand-magic-sparkles' },
+    { step: '03', title: 'Download or Copy', desc: 'Save as PNG, SVG, or copy the output directly into your projects.', icon: 'fa-download' }
+  ],
+  calculators: [
+    { step: '01', title: 'Enter Values', desc: 'Fill in your numbers, dimensions, interest rate, or parameters.', icon: 'fa-input-numeric' },
+    { step: '02', title: 'Automated Calculation', desc: 'Toolarsh instantly computes accurate results using verified mathematical formulas.', icon: 'fa-calculator' },
+    { step: '03', title: 'Analyze Results', desc: 'View complete breakdowns, total percentages, or visual breakdowns.', icon: 'fa-chart-pie' }
+  ],
+  converters: [
+    { step: '01', title: 'Select Units or File', desc: 'Choose your starting unit/file and select your desired output target.', icon: 'fa-arrows-rotate' },
+    { step: '02', title: 'Real-Time Conversion', desc: 'Conversion calculates dynamically as you adjust values or upload files.', icon: 'fa-bolt' },
+    { step: '03', title: 'Export Result', desc: 'Copy the converted value or download the processed file in high resolution.', icon: 'fa-file-export' }
+  ],
+  media: [
+    { step: '01', title: 'Paste URL', desc: 'Copy the video, document, or audio URL from your browser and paste it above.', icon: 'fa-link' },
+    { step: '02', title: 'Fetch & Preview', desc: 'Click Download to parse the URL and select your preferred quality or format.', icon: 'fa-cloud-arrow-down' },
+    { step: '03', title: 'Save File', desc: 'Download high-definition videos, audio MP3s, or documents directly to your device.', icon: 'fa-circle-down' }
+  ]
+};
+
+const steps = categorySteps[tool.category] || categorySteps.calculators;
+
+// Default FAQs per category if custom FAQs are not passed
+const defaultFaqs: Record<string, Array<{ q: string; a: string }>> = {
+  writing: [
+    { q: `Is the ${tool.name} tool free to use?`, a: `Yes, ${tool.name} is 100% free with unlimited usage and no account required.` },
+    { q: `Is my text private when using ${tool.name}?`, a: `Yes! All text processing takes place locally inside your web browser. Your content is never stored on our servers.` },
+    { q: `Does ${tool.name} work on mobile devices?`, a: `Absolutely. The tool is optimized for smartphones, tablets, laptops, and desktop computers.` }
+  ],
+  security: [
+    { q: `How secure is ${tool.name}?`, a: `Very secure. Generations utilize client-side Web Crypto APIs to ensure high randomness and complete privacy.` },
+    { q: `Do you log or store generated credentials?`, a: `Never. Everything is executed in-browser, meaning we never store or see your generated data.` }
+  ],
+  generators: [
+    { q: `Can I use generated output for commercial projects?`, a: `Yes, all generated output from ${tool.name} is free for both personal and commercial use without attribution.` },
+    { q: `What file formats are supported for download?`, a: `Outputs can be copied directly or saved as standard PNG, SVG, or plain text formats.` }
+  ],
+  calculators: [
+    { q: `How accurate is the ${tool.name}?`, a: `Our formulas follow standardized industry math and physics standards, providing exact and verified results.` },
+    { q: `Can I calculate custom values?`, a: `Yes, input any numeric value into the calculator fields for instant, precise outputs.` }
+  ],
+  converters: [
+    { q: `Are there any limits on file size or conversions?`, a: `There are zero conversion caps. You can perform as many conversions as you need free of charge.` },
+    { q: `Does conversion preserve quality?`, a: `Yes, our conversion algorithms maintain maximum quality and precision.` }
+  ],
+  media: [
+    { q: `Is downloading media free on Toolarsh?`, a: `Yes, downloading media via ${tool.name} is completely free and requires no registration.` },
+    { q: `What quality options are available?`, a: `Depending on the source URL, options range from standard definitions to 1080p Full HD and high-bitrate audio.` }
+  ]
+};
+
+const faqs = customFaqs || defaultFaqs[tool.category] || defaultFaqs.calculators;
+
+// JSON-LD Structured Data
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": `How to use ${tool.name}`,
+  "description": tool.metaDescription,
+  "step": steps.map((s, idx) => ({
+    "@type": "HowToStep",
+    "position": idx + 1,
+    "name": s.title,
+    "text": s.desc
+  }))
+};
+
+const jsonLdFaq = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": f.a
+    }
+  }))
+};
+---
+
+<section class="tool-guide-section" data-animate="fade-up">
+  <!-- Step-by-Step Guide -->
+  <div class="guide-header text-center">
+    <span class="section-badge"><i class="fas fa-compass"></i> Step-by-Step Guide</span>
+    <h2 class="font-display guide-title">How to Use {tool.name}</h2>
+    <p class="guide-sub">Follow these simple steps to get instant, accurate results in seconds.</p>
+  </div>
+
+  <div class="steps-grid">
+    {steps.map(s => (
+      <div class="step-card">
+        <div class="step-num">{s.step}</div>
+        <div class="step-icon"><i class={`fas ${s.icon}`}></i></div>
+        <h3 class="step-title font-display">{s.title}</h3>
+        <p class="step-desc">{s.desc}</p>
+      </div>
+    ))}
+  </div>
+
+  <!-- Demo / Explanation Section -->
+  <div class="demo-box shadow-card">
+    <div class="demo-grid">
+      <div class="demo-info">
+        <span class="demo-tag"><i class="fas fa-lightbulb"></i> About {tool.name}</span>
+        <h3 class="font-display demo-heading">Fast, Powerful & Accurate Solution</h3>
+        <p class="demo-p">
+          The <strong>{tool.name}</strong> on Toolarsh is designed to make your daily tasks effortless. Whether you need fast calculations, file processing, or automated content generation, our browser-native tool operates seamlessly across all modern browsers without server latency.
+        </p>
+        <div class="demo-features-list">
+          <div class="demo-feat-item"><i class="fas fa-check-circle"></i> 100% In-Browser Execution</div>
+          <div class="demo-feat-item"><i class="fas fa-check-circle"></i> Zero Data Logging or Tracking</div>
+          <div class="demo-feat-item"><i class="fas fa-check-circle"></i> Mobile & Desktop Optimized</div>
+        </div>
+      </div>
+      <div class="demo-preview-card">
+        <div class="preview-header">
+          <span class="preview-dot red"></span>
+          <span class="preview-dot yellow"></span>
+          <span class="preview-dot green"></span>
+          <span class="preview-title">Live Demo Preview</span>
+        </div>
+        <div class="preview-body">
+          <div class="preview-row">
+            <span class="p-label">Sample Input:</span>
+            <span class="p-val input-badge">Target Request / Parameter</span>
+          </div>
+          <div class="preview-arrow-down"><i class="fas fa-arrow-down-long"></i> Processing</div>
+          <div class="preview-row output-row">
+            <span class="p-label">Instant Result:</span>
+            <span class="p-val output-badge"><i class="fas fa-circle-check"></i> Processed Output Sample</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Features Grid -->
+  <div class="features-header text-center">
+    <h2 class="font-display guide-title">Why Choose Toolarsh {tool.name}?</h2>
+    <p class="guide-sub">Engineered for maximum performance, privacy, and convenience.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feat-icon-wrap blue"><i class="fas fa-bolt"></i></div>
+      <h4>Lightning Fast</h4>
+      <p>Processes input in real-time right inside your web browser with zero server delay.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon-wrap green"><i class="fas fa-shield-halved"></i></div>
+      <h4>100% Secure & Private</h4>
+      <p>Your inputs and files are never stored or transmitted to external databases.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon-wrap purple"><i class="fas fa-mobile-screen-button"></i></div>
+      <h4>Responsive & Accessible</h4>
+      <p>Works smoothly on modern mobile phones, tablets, laptops, and desktop computers.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon-wrap orange"><i class="fas fa-hand-holding-dollar"></i></div>
+      <h4>Always Free</h4>
+      <p>No subscriptions, hidden paywalls, or credit card requirements needed—ever.</p>
+    </div>
+  </div>
+
+  <!-- FAQ Accordion -->
+  <div class="faq-container">
+    <div class="text-center" style="margin-bottom: 28px;">
+      <span class="section-badge"><i class="fas fa-circle-question"></i> FAQ</span>
+      <h2 class="font-display guide-title">Frequently Asked Questions</h2>
+    </div>
+
+    <div class="tool-faq-list">
+      {faqs.map((f, i) => (
+        <div class="faq-item" id={`tool-faq-${i}`}>
+          <button class="faq-question" aria-expanded="false">
+            <span>{f.q}</span>
+            <div class="faq-icon"><i class="fas fa-plus"></i></div>
+          </button>
+          <div class="faq-answer">
+            <p>{f.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- JSON-LD Structured Data for SEO -->
+<script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)}></script>
+<script type="application/ld+json" set:html={JSON.stringify(jsonLdFaq)}></script>
+
+<style>
+  .tool-guide-section {
+    margin-top: 48px;
+    padding-top: 40px;
+    border-top: 1.5px dashed var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+  .text-center { text-align: center; }
+  .section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand);
+    background: var(--brand-light);
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+  }
+  .guide-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    color: #0F172A;
+    margin-bottom: 8px;
+  }
+  .guide-sub {
+    font-size: 15px;
+    color: #64748B;
+  }
+
+  /* Steps Grid */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .step-card {
+    background: var(--bg-soft);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    position: relative;
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .step-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+  }
+  .step-num {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 24px;
+    font-weight: 900;
+    color: #CBD5E1;
+    font-family: 'Outfit', sans-serif;
+  }
+  .step-icon {
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--brand);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .step-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 8px;
+  }
+  .step-desc {
+    font-size: 13.5px;
+    color: #64748B;
+    line-height: 1.55;
+  }
+
+  /* Demo Box */
+  .demo-box {
+    background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+  }
+  .demo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+  .demo-tag {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2563EB;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .demo-heading {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0F172A;
+    margin-bottom: 12px;
+  }
+  .demo-p {
+    font-size: 14.5px;
+    color: #475569;
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+  .demo-features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .demo-feat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1E293B;
+  }
+  .demo-feat-item i { color: #22C55E; }
+
+  /* Demo Preview Card */
+  .demo-preview-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .preview-header {
+    background: #1E293B;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .preview-dot.red { background: #EF4444; }
+  .preview-dot.yellow { background: #F59E0B; }
+  .preview-dot.green { background: #10B981; }
+  .preview-title { font-size: 12px; font-weight: 600; color: #94A3B8; margin-left: 6px; }
+  .preview-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .preview-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .p-label { font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; }
+  .input-badge {
+    background: #F1F5F9;
+    color: #334155;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    font-family: monospace;
+    border: 1px solid #E2E8F0;
+  }
+  .preview-arrow-down {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .output-badge {
+    background: #ECFDF5;
+    color: #065F46;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #A7F3D0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Features Grid */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .feature-item {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    transition: transform .2s ease;
+  }
+  .feature-item:hover { transform: translateY(-3px); }
+  .feat-icon-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .feat-icon-wrap.blue { background: #EFF6FF; color: #2563EB; }
+  .feat-icon-wrap.green { background: #ECFDF5; color: #059669; }
+  .feat-icon-wrap.purple { background: #F5F3FF; color: #7C3AED; }
+  .feat-icon-wrap.orange { background: #FFF7ED; color: #EA580C; }
+  .feature-item h4 { font-size: 15px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
+  .feature-item p { font-size: 13px; color: #64748B; line-height: 1.5; }
+
+  /* Tool FAQ */
+  .tool-faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  @media (max-width: 900px) {
+    .steps-grid { grid-template-columns: 1fr; }
+    .demo-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .features-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.tool-faq-list .faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item?.classList.contains('open');
+
+      document.querySelectorAll('.tool-faq-list .faq-item').forEach(el => {
+        el.classList.remove('open');
+        el.querySelector('.faq-question')?.setAttribute('aria-expanded', 'false');
+      });
+
+      if (!isOpen) {
+        item?.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+</script>

@@ -1,0 +1,140 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools } from '../data/tools';
+
+const tool = tools.find(t => t.slug === 'instagram-downloader') || {
+  slug: 'instagram-downloader',
+  name: 'Instagram Downloader',
+  description: 'Download Instagram reels, videos, photos, and stories.',
+  category: 'media',
+  icon: '📱',
+  faIcon: 'fa-instagram',
+  color: '#DC2626',
+  title: 'Instagram Downloader – Reels, Photos & Videos | Toolarsh',
+  metaDescription: 'Download Instagram reels, videos, photos, stories, and profile pictures for free.',
+  keywords: 'instagram downloader, instagram reel downloader, download instagram'
+};
+---
+
+<ToolLayout tool={tool}>
+  <div class="dl-box">
+    <div class="dl-form shadow-sm">
+      <div class="dl-input-group">
+        <i class="fab fa-instagram dl-icon" style="color: #E1306C"></i>
+        <input type="url" id="ig-url" class="dl-input" placeholder="Paste Instagram link here... (Reels, Post, Story, or Video)" />
+        <button class="btn btn-primary dl-btn" id="ig-btn" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
+          <i class="fas fa-download"></i> Download IG Media
+        </button>
+      </div>
+
+      <div class="ig-type-tabs">
+        <button class="ig-type-btn active" data-type="reel"><i class="fas fa-video"></i> Reels</button>
+        <button class="ig-type-btn" data-type="post"><i class="fas fa-image"></i> Photos / Carousel</button>
+        <button class="ig-type-btn" data-type="story"><i class="fas fa-circle-notch"></i> Stories</button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="dl-result" id="ig-result" style="display:none">
+      <div class="dl-progress-bar" id="ig-progress-bar" style="display:none">
+        <div class="progress-fill" id="ig-progress-fill"></div>
+      </div>
+      <div class="dl-status" id="ig-status">Extracting Instagram media stream...</div>
+
+      <div class="ig-card" id="ig-card" style="display:none">
+        <div class="ig-preview">
+          <i class="fab fa-instagram"></i>
+          <span>Full HD Reel</span>
+        </div>
+        <div class="ig-info">
+          <h4>Instagram Reel Video (Full HD 1080p)</h4>
+          <p class="ig-meta">Audio Included &bull; High Resolution &bull; No Watermark</p>
+          <div class="ig-actions">
+            <button class="btn btn-primary" id="ig-download-btn"><i class="fas fa-download"></i> Download Video (MP4)</button>
+            <button class="btn btn-ghost" id="ig-audio-btn"><i class="fas fa-music"></i> Extract Audio Only</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .dl-box { display: flex; flex-direction: column; gap: 24px; }
+  .dl-form { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+  .dl-input-group { display: flex; align-items: center; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-md); padding: 6px 6px 6px 16px; gap: 12px; transition: border-color .2s; }
+  .dl-input-group:focus-within { border-color: #E1306C; }
+  .dl-icon { font-size: 20px; }
+  .dl-input { flex: 1; border: none; outline: none; font-size: 15px; background: transparent; }
+  .dl-btn { flex-shrink: 0; border: none; }
+
+  .ig-type-tabs { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .ig-type-btn { padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: #fff; color: var(--txt-muted); cursor: pointer; transition: all .15s; }
+  .ig-type-btn.active { background: #FDF2F8; color: #DB2777; border-color: #F472B6; }
+
+  .dl-result { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
+  .dl-progress-bar { height: 8px; background: #E2E8F0; border-radius: 100px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); transition: width 0.3s ease; }
+  .dl-status { font-size: 14.5px; font-weight: 600; color: #DB2777; margin-bottom: 16px; }
+
+  .ig-card { display: flex; gap: 20px; text-align: left; background: var(--bg-soft); padding: 20px; border-radius: var(--radius-md); border: 1.5px solid var(--border); align-items: center; }
+  .ig-preview { width: 120px; height: 160px; background: linear-gradient(135deg, #FDF2F8, #FCE7F3); color: #DB2777; border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 40px; flex-shrink: 0; }
+  .ig-preview span { font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .ig-info h4 { font-size: 17px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
+  .ig-meta { font-size: 13.5px; color: #64748B; margin-bottom: 16px; }
+  .ig-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  @media (max-width: 640px) {
+    .dl-input-group { flex-direction: column; padding: 12px; }
+    .dl-input { width: 100%; margin-bottom: 8px; }
+    .dl-btn { width: 100%; }
+    .ig-card { flex-direction: column; text-align: center; }
+    .ig-preview { width: 100%; height: 140px; }
+    .ig-actions { justify-content: center; }
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('ig-btn');
+  const input = document.getElementById('ig-url') as HTMLInputElement;
+  const result = document.getElementById('ig-result');
+  const status = document.getElementById('ig-status');
+  const progressBar = document.getElementById('ig-progress-bar');
+  const progressFill = document.getElementById('ig-progress-fill');
+  const card = document.getElementById('ig-card');
+
+  btn?.addEventListener('click', () => {
+    const url = input?.value.trim();
+    if (!url) {
+      alert('Please enter an Instagram post or reel link.');
+      return;
+    }
+    if (result) result.style.display = 'block';
+    if (progressBar) progressBar.style.display = 'block';
+    if (card) card.style.display = 'none';
+
+    let progress = 0;
+    if (status) status.textContent = 'Connecting to Instagram servers...';
+    
+    const interval = setInterval(() => {
+      progress += 25;
+      if (progressFill) progressFill.style.width = progress + '%';
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          if (progressBar) progressBar.style.display = 'none';
+          if (status) status.textContent = '✅ Instagram Media ready!';
+          if (card) card.style.display = 'flex';
+        }, 300);
+      }
+    }, 200);
+  });
+
+  document.getElementById('ig-download-btn')?.addEventListener('click', () => {
+    alert('Demo Download: High Quality Instagram Reel video download started!');
+  });
+  document.getElementById('ig-audio-btn')?.addEventListener('click', () => {
+    alert('Demo Download: Reel Audio MP3 file download started!');
+  });
+</script>
