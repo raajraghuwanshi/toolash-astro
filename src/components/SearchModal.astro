@@ -12,96 +12,55 @@ const toolsJson = JSON.stringify(tools.map(t => ({
 })));
 
 const catColors: Record<string, string> = {
-  writing: '#7C3AED',
+  writing: '#EA580C',
   security: '#059669',
-  generators: '#EA580C',
-  calculators: '#2563EB',
-  converters: '#0891B2',
-  media: '#DC2626',
+  generators: '#D97706',
+  calculators: '#0D9488',
+  converters: '#E11D48',
+  media: '#F97316',
 };
 const catBgs: Record<string, string> = {
-  writing: '#F5F3FF',
-  security: '#ECFDF5',
-  generators: '#FFF7ED',
-  calculators: '#EFF6FF',
-  converters: '#ECFEFF',
-  media: '#FEF2F2',
+  writing: 'rgba(234, 88, 12, 0.1)',
+  security: 'rgba(5, 150, 105, 0.1)',
+  generators: 'rgba(217, 119, 6, 0.1)',
+  calculators: 'rgba(13, 148, 136, 0.1)',
+  converters: 'rgba(225, 29, 72, 0.1)',
+  media: 'rgba(249, 115, 22, 0.1)',
 };
 ---
 
-<!-- Search Overlay -->
+<!-- Search Overlay Modal -->
 <div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Search tools">
   <div class="search-modal">
-    <div class="search-modal-input">
-      <i class="fas fa-search search-icon"></i>
+    <div class="search-modal-header">
+      <i class="fas fa-magnifying-glass search-icon" aria-hidden="true"></i>
       <input
         type="text"
         id="search-input"
-        placeholder="Search 35+ free tools (e.g. Word Counter, QR Code, BMI)..."
+        placeholder="Search 35+ free tools (e.g. Word Counter, QR Code, EMI)..."
         autocomplete="off"
         spellcheck="false"
+        aria-label="Search input"
       />
-      <button id="search-clear-input" class="search-clear-btn" title="Clear input" style="display:none;">
+      <button id="search-clear-input" class="search-clear-btn" title="Clear input" style="display:none;" aria-label="Clear input">
         <i class="fas fa-xmark"></i>
       </button>
-      <button id="search-close-btn" class="search-esc-btn">
+      <button id="search-close-btn" class="search-esc-btn" aria-label="Close search">
         ESC
       </button>
     </div>
 
-    <div class="search-modal-results" id="search-results">
+    <div class="search-modal-results" id="search-results" role="listbox" aria-label="Search results">
       <!-- Results or popular items rendered via JS -->
     </div>
 
     <div class="search-modal-footer">
-      <span><kbd>↑</kbd> <kbd>↓</kbd> Navigate</span>
-      <span><kbd>↵</kbd> Select</span>
-      <span><kbd>ESC</kbd> Close</span>
+      <div class="search-tip"><kbd>↑</kbd> <kbd>↓</kbd> <span>to navigate</span></div>
+      <div class="search-tip"><kbd>↵</kbd> <span>to select</span></div>
+      <div class="search-tip"><kbd>ESC</kbd> <span>to close</span></div>
     </div>
   </div>
 </div>
-
-<style>
-  .search-icon { font-size: 16px; color: var(--txt-muted); flex-shrink: 0; }
-  .search-clear-btn {
-    border: none;
-    background: transparent;
-    color: var(--txt-muted);
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  .search-clear-btn:hover { color: var(--txt); background: var(--bg-soft); }
-  .search-esc-btn {
-    color: var(--txt-muted);
-    padding: 3px 8px;
-    border-radius: 6px;
-    background: var(--bg-soft);
-    font-size: 11px;
-    font-weight: 700;
-    border: 1px solid var(--border);
-    cursor: pointer;
-  }
-  .search-modal-footer {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 20px;
-    background: var(--bg-soft);
-    border-top: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--txt-muted);
-  }
-  .search-modal-footer kbd {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1px 5px;
-    font-size: 10px;
-    font-family: inherit;
-  }
-</style>
 
 <script define:vars={{ toolsJson, catColors, catBgs }}>
   const tools = JSON.parse(toolsJson);
@@ -133,6 +92,7 @@ const catBgs: Record<string, string> = {
 
   // Expose globally so buttons anywhere can trigger search easily
   window.openSearchModal = openSearch;
+  window.closeSearchModal = closeSearch;
 
   overlay?.addEventListener('click', (e) => {
     if (e.target === overlay) closeSearch();
@@ -171,8 +131,8 @@ const catBgs: Record<string, string> = {
     if (matched.length === 0) {
       if (results) {
         results.innerHTML = `
-          <div class="search-empty" style="text-align:center; padding:36px 20px; color:var(--txt-muted); font-size:14px;">
-            <i class="fas fa-magnifying-glass" style="font-size:32px; opacity:.3; display:block; margin-bottom:10px;"></i>
+          <div style="text-align:center; padding:36px 20px; color:var(--txt-dim); font-size:14px;">
+            <i class="fas fa-magnifying-glass" style="font-size:28px; opacity:.35; display:block; margin-bottom:10px;"></i>
             No tools found for "<strong>${escapeHtml(query)}</strong>".
           </div>`;
       }
@@ -186,23 +146,23 @@ const catBgs: Record<string, string> = {
   }
 
   function renderItems(items, label) {
-    const color = (cat) => catColors[cat] || '#2563EB';
-    const bg = (cat) => catBgs[cat] || '#EFF6FF';
+    const color = (cat) => catColors[cat] || '#059669';
+    const bg = (cat) => catBgs[cat] || 'rgba(5, 150, 105, 0.1)';
 
     if (!results) return;
 
     results.innerHTML = `
-      <div style="padding: 10px 12px 6px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--txt-muted);">${label}</div>
+      <div style="padding: 8px 12px 6px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--txt-dim); font-family: 'JetBrains Mono', monospace;">${label}</div>
       ${items.map((t, index) => `
         <a class="search-result-item" href="/${t.slug}" data-index="${index}" aria-label="${t.name} - ${t.description}">
           <div class="search-result-icon" style="background: ${bg(t.category)}; color: ${color(t.category)}">
             <i class="fas ${t.faIcon}"></i>
           </div>
           <div style="flex:1; min-width:0;">
-            <strong style="display:block; font-size:14px; color:var(--txt);">${t.name}</strong>
-            <span style="display:block; font-size:12px; color:var(--txt-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.description}</span>
+            <strong>${t.name}</strong>
+            <span>${t.description}</span>
           </div>
-          <i class="fas fa-arrow-right" style="font-size:12px; color:var(--txt-dim); margin-left:auto;"></i>
+          <i class="fas fa-arrow-right search-arrow"></i>
         </a>
       `).join('')}
     `;

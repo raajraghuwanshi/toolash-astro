@@ -1,376 +1,266 @@
 ---
 import { tools } from '../data/tools';
 
-const navCategories = [
-  {
-    label: 'Writing',
-    icon: 'fa-pen-nib',
-    href: '/#writing',
-    color: '#7C3AED',
-    items: tools.filter(t => t.category === 'writing').slice(0, 6),
-  },
-  {
-    label: 'Security',
-    icon: 'fa-shield-halved',
-    href: '/#security',
-    color: '#059669',
-    items: tools.filter(t => t.category === 'security').slice(0, 4),
-  },
-  {
-    label: 'Generators',
-    icon: 'fa-bolt',
-    href: '/#generators',
-    color: '#EA580C',
-    items: tools.filter(t => t.category === 'generators').slice(0, 6),
-  },
-  {
-    label: 'Calculators',
-    icon: 'fa-calculator',
-    href: '/#calculators',
-    color: '#2563EB',
-    items: tools.filter(t => t.category === 'calculators').slice(0, 6),
-  },
-  {
-    label: 'Converters',
-    icon: 'fa-arrows-rotate',
-    href: '/#converters',
-    color: '#0891B2',
-    items: tools.filter(t => t.category === 'converters').slice(0, 5),
-  },
-  {
-    label: 'Media',
-    icon: 'fa-photo-film',
-    href: '/#media',
-    color: '#DC2626',
-    items: tools.filter(t => t.category === 'media').slice(0, 5),
-  },
+const cats = [
+  { label: 'Writing',     href: '/#writing',     count: tools.filter(t=>t.category==='writing').length,     items: tools.filter(t=>t.category==='writing').slice(0,5) },
+  { label: 'Security',    href: '/#security',    count: tools.filter(t=>t.category==='security').length,    items: tools.filter(t=>t.category==='security').slice(0,4) },
+  { label: 'Generators',  href: '/#generators',  count: tools.filter(t=>t.category==='generators').length,  items: tools.filter(t=>t.category==='generators').slice(0,5) },
+  { label: 'Calculators', href: '/#calculators', count: tools.filter(t=>t.category==='calculators').length, items: tools.filter(t=>t.category==='calculators').slice(0,5) },
+  { label: 'Converters',  href: '/#converters',  count: tools.filter(t=>t.category==='converters').length,  items: tools.filter(t=>t.category==='converters').slice(0,4) },
+  { label: 'Media',       href: '/#media',       count: tools.filter(t=>t.category==='media').length,       items: tools.filter(t=>t.category==='media').slice(0,4) },
 ];
 ---
 
 <style>
-  .navbar {
-    position: sticky;
-    top: 0;
-    z-index: 200;
-    background: rgba(255, 255, 255, 0.95);
+  .nav {
+    position: sticky; top: 0; z-index: 200;
+    padding: 10px 0;
+    background: var(--surface);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--border);
+    transition: border-color .2s, background-color .25s;
   }
+  .nav.scrolled {
+    border-bottom-color: var(--border-mid);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+  html[data-theme="dark"] .nav.scrolled {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
   .nav-inner {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    height: 64px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
+    display: flex; align-items: center;
+    height: 40px;
+    max-width: 1160px; margin: 0 auto; padding: 0 28px;
+    gap: 0;
   }
-  
-  /* Modern Professional Logo */
+
+  /* Logo */
   .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    color: #0F172A;
-    text-decoration: none;
-    margin-right: 16px;
-    flex-shrink: 0;
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none; margin-right: 24px; flex-shrink: 0;
   }
-  .nav-logo .logo-icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  .nav-logo-icon {
+    width: 28px; height: 28px;
+    background: var(--brand);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #fff;
+    box-shadow: 0 2px 10px rgba(5, 150, 105, 0.35);
+    transition: transform .2s ease;
   }
-  .nav-logo span { letter-spacing: -0.5px; }
-  .nav-logo .dot { color: #2563EB; }
+  .nav-logo:hover .nav-logo-icon { transform: scale(1.05); }
+  .nav-logo-text {
+    font-size: 16px; font-weight: 800;
+    color: var(--txt); letter-spacing: -.4px;
+  }
+  .nav-logo-text span { color: var(--brand); }
 
-  /* Desktop nav items */
-  .nav-items {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex: 1;
-    list-style: none;
-  }
+  /* Nav links */
+  .nav-links { display: flex; align-items: center; gap: 2px; list-style: none; flex: 1; }
   .nav-item { position: relative; }
-  .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #475569;
-    border-radius: 6px;
-    transition: color 0.15s ease, background 0.15s ease;
-    cursor: pointer;
+  .nav-btn {
+    padding: 6px 12px;
+    font-size: 13.5px; font-weight: 500;
+    color: var(--txt-muted);
+    border-radius: var(--radius-md);
+    transition: color .15s, background .15s;
+    cursor: pointer; background: none; border: none;
+    font-family: inherit; display: flex; align-items: center; gap: 5px;
   }
-  .nav-link i.cat-icon {
-    font-size: 13px;
-    opacity: 0.85;
-  }
-  .nav-link:hover { color: #0F172A; background: #F1F5F9; }
-  .nav-link .arrow {
-    font-size: 10px;
-    color: #94A3B8;
-    transition: transform 0.2s ease;
-  }
-  .nav-item:hover .arrow { transform: rotate(180deg); color: #2563EB; }
+  .nav-btn:hover { color: var(--txt); background: var(--surface-3); }
+  .nav-btn .ch { font-size: 8px; transition: transform .2s; color: var(--txt-dim); }
+  .nav-item:hover .ch { transform: rotate(180deg); color: var(--brand); }
 
-  /* Professional Mega Dropdown */
-  .dropdown {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    padding: 12px;
-    min-width: 250px;
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+  /* Dropdown (Glassmorphic) */
+  .nav-drop {
+    position: absolute; top: calc(100% + 8px); left: 0;
+    background: var(--surface-2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-lg);
+    padding: 8px;
+    min-width: 220px;
+    box-shadow: var(--shadow-lg), var(--glass-inner-glow);
+    opacity: 0; visibility: hidden; pointer-events: none;
     transform: translateY(-6px);
-    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    transition: opacity .18s ease, transform .18s ease, visibility .18s;
     z-index: 300;
   }
-  .nav-item:hover .dropdown,
-  .nav-item:focus-within .dropdown {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateY(0);
+  .nav-item:hover .nav-drop,
+  .nav-item:focus-within .nav-drop {
+    opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0);
   }
-  .dropdown-header {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    padding: 4px 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .drop-hd {
+    font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--txt-dim); padding: 4px 10px 6px; font-family: 'JetBrains Mono', monospace;
   }
-  .dropdown-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: #334155;
-    transition: background 0.12s ease, color 0.12s ease;
+  .drop-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; border-radius: var(--radius-md);
+    font-size: 13px; color: var(--txt-muted);
+    transition: background .12s, color .12s, transform .12s;
   }
-  .dropdown-link:hover {
-    background: #F8FAFC;
-    color: #0F172A;
-  }
-  .dropdown-link i {
-    font-size: 13px;
-    width: 18px;
-    text-align: center;
-  }
-  .dropdown-view-all {
-    margin-top: 6px;
-    padding-top: 8px;
-    border-top: 1px solid #F1F5F9;
-    font-weight: 600;
-    color: #2563EB !important;
-  }
-  .dropdown-view-all:hover {
-    background: #EFF6FF !important;
-  }
+  .drop-link i { font-size: 11px; width: 16px; text-align: center; opacity: .8; }
+  .drop-link:hover { background: var(--surface-3); color: var(--txt); transform: translateX(2px); }
+  .drop-sep { height: 1px; background: var(--border); margin: 5px 0; }
+  .drop-all { color: var(--brand) !important; font-size: 12px; font-weight: 600; }
+  .drop-all:hover { background: var(--brand-soft) !important; }
 
-  /* Right side */
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-left: auto;
-  }
-  .search-trigger {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 14px;
-    border-radius: 8px;
-    border: 1px solid #E2E8F0;
-    background: #F8FAFC;
-    font-size: 13.5px;
-    color: #64748B;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .search-trigger:hover {
-    border-color: #CBD5E1;
-    color: #0F172A;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  }
-  .search-trigger i { font-size: 13px; color: #94A3B8; }
-  .search-trigger kbd {
-    font-size: 11px;
-    background: #fff;
-    border: 1px solid #CBD5E1;
-    border-radius: 4px;
-    padding: 1px 5px;
+  /* Right */
+  .nav-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .nav-search-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-size: 13px; color: var(--txt-muted);
+    font-weight: 500;
+    cursor: pointer; transition: all .15s ease;
     font-family: inherit;
-    color: #64748B;
+    box-shadow: var(--shadow-sm);
   }
-  .pro-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #EFF6FF;
-    color: #1D4ED8;
-    border: 1px solid #DBEAFE;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 100px;
-    white-space: nowrap;
+  .nav-search-btn:hover {
+    border-color: var(--brand);
+    color: var(--txt);
+    background: var(--surface-3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 10px rgba(5, 150, 105, 0.12);
+  }
+  .nav-search-btn i { font-size: 12px; color: var(--brand); }
+  .nav-dot {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; color: var(--txt-dim); font-weight: 500;
+    border: 1px solid var(--border); border-radius: 100px;
+    padding: 4px 12px; white-space: nowrap;
+    background: var(--surface-2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   /* Hamburger */
-  .hamburger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    padding: 8px;
-    cursor: pointer;
-    margin-left: auto;
+  .ham {
+    display: none; flex-direction: column; gap: 4px; padding: 6px;
+    cursor: pointer; background: none; border: none; margin-left: auto;
   }
-  .hamburger span {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: #0F172A;
-    border-radius: 2px;
-    transition: all 0.2s;
-  }
+  .ham span { display: block; width: 18px; height: 1.8px; background: var(--txt); transition: all .2s; border-radius: 2px; }
 
-  /* Mobile menu */
-  .mobile-menu {
+  /* Mobile */
+  .mob {
     display: none;
-    background: #ffffff;
-    border-top: 1px solid #E2E8F0;
-    padding: 16px;
-    max-height: calc(100vh - 64px);
+    background: var(--surface-2);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid var(--border);
+    padding: 16px 20px 24px;
+    max-height: calc(100vh - 58px);
     overflow-y: auto;
+    box-shadow: var(--shadow-lg);
   }
-  .mobile-menu.open { display: block; }
-  .mobile-cat-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #64748B;
-    padding: 12px 0 6px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .mob.open { display: block; }
+  .mob-actions {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px; margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
   }
-  .mobile-cat-title:first-child { padding-top: 0; }
-  .mobile-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    font-size: 14px;
-    font-weight: 500;
-    color: #1E293B;
-    border-bottom: 1px solid #F1F5F9;
+  .mob-cat {
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--txt-dim); padding: 12px 0 6px; font-family: 'JetBrains Mono', monospace;
   }
-  .mobile-link:last-child { border-bottom: none; }
+  .mob-cat:first-child { padding-top: 0; }
+  .mob-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0; font-size: 13.5px; color: var(--txt-muted);
+    border-bottom: 1px solid var(--border);
+    transition: color .12s;
+  }
+  .mob-link:hover { color: var(--txt); }
+  .mob-link:last-child { border-bottom: none; }
+  .mob-link i { font-size: 12px; opacity: .7; }
 
   @media (max-width: 900px) {
-    .nav-items, .pro-pill, .search-trigger { display: none; }
-    .hamburger { display: flex; }
-    .nav-inner { gap: 0; }
+    .nav-links, .nav-right { display: none; }
+    .ham { display: flex; }
   }
 </style>
 
-<nav class="navbar" id="main-navbar">
+<nav class="nav" id="main-navbar" aria-label="Main navigation">
   <div class="nav-inner">
-    <!-- Logo -->
-    <a href="/" class="nav-logo">
-      <div class="logo-icon">
-        <i class="fas fa-layer-group"></i>
-      </div>
-      <span>Toolarsh<span class="dot">.</span></span>
+    <a href="/" class="nav-logo" aria-label="Toolarsh — Free Online Tools">
+      <div class="nav-logo-icon" aria-hidden="true"><i class="fas fa-layer-group"></i></div>
+      <span class="nav-logo-text">Toolarsh<span>.</span></span>
     </a>
 
-    <!-- Desktop nav -->
-    <ul class="nav-items">
-      {navCategories.map(cat => (
-        <li class="nav-item">
-          <button class="nav-link">
-            <i class={`fas ${cat.icon} cat-icon`} style={`color: ${cat.color}`}></i>
-            <span>{cat.label}</span>
-            <i class="fas fa-chevron-down arrow"></i>
+    <ul class="nav-links" role="menubar">
+      {cats.map(cat => (
+        <li class="nav-item" role="none">
+          <button class="nav-btn" role="menuitem" aria-haspopup="true" aria-expanded="false" aria-label={`${cat.label} tools`}>
+            {cat.label}
+            <i class="fas fa-chevron-down ch" aria-hidden="true"></i>
           </button>
-          <div class="dropdown">
-            <div class="dropdown-header" style={`color: ${cat.color}`}>
-              <i class={`fas ${cat.icon}`}></i> {cat.label}
-            </div>
+          <div class="nav-drop" role="menu" aria-label={`${cat.label} submenu`}>
+            <div class="drop-hd">{cat.label} · {cat.count} tools</div>
             {cat.items.map(tool => (
-              <a class="dropdown-link" href={`/${tool.slug}`}>
-                <i class={`fas ${tool.faIcon}`} style={`color: ${cat.color}`}></i>
+              <a class="drop-link" href={`/${tool.slug}`} role="menuitem">
+                <i class={`fas ${tool.faIcon}`} aria-hidden="true"></i>
                 {tool.name}
               </a>
             ))}
-            <a class="dropdown-link dropdown-view-all" href={cat.href}>
-              <i class="fas fa-arrow-right" style={`color: ${cat.color}`}></i>
-              View all tools
+            <div class="drop-sep" aria-hidden="true"></div>
+            <a class="drop-link drop-all" href={cat.href} role="menuitem">
+              View all {cat.label.toLowerCase()} →
             </a>
           </div>
         </li>
       ))}
     </ul>
 
-    <!-- Right actions -->
     <div class="nav-right">
-      <button class="search-trigger" id="search-open-btn" aria-label="Search tools">
-        <i class="fas fa-search"></i>
-        <span>Search tools…</span>
-        <kbd>Ctrl K</kbd>
+      <button class="nav-search-btn" id="search-open-btn" aria-label="Search tools (Ctrl+K)">
+        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+        <span>Search tools</span>
+        <kbd aria-label="Keyboard shortcut Control K">⌘K</kbd>
       </button>
-      <span class="pro-pill">
-        <span class="pulse-dot"></span> 100% Free
-      </span>
+
+      <!-- Light / Dark Theme Toggle Button -->
+      <button class="theme-toggle-btn" id="theme-toggle-desktop" aria-label="Toggle dark and light theme" title="Switch theme">
+        <i class="fas fa-moon" aria-hidden="true"></i>
+        <i class="fas fa-sun" aria-hidden="true"></i>
+      </button>
+
+      <div class="nav-dot">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        Free Forever
+      </div>
     </div>
 
-    <!-- Hamburger -->
-    <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+    <button class="ham" id="hamburger-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 
-  <!-- Mobile menu -->
-  <div class="mobile-menu" id="mobile-menu">
-    {navCategories.map(cat => (
+  <div class="mob" id="mobile-menu" role="navigation" aria-label="Mobile navigation">
+    <div class="mob-actions">
+      <button class="nav-search-btn" id="mob-search-btn" style="flex:1; justify-content:center;">
+        <i class="fas fa-magnifying-glass"></i> Search 35+ tools
+      </button>
+      <button class="theme-toggle-btn" id="theme-toggle-mobile" aria-label="Toggle theme" style="margin-left: 8px;">
+        <i class="fas fa-moon" aria-hidden="true"></i>
+        <i class="fas fa-sun" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    {cats.map(cat => (
       <>
-        <div class="mobile-cat-title" style={`color: ${cat.color}`}>
-          <i class={`fas ${cat.icon}`}></i> {cat.label}
-        </div>
+        <div class="mob-cat">{cat.label}</div>
         {cat.items.map(tool => (
-          <a class="mobile-link" href={`/${tool.slug}`}>
-            <i class={`fas ${tool.faIcon}`} style={`color: ${cat.color}`}></i>
+          <a class="mob-link" href={`/${tool.slug}`}>
+            <i class={`fas ${tool.faIcon}`} aria-hidden="true"></i>
             {tool.name}
           </a>
         ))}
@@ -380,34 +270,49 @@ const navCategories = [
 </nav>
 
 <script>
-  // Hamburger toggle
-  document.getElementById('hamburger-btn')?.addEventListener('click', () => {
-    document.getElementById('mobile-menu')?.classList.toggle('open');
+  // Navbar scroll glass effect
+  const nav = document.getElementById('main-navbar');
+  window.addEventListener('scroll', () => nav?.classList.toggle('scrolled', window.scrollY > 4), { passive: true });
+
+  // Mobile menu
+  const ham = document.getElementById('hamburger-btn');
+  const mob = document.getElementById('mobile-menu');
+  ham?.addEventListener('click', () => {
+    const o = mob?.classList.toggle('open');
+    ham.setAttribute('aria-expanded', String(o));
   });
 
-  // Search open
-  document.getElementById('search-open-btn')?.addEventListener('click', () => {
+  // Search openers
+  const openSearch = () => {
     if (typeof (window as any).openSearchModal === 'function') {
       (window as any).openSearchModal();
     } else {
       document.getElementById('search-overlay')?.classList.add('open');
       (document.getElementById('search-input') as HTMLInputElement)?.focus();
     }
+  };
+  document.getElementById('search-open-btn')?.addEventListener('click', openSearch);
+  document.getElementById('mob-search-btn')?.addEventListener('click', openSearch);
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    if (e.key === 'Escape') document.getElementById('search-overlay')?.classList.remove('open');
   });
 
-  // Keyboard shortcut Ctrl+K / Cmd+K
-  document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      if (typeof (window as any).openSearchModal === 'function') {
-        (window as any).openSearchModal();
-      } else {
-        document.getElementById('search-overlay')?.classList.add('open');
-        (document.getElementById('search-input') as HTMLInputElement)?.focus();
-      }
+  // Theme toggle function
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    if (next === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-    if (e.key === 'Escape') {
-      document.getElementById('search-overlay')?.classList.remove('open');
-    }
-  });
+    try {
+      localStorage.setItem('theme', next);
+    } catch (e) {}
+  }
+
+  document.getElementById('theme-toggle-desktop')?.addEventListener('click', toggleTheme);
+  document.getElementById('theme-toggle-mobile')?.addEventListener('click', toggleTheme);
 </script>

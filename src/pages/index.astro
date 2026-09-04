@@ -8,98 +8,78 @@ import { tools, categoryMeta, type Category } from '../data/tools';
 
 const categories: Category[] = ['writing', 'security', 'generators', 'calculators', 'converters', 'media'];
 
-const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, description: t.description, category: t.category })));
+const catIcons: Record<string, string> = {
+  writing: 'fa-pen-nib', security: 'fa-shield-halved',
+  generators: 'fa-bolt', calculators: 'fa-calculator',
+  converters: 'fa-arrows-rotate', media: 'fa-photo-film',
+};
 ---
 
 <BaseLayout
   title="Toolarsh – 35+ Free Online Tools, Calculators & Converters"
   description="Free online calculators, converters, generators, downloaders, and text tools. No sign-up, no installs — fast, accurate results right in your browser."
-  keywords="free online tools, online calculators, converters, generators, downloader tools, text tools, toolarsh"
+  keywords="free online tools, online calculators, converters, generators, text tools, toolarsh"
 >
   <Navbar />
   <SearchModal />
 
   <main>
-    <!-- ══════════ HERO ══════════ -->
-    <section class="hero">
-      <div class="hero-bg-blobs">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-      </div>
-      <div class="container">
-        <div class="hero-content" data-animate="fade-up">
-          <div class="hero-badge">
-            <span class="pulse-dot"></span>
-            Free forever &middot; No sign-up required
-          </div>
 
-          <h1 class="hero-title font-display">
-            Every tool you need,<br/>
-            <span class="hero-gradient">completely free.</span>
-          </h1>
+    <!-- ══════════════════════════ HERO ══════════════════════════ -->
+    <section class="hero" aria-label="Hero">
+      <!-- Ambient glows (Raycast-style) -->
+      <div class="hero-glow hero-glow-1" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow-2" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow-3" aria-hidden="true"></div>
+      <!-- Grid bg (Linear-style) -->
+      <div class="hero-grid" aria-hidden="true"></div>
 
-          <p class="hero-subtitle">
-            35+ browser-based utilities for writing, security, generators,<br class="hide-mobile"/>
-            calculators, converters, and media — all in one place.
-          </p>
-
-          <!-- Search bar -->
-          <div class="hero-search-wrap">
-            <div class="hero-search-bar" id="hero-search-trigger">
-              <i class="fas fa-search hero-search-icon"></i>
-              <span class="hero-search-placeholder">Search for a tool… (Word Counter, QR Code, BMI…)</span>
-              <kbd class="hero-kbd">Ctrl + K</kbd>
-            </div>
-          </div>
-
-          <!-- Stats -->
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <strong>35+</strong>
-              <span>Free Tools</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="hero-stat">
-              <strong>100%</strong>
-              <span>Browser-Based</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="hero-stat">
-              <strong>0</strong>
-              <span>Sign-ups Needed</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="hero-stat">
-              <strong>∞</strong>
-              <span>Usage Limit</span>
-            </div>
-          </div>
+      <div class="container hero-inner">
+        <!-- Top badge -->
+        <div class="hero-badge" data-animate="fade-up">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          <span>35+ tools · Always free · No sign-up</span>
         </div>
-      </div>
-    </section>
 
-    <!-- ══════════ CATEGORY CARDS ══════════ -->
-    <section class="categories-section" data-animate="fade-up">
-      <div class="container">
-        <div class="section-header">
-          <p class="section-label"><i class="fas fa-th-large"></i> Browse by category</p>
-          <h2>Everything you need in one place</h2>
-          <p class="section-desc">Pick a category below to jump straight to the tools you need.</p>
+        <!-- Headline -->
+        <h1 class="hero-title" data-animate="fade-up">
+          Every tool you need,<br/>
+          <span class="shimmer-text">right in your browser.</span>
+        </h1>
+
+        <!-- Sub -->
+        <p class="hero-sub" data-animate="fade-up">
+          Free calculators, converters, generators, text tools and more.
+          <br/>Open a tool and start in seconds — no sign-up, no installs.
+        </p>
+
+        <!-- Command bar (High contrast, crystal clear in light and dark) -->
+        <div class="hero-cmd-wrap" data-animate="fade-up">
+          <button class="hero-cmd" id="hero-search-trigger" aria-label="Open search — find any tool">
+            <div class="hcmd-left">
+              <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+              <span class="font-mono">Search 35+ tools… (or press ⌘K)</span>
+            </div>
+            <kbd aria-label="Keyboard shortcut Control K">⌘K</kbd>
+          </button>
         </div>
-        <div class="category-grid">
-          {categories.map(cat => {
-            const meta = categoryMeta[cat];
+
+        <!-- Category chips -->
+        <div class="hero-chips" data-animate="fade-up" role="list" aria-label="Browse by category">
+          {categories.map((cat, i) => {
+            const m = categoryMeta[cat];
             const count = tools.filter(t => t.category === cat).length;
             return (
-              <a class="category-card" href={`#${cat}`} style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`} aria-label={`${meta.label} - ${meta.description}`}>
-                <div class="cat-card-icon">{meta.emoji}</div>
-                <h3>{meta.label}</h3>
-                <p>{meta.description}</p>
-                <div class="cat-card-footer">
-                  <span class="cat-count">{count} tools</span>
-                  <span class="cat-arrow"><i class="fas fa-arrow-right"></i></span>
-                </div>
+              <a
+                class="hero-chip"
+                href={`#${cat}`}
+                role="listitem"
+                style={`--cc: ${m.color}`}
+                aria-label={`${m.label} — ${count} tools`}
+              >
+                <i class={`fas ${catIcons[cat]}`} style={`color: ${m.color}`} aria-hidden="true"></i>
+                <span>{m.label}</span>
+                <span class="chip-count">{count}</span>
               </a>
             );
           })}
@@ -107,59 +87,64 @@ const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, d
       </div>
     </section>
 
-    <!-- ══════════ ALL TOOLS ══════════ -->
-    <section class="tools-section" id="all-tools" data-animate="fade-up">
+    <!-- ══════════════════════════ ALL TOOLS ══════════════════════════ -->
+    <section class="tools-section" id="all-tools" aria-labelledby="tools-h" data-animate="fade-up">
       <div class="container">
         <div class="section-header">
-          <p class="section-label"><i class="fas fa-toolbox"></i> All tools</p>
-          <h2>Pick your tool, start instantly</h2>
-          <p class="section-desc">No downloads. No account. Just open a tool and go.</p>
+          <div>
+            <span class="section-label"><i class="fas fa-toolbox" aria-hidden="true"></i> All Tools</span>
+            <h2 id="tools-h" class="section-title">Pick one and start instantly</h2>
+          </div>
+          <div class="filter-row" role="tablist" aria-label="Filter tools">
+            <button class="filter-pill active" data-filter="all" role="tab" aria-selected="true">All</button>
+            {categories.map(cat => (
+              <button class="filter-pill" data-filter={cat} role="tab" aria-selected="false"
+                style={`--cc:${categoryMeta[cat].color}`}>
+                {categoryMeta[cat].label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <!-- Filter pills -->
-        <div class="filter-bar" role="tablist" aria-label="Filter tools by category">
-          <button class="filter-pill active" data-filter="all" role="tab">
-            <i class="fas fa-th-large"></i> All
-          </button>
-          {categories.map(cat => (
-            <button class="filter-pill" data-filter={cat} role="tab">
-              {categoryMeta[cat].emoji} {categoryMeta[cat].label}
-            </button>
-          ))}
-        </div>
-
-        <!-- Tool grid -->
-        <div class="tools-grid" id="tools-grid">
+        <div class="tools-grid" id="tools-grid" role="list" aria-label="All available tools">
           {tools.map(tool => (
-            <div class="tool-grid-item" data-category={tool.category}>
+            <div class="tool-grid-item" data-category={tool.category} role="listitem">
               <ToolCard tool={tool} />
             </div>
           ))}
         </div>
-
-        <!-- No results (hidden by default) -->
-        <div class="no-results" id="no-results" style="display:none">
-          <i class="fas fa-face-sad-tear"></i>
-          <p>No tools in this category yet.</p>
+        <div class="no-results" id="no-results" style="display:none" role="status" aria-live="polite">
+          <i class="fas fa-face-sad-tear" aria-hidden="true"></i>
+          <p class="font-mono">Nothing here yet.</p>
         </div>
       </div>
     </section>
 
-    <!-- ══════════ CATEGORY SECTIONS ══════════ -->
-    {categories.map(cat => {
-      const meta = categoryMeta[cat];
+    <!-- ══════════════════════════ CAT SECTIONS ══════════════════════════ -->
+    {categories.map((cat, i) => {
+      const m = categoryMeta[cat];
       const catTools = tools.filter(t => t.category === cat);
       return (
-        <section class="cat-section" id={cat} data-animate="fade-up">
+        <section
+          class={`cat-section ${i % 2 === 1 ? 'cat-section-alt' : ''}`}
+          id={cat}
+          aria-labelledby={`cs-h-${cat}`}
+          data-animate="fade-up"
+        >
           <div class="container">
-            <div class="cat-section-header" style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`}>
-              <div class="cat-section-badge">
-                <span class="cat-section-emoji">{meta.emoji}</span>
-                <span>{meta.label}</span>
+            <div class="cat-hd">
+              <div class="cat-hd-icon" style={`background:${m.bg}; color:${m.color}`} aria-hidden="true">
+                <i class={`fas ${catIcons[cat]}`}></i>
               </div>
-              <p class="cat-section-desc">{meta.description}</p>
+              <div>
+                <h2 id={`cs-h-${cat}`} class="cat-title">{m.label}</h2>
+                <p class="cat-desc">{m.description}</p>
+              </div>
+              <a class="cat-all-link" href={`#${cat}`} aria-label={`See all ${m.label} tools`}>
+                All {m.label} <i class="fas fa-arrow-right" aria-hidden="true"></i>
+              </a>
             </div>
-            <div class="tools-grid">
+            <div class="tools-grid" role="list" aria-label={`${m.label} tools`}>
               {catTools.map(tool => <ToolCard tool={tool} />)}
             </div>
           </div>
@@ -167,371 +152,337 @@ const toolsJson = JSON.stringify(tools.map(t => ({ slug: t.slug, name: t.name, d
       );
     })}
 
-    <!-- ══════════ STATS BANNER ══════════ -->
-    <section class="stats-banner" data-animate="fade-up">
+    <!-- ══════════════════════════ FEATURES ══════════════════════════ -->
+    <section class="features-section" aria-labelledby="feat-h" data-animate="fade-up">
       <div class="container">
-        <div class="stats-banner-grid">
-          <div class="stats-banner-item">
-            <div class="stats-icon" style="background:#EFF6FF; color:#2563EB"><i class="fas fa-toolbox"></i></div>
-            <strong>35+</strong>
-            <span>Free Tools</span>
-          </div>
-          <div class="stats-banner-item">
-            <div class="stats-icon" style="background:#ECFDF5; color:#059669"><i class="fas fa-shield-halved"></i></div>
-            <strong>100%</strong>
-            <span>Private & Secure</span>
-          </div>
-          <div class="stats-banner-item">
-            <div class="stats-icon" style="background:#FFF7ED; color:#EA580C"><i class="fas fa-bolt"></i></div>
-            <strong>Instant</strong>
-            <span>Results in Browser</span>
-          </div>
-          <div class="stats-banner-item">
-            <div class="stats-icon" style="background:#F5F3FF; color:#7C3AED"><i class="fas fa-user-slash"></i></div>
-            <strong>Zero</strong>
-            <span>Account Needed</span>
-          </div>
+        <div class="feat-top">
+          <span class="section-label"><i class="fas fa-sparkles" aria-hidden="true"></i> Why Toolarsh</span>
+          <h2 id="feat-h" class="section-title">Built for speed, privacy & simplicity.</h2>
         </div>
-      </div>
-    </section>
-
-    <!-- ══════════ FAQ ══════════ -->
-    <section class="faq-section">
-      <div class="container">
-        <div class="section-header">
-          <p class="section-label"><i class="fas fa-circle-question"></i> FAQ</p>
-          <h2>Frequently Asked Questions</h2>
-          <p class="section-desc">Everything you need to know about Toolarsh.</p>
-        </div>
-        <div class="faq-list" id="faq-list">
+        <div class="feat-grid" role="list">
           {[
-            { q: "Are all tools on Toolarsh.com free to use?", a: "Yes. Every tool available on Toolarsh.com is completely free to use. Our goal is to provide fast, reliable, and easy-to-use online tools without subscriptions, hidden fees, or registration requirements." },
-            { q: "Do I need to create an account to use Toolarsh?", a: "No. You can use all Toolarsh tools without creating an account. Simply visit the website, choose the tool you need, and start using it immediately." },
-            { q: "What types of online tools are available on Toolarsh?", a: "Toolarsh offers a growing collection of text tools, calculators, converters, generators, developer tools, image tools, productivity tools, and many other useful online utilities." },
-            { q: "Is my information secure while using Toolarsh?", a: "Yes. Many Toolarsh tools process data directly in your browser, helping keep your files and personal information private unless a particular service clearly states otherwise." },
-            { q: "Can I use Toolarsh on my smartphone or tablet?", a: "Absolutely. Toolarsh is fully responsive and works smoothly on desktops, laptops, tablets, and smartphones." },
-            { q: "How often are new tools added to Toolarsh?", a: "We regularly introduce new tools and improve existing ones to provide the best possible experience for our users." },
-            { q: "Why should I choose Toolarsh over other online tool websites?", a: "Toolarsh focuses on speed, simplicity, privacy, and reliability. Our tools are designed to be accurate, easy to use, and accessible from any device." },
-            { q: "Are there any usage limits on Toolarsh?", a: "Most Toolarsh tools have no daily usage limits, allowing unlimited access whenever you need them." },
-            { q: "How does Toolarsh remain free for everyone?", a: "Toolarsh is supported through advertising and other revenue sources, allowing us to continue offering high-quality online tools free of charge." },
-          ].map((faq, i) => (
-            <div class="faq-item" id={`faq-${i}`}>
-              <button class="faq-question" aria-expanded="false" aria-controls={`faq-answer-${i}`}>
-                <span>{faq.q}</span>
-                <div class="faq-icon"><i class="fas fa-plus"></i></div>
-              </button>
-              <div class="faq-answer" id={`faq-answer-${i}`} role="region">
-                <p>{faq.a}</p>
+            { icon: 'fa-bolt', color: '#D97706', bg: 'rgba(217,119,6,0.1)', title: 'Instant results', desc: 'No upload queues. No processing delays. Tools run entirely in your browser for instant feedback.' },
+            { icon: 'fa-shield-halved', color: '#059669', bg: 'rgba(5,150,105,0.1)', title: 'Private by design', desc: 'Your data never leaves your device. Zero tracking, zero storage, zero risk.' },
+            { icon: 'fa-user-slash', color: '#EA580C', bg: 'rgba(234,88,12,0.1)', title: 'Zero sign-up', desc: 'No account. No email. No credit card. Every tool is open and ready, always.' },
+            { icon: 'fa-mobile-screen', color: '#0D9488', bg: 'rgba(13,148,136,0.1)', title: 'Works everywhere', desc: 'Fully responsive. Open any tool on your phone, tablet, or desktop — it just works.' },
+            { icon: 'fa-infinity', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)', title: 'Unlimited usage', desc: 'No daily limits, no usage caps, no feature gates. Use every tool as often as you need.' },
+            { icon: 'fa-code-branch', color: '#E11D48', bg: 'rgba(225,29,72,0.1)', title: 'Always improving', desc: 'New tools and improvements ship regularly. Bookmark the site and check back anytime.' },
+          ].map(f => (
+            <div class="feat-card" role="listitem">
+              <div class="feat-icon" style={`background:${f.bg}; color:${f.color}`} aria-hidden="true">
+                <i class={`fas ${f.icon}`}></i>
               </div>
+              <h3>{f.title}</h3>
+              <p>{f.desc}</p>
             </div>
           ))}
         </div>
       </div>
     </section>
+
+    <!-- ══════════════════════════ FAQ ══════════════════════════ -->
+    <section class="faq-section" aria-labelledby="faq-h">
+      <div class="container">
+        <div class="faq-inner">
+          <div class="faq-left">
+            <span class="section-label"><i class="fas fa-circle-question" aria-hidden="true"></i> FAQ</span>
+            <h2 id="faq-h" class="section-title">Frequently asked</h2>
+            <p class="faq-sub">Can't find your answer? <a href="/contact">Contact us →</a></p>
+          </div>
+          <div class="faq-list">
+            {[
+              { q: 'Are all tools completely free?', a: 'Yes — every single tool is 100% free, forever. No subscriptions, no hidden fees, no "pro" tier.' },
+              { q: 'Do I need an account?', a: 'No. Just open any tool and use it. No account, no email, no password needed.' },
+              { q: 'Is my data private?', a: 'Yes. Most tools run entirely in your browser — your input never reaches our servers.' },
+              { q: 'What kinds of tools are available?', a: 'Text & writing, security, generators, calculators, converters, media tools — 35+ and growing.' },
+              { q: 'Does Toolarsh work on mobile?', a: 'Absolutely. Every tool is fully responsive and optimized for phones, tablets, and desktops.' },
+              { q: 'Are there usage limits?', a: 'None. No daily caps, no usage limits. Use any tool as often as you need, whenever you need.' },
+            ].map((faq, i) => (
+              <div class="faq-item" id={`faq-${i}`}>
+                <button class="faq-question" aria-expanded="false" aria-controls={`faq-ans-${i}`} id={`faq-btn-${i}`}>
+                  <span>{faq.q}</span>
+                  <div class="faq-icon" aria-hidden="true"><i class="fas fa-plus"></i></div>
+                </button>
+                <div class="faq-answer" id={`faq-ans-${i}`} role="region" aria-labelledby={`faq-btn-${i}`}>
+                  <p>{faq.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <Footer />
 </BaseLayout>
 
 <style>
-  /* ── Hero ──────────────────────────────────────────── */
+  /* ── HERO ───────────────────────────────────────────── */
   .hero {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(180deg, #F0F5FF 0%, #ffffff 60%);
-    padding: 80px 0 72px;
-    text-align: center;
+    position: relative; overflow: hidden;
+    padding: 96px 0 84px;
+    border-bottom: 1px solid var(--border);
   }
-  .hero-bg-blobs { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-  .blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: .35;
+  .hero-glow {
+    position: absolute; border-radius: 50%;
+    pointer-events: none; filter: blur(90px);
   }
-  .blob-1 { width: 500px; height: 500px; background: #BFDBFE; top: -150px; left: -100px; }
-  .blob-2 { width: 400px; height: 400px; background: #DDD6FE; top: -80px; right: -120px; }
-  .blob-3 { width: 300px; height: 300px; background: #BBF7D0; bottom: -100px; left: 50%; transform: translateX(-50%); }
-  .hero-content { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
+  .hero-glow-1 {
+    width: 700px; height: 500px;
+    background: radial-gradient(ellipse, var(--brand-glow) 0%, transparent 70%);
+    top: -200px; left: 50%; transform: translateX(-50%);
+  }
+  .hero-glow-2 {
+    width: 450px; height: 320px;
+    background: radial-gradient(ellipse, var(--amber-soft) 0%, transparent 70%);
+    top: 0; right: 8%;
+  }
+  .hero-glow-3 {
+    width: 350px; height: 240px;
+    background: radial-gradient(ellipse, rgba(13, 148, 136, 0.08) 0%, transparent 70%);
+    bottom: 0; left: 12%;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 80%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; text-align: center;
+  }
+
   .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #15803D;
-    background: #DCFCE7;
-    border: 1px solid #BBF7D0;
-    padding: 5px 14px;
-    border-radius: 100px;
-    margin-bottom: 24px;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600;
+    color: var(--txt-muted); font-family: 'JetBrains Mono', monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    padding: 6px 16px; border-radius: 100px;
+    margin-bottom: 28px;
+    letter-spacing: .02em;
+    box-shadow: var(--shadow-sm);
   }
+
   .hero-title {
-    font-size: clamp(2.4rem, 5vw + 1rem, 4rem);
-    font-weight: 900;
-    color: #0F172A;
+    font-size: clamp(2.6rem, 5.5vw, 4.8rem);
+    font-weight: 800;
+    color: var(--txt);
     line-height: 1.1;
+    letter-spacing: -1.8px;
     margin-bottom: 20px;
-    letter-spacing: -1.5px;
-  }
-  .hero-gradient {
-    background: linear-gradient(135deg, #2563EB, #7C3AED, #EC4899);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hero-subtitle {
-    font-size: 18px;
-    color: #475569;
-    line-height: 1.6;
-    margin-bottom: 36px;
-  }
-  .hide-mobile { display: inline; }
-
-  /* Hero search */
-  .hero-search-wrap { max-width: 580px; margin: 0 auto 36px; }
-  .hero-search-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #fff;
-    border: 2px solid #E5E7EB;
-    border-radius: 100px;
-    padding: 14px 14px 14px 22px;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,0,0,.07);
-    transition: border-color .2s, box-shadow .2s;
-  }
-  .hero-search-bar:hover {
-    border-color: #2563EB;
-    box-shadow: 0 4px 24px rgba(37,99,235,.15);
-  }
-  .hero-search-icon { font-size: 16px; color: #9CA3AF; flex-shrink: 0; }
-  .hero-search-placeholder { flex: 1; font-size: 15px; color: #9CA3AF; text-align: left; }
-  .hero-kbd {
-    font-size: 11px;
-    background: #F3F4F6;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
-    padding: 3px 8px;
-    color: #6B7280;
-    font-family: 'Inter', sans-serif;
-    white-space: nowrap;
-    flex-shrink: 0;
+    max-width: 820px;
   }
 
-  /* Stats */
-  .hero-stats {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    flex-wrap: wrap;
-  }
-  .hero-stat { text-align: center; }
-  .hero-stat strong { display: block; font-size: 22px; font-weight: 800; color: #0F172A; }
-  .hero-stat span { font-size: 13px; color: #64748B; }
-  .stat-divider { width: 1px; height: 36px; background: #E5E7EB; }
-
-  /* ── Categories ────────────────────────────────────── */
-  .categories-section { padding: 80px 0; background: var(--bg-soft); }
-  .section-header { text-align: center; margin-bottom: 40px; }
-  .section-label { margin-bottom: 10px; }
-  .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); color: #0F172A; margin-bottom: 10px; font-family: 'Outfit', sans-serif; font-weight: 800; }
-  .section-desc { font-size: 16px; color: #64748B; }
-
-  .category-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+  .hero-sub {
+    font-size: 16.5px; color: var(--txt-muted);
+    line-height: 1.65; margin-bottom: 36px;
+    max-width: 520px;
   }
 
-  .category-card {
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    text-decoration: none;
-    transition: all .22s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    position: relative;
-    overflow: hidden;
+  /* Command bar (High contrast, crystal clear in light and dark) */
+  .hero-cmd-wrap { width: 100%; max-width: 520px; margin-bottom: 32px; }
+  .hero-cmd {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%;
+    background: var(--surface-2);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--webkit-glass-blur);
+    border: 1.5px solid var(--border-mid);
+    border-radius: var(--radius-lg);
+    padding: 14px 20px;
+    cursor: pointer; font-family: inherit;
+    transition: all .2s ease;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05), var(--glass-inner-glow);
   }
-  .category-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: var(--cat-color);
-    border-radius: 0 0 4px 4px;
-    transform: scaleX(0);
-    transition: transform .22s ease;
-    transform-origin: left;
+  .hero-cmd:hover {
+    background: var(--surface-solid);
+    border-color: var(--brand);
+    box-shadow: 0 6px 24px rgba(5, 150, 105, 0.16), 0 0 0 3px var(--brand-soft);
+    transform: translateY(-2px);
   }
-  .category-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: transparent; }
-  .category-card:hover::before { transform: scaleX(1); }
+  .hcmd-left { display: flex; align-items: center; gap: 12px; }
+  .hcmd-left i { font-size: 16px; color: var(--brand); }
+  .hcmd-left span { font-size: 14px; color: var(--txt-dim); font-weight: 500; }
 
-  .cat-card-icon {
-    width: 52px; height: 52px;
-    border-radius: 14px;
-    background: var(--cat-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
+  /* Chips (Glassmorphic) */
+  .hero-chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; max-width: 720px;
   }
-  .category-card h3 { font-size: 17px; font-weight: 700; color: #0F172A; font-family: 'Outfit', sans-serif; }
-  .category-card p { font-size: 13.5px; color: #64748B; flex: 1; line-height: 1.5; }
-  .cat-card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 6px;
-  }
-  .cat-count { font-size: 12px; font-weight: 700; color: var(--cat-color); background: var(--cat-bg); padding: 3px 10px; border-radius: 100px; }
-  .cat-arrow { width: 28px; height: 28px; background: var(--cat-bg); color: var(--cat-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: transform .15s; }
-  .category-card:hover .cat-arrow { transform: translateX(3px); }
-
-  /* ── Tools Section ─────────────────────────────────── */
-  .tools-section { padding: 80px 0; }
-
-  .filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 36px;
-  }
-
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-
-  .tool-grid-item { transition: opacity .2s, transform .2s; }
-  .tool-grid-item.hidden { display: none; }
-
-  .no-results {
-    text-align: center;
-    padding: 60px 20px;
+  .hero-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 15px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--webkit-glass-blur);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 12.5px; font-weight: 500;
     color: var(--txt-muted);
-    font-size: 16px;
+    transition: all .18s ease;
+    box-shadow: var(--shadow-sm);
   }
-  .no-results i { font-size: 40px; opacity: .3; display: block; margin-bottom: 12px; }
-
-  /* ── Category Sections ─────────────────────────────── */
-  .cat-section { padding: 60px 0; }
-  .cat-section:nth-child(even) { background: var(--bg-soft); }
-  .cat-section-header { margin-bottom: 32px; }
-  .cat-section-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--cat-bg);
-    color: var(--cat-color);
-    font-size: 15px;
-    font-weight: 700;
-    padding: 6px 16px;
-    border-radius: 100px;
-    margin-bottom: 10px;
+  .hero-chip:hover {
+    border-color: var(--cc);
+    color: var(--cc);
+    background: var(--glass-bg-hover);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
   }
-  .cat-section-emoji { font-size: 18px; }
-  .cat-section-desc { font-size: 15px; color: #64748B; margin-top: 6px; }
-
-  /* ── Stats Banner ──────────────────────────────────── */
-  .stats-banner { padding: 80px 0; background: #0F172A; }
-  .stats-banner-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
-    text-align: center;
+  .hero-chip i { font-size: 11px; }
+  .chip-count {
+    font-size: 10.5px; font-weight: 600;
+    color: var(--txt-dim); font-family: 'JetBrains Mono', monospace;
+    background: var(--surface-3); border-radius: 100px;
+    padding: 1px 7px;
   }
-  .stats-banner-item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  .stats-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-  .stats-banner-item strong { font-size: 28px; font-weight: 800; color: #fff; font-family: 'Outfit', sans-serif; }
-  .stats-banner-item span { font-size: 14px; color: #64748B; }
 
-  /* ── FAQ ───────────────────────────────────────────── */
-  .faq-section { padding: 80px 0; }
-  .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  /* ── TOOLS SECTION ─────────────────────────────────── */
+  .tools-section { padding: 80px 0; }
+  .section-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 24px; margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .section-title { font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 700; color: var(--txt); margin-top: 6px; }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .tool-grid-item { transition: opacity .2s; }
+  .no-results { padding: 56px 0; text-align: center; color: var(--txt-dim); font-size: 13.5px; }
+  .no-results i { font-size: 28px; opacity: .3; display: block; margin-bottom: 8px; }
 
-  /* ── Responsive ────────────────────────────────────── */
+  /* ── CAT SECTIONS ─────────────────────────────────── */
+  .cat-section { padding: 68px 0; border-top: 1px solid var(--border); }
+  .cat-section-alt { background: var(--surface); }
+  .cat-hd {
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-bottom: 28px;
+  }
+  .cat-hd-icon {
+    width: 42px; height: 42px; border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .cat-title { font-size: 1.35rem; font-weight: 700; color: var(--txt); margin-bottom: 3px; }
+  .cat-desc { font-size: 13.5px; color: var(--txt-muted); }
+  .cat-all-link {
+    margin-left: auto; flex-shrink: 0;
+    font-size: 12.5px; font-weight: 600; color: var(--brand);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex; align-items: center; gap: 6px;
+    transition: gap .15s ease; padding-top: 2px;
+  }
+  .cat-all-link:hover { gap: 9px; }
+
+  /* ── FEATURES (Glassmorphic) ─────────────────────── */
+  .features-section {
+    padding: 88px 0;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--webkit-glass-blur);
+  }
+  .feat-top { margin-bottom: 48px; }
+  .feat-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl); overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .feat-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--webkit-glass-blur);
+    padding: 30px 26px;
+    transition: background .18s ease, transform .18s ease;
+  }
+  .feat-card:hover { background: var(--glass-bg-hover); }
+  .feat-icon {
+    width: 40px; height: 40px; border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .feat-card h3 { font-size: 15px; font-weight: 600; color: var(--txt); margin-bottom: 8px; }
+  .feat-card p { font-size: 13px; color: var(--txt-muted); line-height: 1.65; }
+
+  /* ── FAQ ──────────────────────────────────────────── */
+  .faq-section { padding: 80px 0; border-top: 1px solid var(--border); }
+  .faq-inner { display: grid; grid-template-columns: 280px 1fr; gap: 80px; align-items: start; }
+  .faq-left { position: sticky; top: 84px; }
+  .faq-left .section-label { margin-bottom: 10px; }
+  .faq-sub { font-size: 13.5px; color: var(--txt-dim); margin-top: 14px; }
+  .faq-sub a { color: var(--brand); text-decoration: none; font-weight: 500; }
+  .faq-sub a:hover { text-decoration: underline; }
+
+  /* ── RESPONSIVE ───────────────────────────────────── */
   @media (max-width: 1024px) {
     .tools-grid { grid-template-columns: repeat(3, 1fr); }
+    .feat-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 768px) {
-    .hero { padding: 56px 0 48px; }
-    .hero-subtitle { font-size: 16px; }
-    .hide-mobile { display: none; }
-    .hero-stats { gap: 20px; }
-    .stat-divider { display: none; }
-    .category-grid { grid-template-columns: 1fr 1fr; }
-    .tools-grid { grid-template-columns: repeat(2, 1fr); }
-    .stats-banner-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero { padding: 68px 0 60px; }
+    .hero-title { letter-spacing: -1px; }
+    .hero-sub { font-size: 15px; }
+    .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .section-header { flex-direction: column; align-items: flex-start; }
+    .cat-hd { flex-wrap: wrap; }
+    .cat-all-link { margin-left: 0; }
+    .feat-grid { grid-template-columns: 1fr; }
+    .faq-inner { grid-template-columns: 1fr; gap: 36px; }
+    .faq-left { position: static; }
   }
   @media (max-width: 480px) {
-    .category-grid { grid-template-columns: 1fr; }
     .tools-grid { grid-template-columns: 1fr; }
-    .stats-banner-grid { grid-template-columns: 1fr 1fr; }
-    .hero-title { font-size: 2rem; }
+    .hero-chips { justify-content: flex-start; }
   }
 </style>
 
 <script>
-  // Hero search → open modal
-  document.getElementById('hero-search-trigger')?.addEventListener('click', () => {
-    if (typeof (window as any).openSearchModal === 'function') {
-      (window as any).openSearchModal();
-    } else {
-      document.getElementById('search-overlay')?.classList.add('open');
-      (document.getElementById('search-input') as HTMLInputElement)?.focus();
-    }
+  // Staggered animation for hero elements
+  const heroItems = document.querySelectorAll('.hero [data-animate]');
+  heroItems.forEach((el, i) => {
+    (el as HTMLElement).style.transitionDelay = `${i * 0.08}s`;
   });
 
-  // Filter tabs
+  document.getElementById('hero-search-trigger')?.addEventListener('click', () => {
+    if (typeof (window as any).openSearchModal === 'function') { (window as any).openSearchModal(); }
+    else { document.getElementById('search-overlay')?.classList.add('open'); (document.getElementById('search-input') as HTMLInputElement)?.focus(); }
+  });
+
   const pills = document.querySelectorAll('.filter-pill');
   const items = document.querySelectorAll('.tool-grid-item');
-  const noResults = document.getElementById('no-results');
-
+  const noRes = document.getElementById('no-results');
   pills.forEach(pill => {
     pill.addEventListener('click', () => {
-      const filter = (pill as HTMLElement).dataset.filter ?? 'all';
-
-      pills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-
-      let visible = 0;
+      const f = (pill as HTMLElement).dataset.filter ?? 'all';
+      pills.forEach(p => { p.classList.remove('active'); p.setAttribute('aria-selected','false'); });
+      pill.classList.add('active'); pill.setAttribute('aria-selected','true');
+      let v = 0;
       items.forEach(item => {
-        const cat = (item as HTMLElement).dataset.category ?? '';
-        const show = filter === 'all' || cat === filter;
+        const show = f === 'all' || (item as HTMLElement).dataset.category === f;
         (item as HTMLElement).style.display = show ? '' : 'none';
-        if (show) visible++;
+        if (show) v++;
       });
-
-      if (noResults) noResults.style.display = visible === 0 ? '' : 'none';
+      if (noRes) noRes.style.display = v === 0 ? '' : 'none';
     });
   });
 
-  // FAQ accordion
   document.querySelectorAll('.faq-question').forEach(btn => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.faq-item');
       const isOpen = item?.classList.contains('open');
-
-      // Close all
-      document.querySelectorAll('.faq-item').forEach(el => {
-        el.classList.remove('open');
-        el.querySelector('.faq-question')?.setAttribute('aria-expanded', 'false');
-      });
-
-      // Open clicked if it wasn't open
-      if (!isOpen) {
-        item?.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-      }
+      document.querySelectorAll('.faq-item').forEach(el => { el.classList.remove('open'); el.querySelector('.faq-question')?.setAttribute('aria-expanded','false'); });
+      if (!isOpen) { item?.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
     });
   });
 </script>

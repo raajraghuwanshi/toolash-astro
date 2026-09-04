@@ -31,15 +31,14 @@ const bg = catBgs[tool.category] ?? 'var(--brand-light)';
   href={`/${tool.slug}`}
   class="tool-card"
   style={`--card-color: ${color}`}
-  title={tool.name}
-  aria-label={`${tool.name} - ${tool.description}`}
+  aria-label={`${tool.name} — ${tool.description}`}
 >
-  <div class="tool-card-icon" style={`background: ${bg}; color: ${color}`}>
-    <i class={`fas ${tool.faIcon}`}></i>
+  <div class="tool-card-icon" style={`background: ${bg}; color: ${color}`} aria-hidden="true">
+    <i class={`fas ${tool.faIcon}`} aria-hidden="true"></i>
   </div>
   <h3>{tool.name}</h3>
   <p>{tool.description}</p>
-  <span class="tool-card-link">
-    Use tool <i class="fas fa-arrow-right" style="font-size:11px"></i>
+  <span class="tool-card-link" aria-hidden="true">
+    Open tool <i class="fas fa-arrow-right" style="font-size:10px" aria-hidden="true"></i>
   </span>
 </a>

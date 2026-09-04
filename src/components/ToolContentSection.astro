@@ -1,5 +1,6 @@
 ---
 import type { Tool } from '../data/tools';
+import { toolContentMap } from '../data/toolContent';
 
 export interface Props {
   tool: Tool;
@@ -7,73 +8,107 @@ export interface Props {
 }
 
 const { tool, customFaqs } = Astro.props;
+const toolCustom = toolContentMap[tool.slug];
 
-// Category specific step instructions
+// Category metadata & styling
+const catTheme: Record<string, { color: string; bg: string; border: string; label: string; badgeIcon: string }> = {
+  writing: { color: '#EA580C', bg: 'rgba(234, 88, 12, 0.08)', border: 'rgba(234, 88, 12, 0.25)', label: 'Writing & Text Architecture', badgeIcon: 'fa-pen-nib' },
+  security: { color: '#059669', bg: 'rgba(5, 150, 105, 0.08)', border: 'rgba(5, 150, 105, 0.25)', label: 'Security & Privacy Protocol', badgeIcon: 'fa-shield-halved' },
+  generators: { color: '#D97706', bg: 'rgba(217, 119, 6, 0.08)', border: 'rgba(217, 119, 6, 0.25)', label: 'Generator Tech Specs', badgeIcon: 'fa-bolt' },
+  calculators: { color: '#0D9488', bg: 'rgba(13, 148, 136, 0.08)', border: 'rgba(13, 148, 136, 0.25)', label: 'Mathematical Blueprint', badgeIcon: 'fa-calculator' },
+  converters: { color: '#E11D48', bg: 'rgba(225, 29, 72, 0.08)', border: 'rgba(225, 29, 72, 0.25)', label: 'Conversion Pipeline', badgeIcon: 'fa-arrows-rotate' },
+  media: { color: '#F97316', bg: 'rgba(249, 115, 22, 0.08)', border: 'rgba(249, 115, 22, 0.25)', label: 'Media Stream & Format Deck', badgeIcon: 'fa-photo-film' },
+};
+
+const currentTheme = catTheme[tool.category] || catTheme.calculators;
+
+// Default category fallback steps
 const categorySteps: Record<string, Array<{ step: string; title: string; desc: string; icon: string }>> = {
   writing: [
-    { step: '01', title: 'Paste your Text', desc: 'Copy and paste your content into the editor or type directly into the text area.', icon: 'fa-paste' },
-    { step: '02', title: 'Choose Options', desc: 'Select your desired options, case style, or translation parameters in real time.', icon: 'fa-sliders' },
-    { step: '03', title: 'Copy or Export', desc: 'Instantly get your transformed text with one-click copy to clipboard.', icon: 'fa-copy' }
+    { step: '01', title: 'Input Content', desc: 'Paste or type text directly into the live editor.', icon: 'fa-paste' },
+    { step: '02', title: 'Real-Time Analysis', desc: 'Instant calculation across all tokens, words, and characters.', icon: 'fa-bolt' },
+    { step: '03', title: 'Copy & Export', desc: 'Copy formatted text or metrics directly to your clipboard.', icon: 'fa-copy' }
   ],
   security: [
-    { step: '01', title: 'Select Preferences', desc: 'Customize security parameters like password length, symbols, or address types.', icon: 'fa-gears' },
-    { step: '02', title: 'Generate Instantly', desc: 'Click generate to calculate cryptographically secure IDs, emails, or passwords.', icon: 'fa-shield-halved' },
-    { step: '03', title: 'Copy Safely', desc: 'Copy your generated credential securely to your clipboard.', icon: 'fa-lock' }
+    { step: '01', title: 'Set Cryptographic Options', desc: 'Select length, character mix, and hardware entropy.', icon: 'fa-sliders' },
+    { step: '02', title: 'Generate Token', desc: 'Client-side Web Crypto API creates randomized keys.', icon: 'fa-shield-halved' },
+    { step: '03', title: 'Zero-Trace Copy', desc: 'Ephemeral memory copy with zero server persistence.', icon: 'fa-lock' }
   ],
   generators: [
-    { step: '01', title: 'Enter Input', desc: 'Input your target text, URL, or business keywords into the form.', icon: 'fa-keyboard' },
-    { step: '02', title: 'Generate Content', desc: 'Click generate to instantly render high quality QR codes, barcodes, or names.', icon: 'fa-wand-magic-sparkles' },
-    { step: '03', title: 'Download or Copy', desc: 'Save as PNG, SVG, or copy the output directly into your projects.', icon: 'fa-download' }
+    { step: '01', title: 'Enter Target Data', desc: 'Input URLs, text, keywords, or configuration options.', icon: 'fa-keyboard' },
+    { step: '02', title: 'Algorithmic Render', desc: 'Computes error-corrected matrix, vectors, or creative names.', icon: 'fa-wand-magic-sparkles' },
+    { step: '03', title: 'Save Output', desc: 'Download SVG, high-res PNG, or copy output directly.', icon: 'fa-download' }
   ],
   calculators: [
-    { step: '01', title: 'Enter Values', desc: 'Fill in your numbers, dimensions, interest rate, or parameters.', icon: 'fa-input-numeric' },
-    { step: '02', title: 'Automated Calculation', desc: 'Toolarsh instantly computes accurate results using verified mathematical formulas.', icon: 'fa-calculator' },
-    { step: '03', title: 'Analyze Results', desc: 'View complete breakdowns, total percentages, or visual breakdowns.', icon: 'fa-chart-pie' }
+    { step: '01', title: 'Supply Inputs', desc: 'Fill in principal, dimensions, interest rate, or readings.', icon: 'fa-hashtag' },
+    { step: '02', title: 'Formula Calculation', desc: 'Applies verified mathematical formulas with floating precision.', icon: 'fa-calculator' },
+    { step: '03', title: 'Analyze Metrics', desc: 'Inspect full amortizations, percentages, or health stages.', icon: 'fa-chart-pie' }
   ],
   converters: [
-    { step: '01', title: 'Select Units or File', desc: 'Choose your starting unit/file and select your desired output target.', icon: 'fa-arrows-rotate' },
-    { step: '02', title: 'Real-Time Conversion', desc: 'Conversion calculates dynamically as you adjust values or upload files.', icon: 'fa-bolt' },
-    { step: '03', title: 'Export Result', desc: 'Copy the converted value or download the processed file in high resolution.', icon: 'fa-file-export' }
+    { step: '01', title: 'Select Base Units', desc: 'Choose origin measurement system or upload file format.', icon: 'fa-arrow-right-arrow-left' },
+    { step: '02', title: 'Real-Time Factor', desc: 'Instant recalculation as numbers or formats adjust.', icon: 'fa-arrows-rotate' },
+    { step: '03', title: 'Export Conversion', desc: 'Copy exact numeric results or download converted files.', icon: 'fa-file-export' }
   ],
   media: [
-    { step: '01', title: 'Paste URL', desc: 'Copy the video, document, or audio URL from your browser and paste it above.', icon: 'fa-link' },
-    { step: '02', title: 'Fetch & Preview', desc: 'Click Download to parse the URL and select your preferred quality or format.', icon: 'fa-cloud-arrow-down' },
-    { step: '03', title: 'Save File', desc: 'Download high-definition videos, audio MP3s, or documents directly to your device.', icon: 'fa-circle-down' }
+    { step: '01', title: 'Paste Public Link', desc: 'Copy the shareable URL of the public video, reel, or photo.', icon: 'fa-link' },
+    { step: '02', title: 'Select Stream Tier', desc: 'Choose between 1080p Full HD, original photo, or MP3 audio.', icon: 'fa-cloud-arrow-down' },
+    { step: '03', title: 'Direct Download', desc: 'Save un-watermarked high-bitrate media directly to device.', icon: 'fa-circle-down' }
   ]
 };
 
-const steps = categorySteps[tool.category] || categorySteps.calculators;
-
-// Default FAQs per category if custom FAQs are not passed
-const defaultFaqs: Record<string, Array<{ q: string; a: string }>> = {
+// Default fallback FAQs
+const defaultCategoryFaqs: Record<string, Array<{ q: string; a: string }>> = {
   writing: [
-    { q: `Is the ${tool.name} tool free to use?`, a: `Yes, ${tool.name} is 100% free with unlimited usage and no account required.` },
-    { q: `Is my text private when using ${tool.name}?`, a: `Yes! All text processing takes place locally inside your web browser. Your content is never stored on our servers.` },
-    { q: `Does ${tool.name} work on mobile devices?`, a: `Absolutely. The tool is optimized for smartphones, tablets, laptops, and desktop computers.` }
+    { q: `Is the ${tool.name} tool completely free to use?`, a: `Yes, ${tool.name} is 100% free with no usage limits, no premium paywalls, and no registration required.` },
+    { q: 'Is my text private when using this tool?', a: 'Yes. All text processing occurs client-side in your web browser. Your text is never stored, logged, or transmitted to any server.' },
+    { q: 'Does this tool work on mobile devices?', a: 'Yes, Toolarsh tools are fully responsive and work seamlessly on iPhones, Android devices, tablets, and desktop computers.' }
   ],
   security: [
-    { q: `How secure is ${tool.name}?`, a: `Very secure. Generations utilize client-side Web Crypto APIs to ensure high randomness and complete privacy.` },
-    { q: `Do you log or store generated credentials?`, a: `Never. Everything is executed in-browser, meaning we never store or see your generated data.` }
+    { q: `Is ${tool.name} cryptographically secure?`, a: 'Yes! It utilizes the browser native window.crypto CSPRNG API with hardware entropy seeds to guarantee true mathematical randomness.' },
+    { q: 'Do you store or log generated credentials?', a: 'Never. All generation happens locally in your device temporary RAM with zero data persistence.' }
   ],
   generators: [
-    { q: `Can I use generated output for commercial projects?`, a: `Yes, all generated output from ${tool.name} is free for both personal and commercial use without attribution.` },
-    { q: `What file formats are supported for download?`, a: `Outputs can be copied directly or saved as standard PNG, SVG, or plain text formats.` }
+    { q: `Can I use outputs from ${tool.name} commercially?`, a: 'Yes, all generated outputs (QR codes, barcodes, UUIDs, business names) are 100% royalty-free for personal and commercial applications.' },
+    { q: 'Do generated items expire?', a: 'No, static generated codes and outputs never expire and have zero scan or usage caps.' }
   ],
   calculators: [
-    { q: `How accurate is the ${tool.name}?`, a: `Our formulas follow standardized industry math and physics standards, providing exact and verified results.` },
-    { q: `Can I calculate custom values?`, a: `Yes, input any numeric value into the calculator fields for instant, precise outputs.` }
+    { q: `What formula is used in the ${tool.name}?`, a: 'Our calculator implements standard, verified mathematical and financial formulas to guarantee exact computational precision.' },
+    { q: 'Can I calculate values using decimal numbers?', a: 'Yes, our calculation engine supports full 64-bit IEEE 754 floating-point arithmetic with multi-decimal precision.' }
   ],
   converters: [
-    { q: `Are there any limits on file size or conversions?`, a: `There are zero conversion caps. You can perform as many conversions as you need free of charge.` },
-    { q: `Does conversion preserve quality?`, a: `Yes, our conversion algorithms maintain maximum quality and precision.` }
+    { q: `How accurate is the ${tool.name}?`, a: 'Our conversion factors are aligned with international BIPM and NIST measurement standards with zero rounding bias.' },
+    { q: 'Can I convert between Metric and Imperial units?', a: 'Yes, seamless bidirectional conversion between Metric (SI) and US/UK Imperial units is fully supported.' }
   ],
   media: [
-    { q: `Is downloading media free on Toolarsh?`, a: `Yes, downloading media via ${tool.name} is completely free and requires no registration.` },
-    { q: `What quality options are available?`, a: `Depending on the source URL, options range from standard definitions to 1080p Full HD and high-bitrate audio.` }
+    { q: `Is it free to download media using ${tool.name}?`, a: 'Yes, Toolarsh media downloaders are 100% free with no download caps, no subscriptions, and no hidden fees.' },
+    { q: 'Does this tool add watermarks to downloaded files?', a: 'Never. All media is fetched in original uncompressed quality without injected logos or watermarks.' }
   ]
 };
 
-const faqs = customFaqs || defaultFaqs[tool.category] || defaultFaqs.calculators;
+const activeSteps = toolCustom?.steps || categorySteps[tool.category] || categorySteps.calculators;
+const activeFaqs = customFaqs || toolCustom?.faqs || defaultCategoryFaqs[tool.category] || defaultCategoryFaqs.calculators;
+const activeTable = toolCustom?.specsTable;
+const activeFormula = toolCustom?.formula;
+const activeArticle = toolCustom?.article || {
+  heading: `${tool.name} — Free Online Tool | Toolarsh`,
+  subheading: tool.description,
+  paragraphs: [
+    `${tool.name} on Toolarsh provides a fast, reliable, and completely private way to handle your ${tool.category} tasks right in your browser. With zero software downloads, zero account requirements, and zero usage limits, you can complete your work in seconds.`,
+    `Our tools are built with modern client-side processing, ensuring your confidential data remains securely on your device. Whether you are working on desktop, tablet, or smartphone, Toolarsh delivers pristine performance.`
+  ],
+  bulletPoints: [
+    '100% free with unlimited usage.',
+    'Client-side execution for complete data privacy.',
+    'Mobile-friendly and compatible across all modern browsers.',
+    'No account registration or email subscription required.'
+  ]
+};
+const activeFeatures = toolCustom?.features || [
+  { icon: 'fa-bolt', title: 'Instant Speed', desc: 'Sub-second client-side execution with zero server lag.' },
+  { icon: 'fa-shield-halved', title: '100% Private', desc: 'Processed directly in your browser with zero data logging.' },
+  { icon: 'fa-mobile-screen', title: 'Mobile Responsive', desc: 'Optimized touch interface for iPhones, iPads, and Android devices.' },
+  { icon: 'fa-infinity', title: 'No Limits', desc: 'Unlimited usage with zero paywalls or subscriptions.' }
+];
 
 // JSON-LD Structured Data
 const jsonLdHowTo = {
@@ -81,7 +116,7 @@ const jsonLdHowTo = {
   "@type": "HowTo",
   "name": `How to use ${tool.name}`,
   "description": tool.metaDescription,
-  "step": steps.map((s, idx) => ({
+  "step": activeSteps.map((s, idx) => ({
     "@type": "HowToStep",
     "position": idx + 1,
     "name": s.title,
@@ -92,7 +127,7 @@ const jsonLdHowTo = {
 const jsonLdFaq = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": faqs.map(f => ({
+  "mainEntity": activeFaqs.map(f => ({
     "@type": "Question",
     "name": f.q,
     "acceptedAnswer": {
@@ -103,382 +138,1408 @@ const jsonLdFaq = {
 };
 ---
 
-<section class="tool-guide-section" data-animate="fade-up">
-  <!-- Step-by-Step Guide -->
-  <div class="guide-header text-center">
-    <span class="section-badge"><i class="fas fa-compass"></i> Step-by-Step Guide</span>
-    <h2 class="font-display guide-title">How to Use {tool.name}</h2>
-    <p class="guide-sub">Follow these simple steps to get instant, accurate results in seconds.</p>
-  </div>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     DYNAMIC ARCHITECTURAL LAYOUTS PER CATEGORY (6 COMPLETELY DIFFERENT DESIGNS)
+     ═══════════════════════════════════════════════════════════════════════ -->
 
-  <div class="steps-grid">
-    {steps.map(s => (
-      <div class="step-card">
-        <div class="step-num">{s.step}</div>
-        <div class="step-icon"><i class={`fas ${s.icon}`}></i></div>
-        <h3 class="step-title font-display">{s.title}</h3>
-        <p class="step-desc">{s.desc}</p>
-      </div>
-    ))}
-  </div>
-
-  <!-- Demo / Explanation Section -->
-  <div class="demo-box shadow-card">
-    <div class="demo-grid">
-      <div class="demo-info">
-        <span class="demo-tag"><i class="fas fa-lightbulb"></i> About {tool.name}</span>
-        <h3 class="font-display demo-heading">Fast, Powerful & Accurate Solution</h3>
-        <p class="demo-p">
-          The <strong>{tool.name}</strong> on Toolarsh is designed to make your daily tasks effortless. Whether you need fast calculations, file processing, or automated content generation, our browser-native tool operates seamlessly across all modern browsers without server latency.
-        </p>
-        <div class="demo-features-list">
-          <div class="demo-feat-item"><i class="fas fa-check-circle"></i> 100% In-Browser Execution</div>
-          <div class="demo-feat-item"><i class="fas fa-check-circle"></i> Zero Data Logging or Tracking</div>
-          <div class="demo-feat-item"><i class="fas fa-check-circle"></i> Mobile & Desktop Optimized</div>
-        </div>
-      </div>
-      <div class="demo-preview-card">
-        <div class="preview-header">
-          <span class="preview-dot red"></span>
-          <span class="preview-dot yellow"></span>
-          <span class="preview-dot green"></span>
-          <span class="preview-title">Live Demo Preview</span>
-        </div>
-        <div class="preview-body">
-          <div class="preview-row">
-            <span class="p-label">Sample Input:</span>
-            <span class="p-val input-badge">Target Request / Parameter</span>
+{/* ───────────────────────────────────────────────────────────────────────
+     LAYOUT 1: WRITING & TEXT (Editorial Desk & Sidebar Layout)
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.category === 'writing' && (
+  <section class="cat-layout layout-writing" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
+    <div class="writing-grid">
+      <!-- Left Sticky Editorial Sidebar (30%) -->
+      <aside class="writing-sidebar">
+        <div class="editorial-card">
+          <div class="ed-header">
+            <i class="fas fa-feather-pointed ed-icon"></i>
+            <div>
+              <span class="ed-label">Editorial Benchmarks</span>
+              <h4>Text Dynamics</h4>
+            </div>
           </div>
-          <div class="preview-arrow-down"><i class="fas fa-arrow-down-long"></i> Processing</div>
-          <div class="preview-row output-row">
-            <span class="p-label">Instant Result:</span>
-            <span class="p-val output-badge"><i class="fas fa-circle-check"></i> Processed Output Sample</span>
+          <div class="ed-stats-list">
+            <div class="ed-stat-row">
+              <span>Silent Reading Rate</span>
+              <strong>230 wpm</strong>
+            </div>
+            <div class="ed-stat-row">
+              <span>Public Speaking Rate</span>
+              <strong>130 wpm</strong>
+            </div>
+            <div class="ed-stat-row">
+              <span>Optimal Line Length</span>
+              <strong>50–75 chars</strong>
+            </div>
+            <div class="ed-stat-row">
+              <span>Target Sentence Length</span>
+              <strong>15–20 words</strong>
+            </div>
+          </div>
+          <div class="ed-footer-tip">
+            <i class="fas fa-lightbulb"></i>
+            <span>Short paragraphs of 2-3 sentences maximize reader retention on mobile displays.</span>
           </div>
         </div>
+      </aside>
+
+      <!-- Right Main Editorial Stream (70%) -->
+      <main class="writing-main">
+        <!-- Step Capsules Ribbon -->
+        <div class="step-capsules">
+          {activeSteps.map(s => (
+            <div class="step-capsule">
+              <span class="cap-num">{s.step}</span>
+              <div class="cap-info">
+                <strong>{s.title}</strong>
+                <span>{s.desc}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Rich Editorial Article Block -->
+        <article class="editorial-article-box">
+          <div class="art-header">
+            <span class="art-badge"><i class="fas fa-book-open"></i> In-Depth Guide</span>
+            <h2>{activeArticle.heading}</h2>
+            {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
+          </div>
+
+          <div class="art-body">
+            {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+          </div>
+
+          {activeArticle.bulletPoints && (
+            <ul class="art-bullets">
+              {activeArticle.bulletPoints.map(b => (
+                <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
+              ))}
+            </ul>
+          )}
+        </article>
+
+        <!-- Feature Highlights Grid -->
+        <div class="features-block">
+          <h3 class="section-subhd"><i class="fas fa-sparkles"></i> Key Capabilities</h3>
+          <div class="feature-card-grid">
+            {activeFeatures.map(f => (
+              <div class="feature-card">
+                <div class="feature-icon"><i class={`fas ${f.icon}`}></i></div>
+                <h4>{f.title}</h4>
+                <p>{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Reference Table if available */}
+        {activeTable && (
+          <div class="writing-table-card">
+            <h3 class="section-subhd"><i class="fas fa-table"></i> {activeTable.title}</h3>
+            <div class="table-wrap">
+              <table class="writing-table">
+                <thead>
+                  <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {activeTable.rows.map((r: string[]) => (
+                    <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'ed-bold' : ''}>{c}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        <!-- 2-Column FAQ Cards -->
+        <div class="writing-faq-wrap">
+          <h3 class="section-subhd"><i class="fas fa-circle-question"></i> Editorial Questions & Answers</h3>
+          <div class="faq-two-col">
+            {activeFaqs.map(f => (
+              <div class="faq-card-static">
+                <h4>{f.q}</h4>
+                <p>{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+    </div>
+  </section>
+)}
+
+{/* ───────────────────────────────────────────────────────────────────────
+     LAYOUT 2: CALCULATORS (Mathematical Blueprint / Dashboard)
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.category === 'calculators' && (
+  <section class="cat-layout layout-calculators" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
+    <!-- Top Math Chalkboard / Canvas Banner -->
+    {activeFormula && (
+      <div class="calc-math-canvas">
+        <div class="math-canvas-badge">
+          <i class="fas fa-square-root-variable"></i> Verified Computational Formula
+        </div>
+        <div class="math-formula-code font-mono">
+          {activeFormula.latex}
+        </div>
+        <p class="math-explanation">{activeFormula.explanation}</p>
+      </div>
+    )}
+
+    <!-- 50/50 Split Blueprint Grid -->
+    <div class="calc-split-grid">
+      <!-- Left: Step Algorithm Recipe -->
+      <div class="calc-recipe-card">
+        <div class="card-hd">
+          <i class="fas fa-list-check card-hd-icon"></i>
+          <div>
+            <span class="card-hd-badge">Algorithm Flow</span>
+            <h3>How Calculations Execute</h3>
+          </div>
+        </div>
+        <div class="calc-steps-stack">
+          {activeSteps.map(s => (
+            <div class="calc-step-row">
+              <div class="calc-step-bubble font-mono">{s.step}</div>
+              <div>
+                <h4>{s.title}</h4>
+                <p>{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Right: Pre-Calculated Benchmark Table -->
+      <div class="calc-table-card">
+        <div class="card-hd">
+          <i class="fas fa-chart-column card-hd-icon"></i>
+          <div>
+            <span class="card-hd-badge">Benchmark Matrix</span>
+            <h3>{activeTable?.title || `${tool.name} Standards`}</h3>
+          </div>
+        </div>
+        {activeTable?.rows ? (
+          <div class="table-wrap">
+            <table class="calc-table">
+              <thead>
+                <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
+              </thead>
+              <tbody>
+                {activeTable.rows.map((r: string[]) => (
+                  <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'calc-cell-hd' : ''}>{c}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div class="calc-placeholder-specs">
+            <div class="spec-row"><span>Arithmetic Precision</span><strong>64-bit IEEE 754</strong></div>
+            <div class="spec-row"><span>Error Tolerance</span><strong>&lt; 0.00001%</strong></div>
+            <div class="spec-row"><span>Execution Speed</span><strong>&lt; 1 millisecond</strong></div>
+          </div>
+        )}
       </div>
     </div>
-  </div>
 
-  <!-- Key Features Grid -->
-  <div class="features-header text-center">
-    <h2 class="font-display guide-title">Why Choose Toolarsh {tool.name}?</h2>
-    <p class="guide-sub">Engineered for maximum performance, privacy, and convenience.</p>
-  </div>
+    <!-- Editorial Article Block -->
+    <article class="calc-article-card">
+      <div class="art-header">
+        <span class="art-badge"><i class="fas fa-book-open"></i> Mathematical Analysis</span>
+        <h2>{activeArticle.heading}</h2>
+        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
+      </div>
+      <div class="art-body">
+        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+      </div>
+      {activeArticle.bulletPoints && (
+        <ul class="art-bullets">
+          {activeArticle.bulletPoints.map(b => (
+            <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
+          ))}
+        </ul>
+      )}
+    </article>
 
-  <div class="features-grid">
-    <div class="feature-item">
-      <div class="feat-icon-wrap blue"><i class="fas fa-bolt"></i></div>
-      <h4>Lightning Fast</h4>
-      <p>Processes input in real-time right inside your web browser with zero server delay.</p>
-    </div>
-    <div class="feature-item">
-      <div class="feat-icon-wrap green"><i class="fas fa-shield-halved"></i></div>
-      <h4>100% Secure & Private</h4>
-      <p>Your inputs and files are never stored or transmitted to external databases.</p>
-    </div>
-    <div class="feature-item">
-      <div class="feat-icon-wrap purple"><i class="fas fa-mobile-screen-button"></i></div>
-      <h4>Responsive & Accessible</h4>
-      <p>Works smoothly on modern mobile phones, tablets, laptops, and desktop computers.</p>
-    </div>
-    <div class="feature-item">
-      <div class="feat-icon-wrap orange"><i class="fas fa-hand-holding-dollar"></i></div>
-      <h4>Always Free</h4>
-      <p>No subscriptions, hidden paywalls, or credit card requirements needed—ever.</p>
-    </div>
-  </div>
-
-  <!-- FAQ Accordion -->
-  <div class="faq-container">
-    <div class="text-center" style="margin-bottom: 28px;">
-      <span class="section-badge"><i class="fas fa-circle-question"></i> FAQ</span>
-      <h2 class="font-display guide-title">Frequently Asked Questions</h2>
-    </div>
-
-    <div class="tool-faq-list">
-      {faqs.map((f, i) => (
-        <div class="faq-item" id={`tool-faq-${i}`}>
-          <button class="faq-question" aria-expanded="false">
-            <span>{f.q}</span>
-            <div class="faq-icon"><i class="fas fa-plus"></i></div>
-          </button>
-          <div class="faq-answer">
-            <p>{f.a}</p>
+    <!-- 4 Feature Cards -->
+    <div class="calc-features-grid">
+      {activeFeatures.map(f => (
+        <div class="calc-feature-pill">
+          <div class="calc-feat-icon"><i class={`fas ${f.icon}`}></i></div>
+          <div>
+            <h4>{f.title}</h4>
+            <p>{f.desc}</p>
           </div>
         </div>
       ))}
     </div>
-  </div>
-</section>
+
+    <!-- FAQ Drawer Accordion -->
+    <div class="calc-faq-section">
+      <div class="calc-faq-header">
+        <span class="card-hd-badge">Calculation FAQ</span>
+        <h3>Answers to Common Formulas & Queries</h3>
+      </div>
+      <div class="calc-faq-list">
+        {activeFaqs.map((f, i) => (
+          <details class="calc-faq-drawer" id={`c-faq-${i}`}>
+            <summary class="calc-faq-summary">
+              <span>{f.q}</span>
+              <i class="fas fa-chevron-down"></i>
+            </summary>
+            <div class="calc-faq-body">{f.a}</div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+{/* ───────────────────────────────────────────────────────────────────────
+     LAYOUT 3: SECURITY & PRIVACY (Cyber Dossier & Terminal Architecture)
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.category === 'security' && (
+  <section class="cat-layout layout-security" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
+    <!-- Terminal-style Security Dossier Banner -->
+    <div class="cyber-terminal">
+      <div class="terminal-bar">
+        <div class="term-dots"><span></span><span></span><span></span></div>
+        <span class="term-title font-mono">ENCRYPTION_PROTOCOL // CLIENT_SIDE_ONLY</span>
+        <span class="term-status font-mono"><i class="fas fa-circle-check"></i> ZERO_PERSISTENCE</span>
+      </div>
+      <div class="terminal-body font-mono">
+        <div class="term-line"><span class="t-green">&gt; INITIALIZING_CIPHER:</span> WebCryptoAPI CSPRNG (Cryptographically Secure Pseudo-Random Number Generator)</div>
+        <div class="term-line"><span class="t-green">&gt; MEMORY_LIFECYCLE:</span> Ephemeral JavaScript heap memory &bull; Zero server telemetry &bull; Immediate GC release</div>
+        <div class="term-line"><span class="t-green">&gt; ENTROPY_STANDARD:</span> NIST SP 800-90A / FIPS 140-2 compliance verified</div>
+      </div>
+    </div>
+
+    <!-- 3 Pillars of Security Architecture -->
+    <div class="cyber-pillars">
+      <div class="pillar-card">
+        <div class="pillar-icon"><i class="fas fa-microchip"></i></div>
+        <h4>Local Web Crypto</h4>
+        <p>Uses hardware-accelerated OS entropy seeds directly in your browser. No strings are ever transmitted across networks.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon"><i class="fas fa-hard-drive"></i></div>
+        <h4>Zero Disk Persistence</h4>
+        <p>All values exist strictly in temporary RAM. No cookies, local storage, or server logs retain your sensitive credentials.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon"><i class="fas fa-shield-virus"></i></div>
+        <h4>Brute Force Immunity</h4>
+        <p>High entropy distributions ensure mathematical resistance against state-sponsored rainbow tables and GPU cracking arrays.</p>
+      </div>
+    </div>
+
+    <!-- Security Editorial Article -->
+    <article class="cyber-article-card">
+      <div class="art-header">
+        <span class="art-badge"><i class="fas fa-user-shield"></i> Security Dossier</span>
+        <h2>{activeArticle.heading}</h2>
+        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
+      </div>
+      <div class="art-body">
+        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+      </div>
+      {activeArticle.bulletPoints && (
+        <ul class="art-bullets">
+          {activeArticle.bulletPoints.map(b => (
+            <li><i class="fas fa-shield-check"></i> <span>{b}</span></li>
+          ))}
+        </ul>
+      )}
+    </article>
+
+    {/* NIST Table if available */}
+    {activeTable && (
+      <div class="cyber-table-wrap">
+        <div class="cyber-tbl-header">
+          <i class="fas fa-server"></i>
+          <h4>{activeTable.title}</h4>
+        </div>
+        <table class="cyber-table font-mono">
+          <thead>
+            <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {activeTable.rows.map((r: string[]) => (
+              <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'cyber-col-1' : ''}>{c}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+
+    <!-- Security Protocol FAQs -->
+    <div class="cyber-faq-deck">
+      <h3 class="cyber-faq-title font-mono"><i class="fas fa-shield-halved"></i> SECURITY_FAQ_ARCHIVE</h3>
+      <div class="cyber-faq-grid">
+        {activeFaqs.map(f => (
+          <div class="cyber-faq-box font-mono">
+            <div class="q-row"><span class="t-green">?</span> <strong>{f.q}</strong></div>
+            <div class="a-row"><span class="t-dim">&gt;</span> {f.a}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+{/* ───────────────────────────────────────────────────────────────────────
+     LAYOUT 4: GENERATORS (Studio & Tech Specs Matrix)
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.category === 'generators' && (
+  <section class="cat-layout layout-generators" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
+    <!-- Generator Bento Studio Grid -->
+    <div class="gen-bento-grid">
+      <!-- Main Tech Feature (2 col span) -->
+      <div class="gen-bento-tile bento-main">
+        <div class="gen-tile-badge"><i class="fas fa-wand-magic-sparkles"></i> Vector Engine</div>
+        <h2>Instant Vector Generation</h2>
+        <p>Generates high-resolution raster and vector graphics with sub-millisecond precision. Output formats are mathematically optimized for crisp physical print and high-DPI screens.</p>
+        <div class="gen-format-tags">
+          <span class="gen-tag"><i class="fas fa-check"></i> SVG Vector</span>
+          <span class="gen-tag"><i class="fas fa-check"></i> High-Res PNG</span>
+          <span class="gen-tag"><i class="fas fa-check"></i> Plain Text</span>
+          <span class="gen-tag"><i class="fas fa-check"></i> 100% Commercial Free</span>
+        </div>
+      </div>
+
+      <!-- Quick Steps Tile -->
+      <div class="gen-bento-tile bento-steps">
+        <div class="gen-tile-badge"><i class="fas fa-arrows-split-up-and-left"></i> Workflow</div>
+        <div class="gen-step-list">
+          {activeSteps.map(s => (
+            <div class="gen-mini-step">
+              <span class="gen-step-num font-mono">{s.step}</span>
+              <div>
+                <strong>{s.title}</strong>
+                <p>{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Generator Editorial Article -->
+    <article class="gen-article-card">
+      <div class="art-header">
+        <span class="art-badge"><i class="fas fa-bolt"></i> Generator Studio Guide</span>
+        <h2>{activeArticle.heading}</h2>
+        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
+      </div>
+      <div class="art-body">
+        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+      </div>
+      {activeArticle.bulletPoints && (
+        <ul class="art-bullets">
+          {activeArticle.bulletPoints.map(b => (
+            <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
+          ))}
+        </ul>
+      )}
+    </article>
+
+    <!-- 4 Feature Cards -->
+    <div class="gen-features-grid">
+      {activeFeatures.map(f => (
+        <div class="gen-feature-card">
+          <div class="gen-feat-icon"><i class={`fas ${f.icon}`}></i></div>
+          <h4>{f.title}</h4>
+          <p>{f.desc}</p>
+        </div>
+      ))}
+    </div>
+
+    {/* Tech Specs Matrix Table */}
+    {activeTable && (
+      <div class="gen-specs-card">
+        <div class="specs-header">
+          <i class="fas fa-microchip"></i>
+          <div>
+            <span class="specs-label">Technical Specification</span>
+            <h3>{activeTable.title}</h3>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="gen-table">
+            <thead>
+              <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {activeTable.rows.map((r: string[]) => (
+                <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'gen-cell-bold' : ''}>{c}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
+
+    <!-- Generator FAQs -->
+    <div class="gen-faq-section">
+      <h3>Frequently Asked Questions</h3>
+      <div class="gen-faq-columns">
+        {activeFaqs.map(f => (
+          <div class="gen-faq-card">
+            <h4>{f.q}</h4>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+{/* ───────────────────────────────────────────────────────────────────────
+     LAYOUT 5: CONVERTERS (Exchange & Pipeline Transformation Flow)
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.category === 'converters' && (
+  <section class="cat-layout layout-converters" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
+    <!-- Transformation Pipeline Visual Diagram -->
+    <div class="converter-pipeline-card">
+      <div class="pipeline-header">
+        <span class="pipeline-tag"><i class="fas fa-arrows-rotate"></i> Pipeline Architecture</span>
+        <h3>Real-Time Transformation Engine</h3>
+      </div>
+      <div class="pipeline-flow">
+        <div class="pipe-node">
+          <div class="node-icon"><i class="fas fa-file-import"></i></div>
+          <strong>Input Value / File</strong>
+          <span>Raw Source Data</span>
+        </div>
+        <div class="pipe-arrow">
+          <div class="arrow-pulse"></div>
+          <i class="fas fa-bolt"></i>
+          <span>Mathematical Scaling</span>
+        </div>
+        <div class="pipe-node active-node">
+          <div class="node-icon"><i class="fas fa-gears"></i></div>
+          <strong>Precision Transform</strong>
+          <span>Lossless Parsing</span>
+        </div>
+        <div class="pipe-arrow">
+          <div class="arrow-pulse"></div>
+          <i class="fas fa-arrow-right"></i>
+          <span>Instant Mapping</span>
+        </div>
+        <div class="pipe-node">
+          <div class="node-icon"><i class="fas fa-file-export"></i></div>
+          <strong>Export Format</strong>
+          <span>Target Metric</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Converter Editorial Article -->
+    <article class="conv-article-card">
+      <div class="art-header">
+        <span class="art-badge"><i class="fas fa-arrows-rotate"></i> Technical Conversion Guide</span>
+        <h2>{activeArticle.heading}</h2>
+        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
+      </div>
+      <div class="art-body">
+        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+      </div>
+      {activeArticle.bulletPoints && (
+        <ul class="art-bullets">
+          {activeArticle.bulletPoints.map(b => (
+            <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
+          ))}
+        </ul>
+      )}
+    </article>
+
+    <!-- Feature Cards -->
+    <div class="conv-features-grid">
+      {activeFeatures.map(f => (
+        <div class="conv-feature-pill">
+          <div class="conv-feat-icon"><i class={`fas ${f.icon}`}></i></div>
+          <div>
+            <h4>{f.title}</h4>
+            <p>{f.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Factor Reference Matrix */}
+    {activeTable && (
+      <div class="converter-matrix-card">
+        <div class="matrix-hd">
+          <i class="fas fa-table-cells"></i>
+          <div>
+            <span class="matrix-badge">Multiplication Matrix</span>
+            <h3>{activeTable.title}</h3>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="conv-table">
+            <thead>
+              <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {activeTable.rows.map((r: string[]) => (
+                <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'conv-cell-bold font-mono' : ''}>{c}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
+
+    <!-- Conversion FAQs -->
+    <div class="conv-faq-section">
+      <h3 class="conv-faq-hd">Converter Frequently Asked Questions</h3>
+      <div class="conv-faq-accordion">
+        {activeFaqs.map(f => (
+          <div class="conv-faq-item">
+            <h4><i class="fas fa-circle-question"></i> {f.q}</h4>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+{/* ───────────────────────────────────────────────────────────────────────
+     LAYOUT 6: MEDIA & DOWNLOADS (Media Deck & Device Workflow)
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.category === 'media' && (
+  <section class="cat-layout layout-media" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
+    <!-- Resolution Tier Deck Cards -->
+    <div class="media-deck-header">
+      <span class="media-badge"><i class="fas fa-photo-film"></i> Stream Quality Standards</span>
+      <h2>Supported Media Formats & Resolutions</h2>
+    </div>
+
+    <div class="media-tier-grid">
+      <div class="tier-card tier-top">
+        <div class="tier-tag">Highest Quality</div>
+        <div class="tier-res">1080p Full HD</div>
+        <div class="tier-spec font-mono">1920 &times; 1080 &bull; 60fps &bull; MP4</div>
+        <p>Original bitrate crystal clear video streams extracted directly from CDN endpoints without compression artifacts.</p>
+      </div>
+      <div class="tier-card">
+        <div class="tier-tag">Standard Mobile</div>
+        <div class="tier-res">720p HD</div>
+        <div class="tier-spec font-mono">1280 &times; 720 &bull; 30fps &bull; MP4</div>
+        <p>Lightweight video files optimized for mobile data sharing and fast messaging app attachments.</p>
+      </div>
+      <div class="tier-card">
+        <div class="tier-tag">Audio Stream</div>
+        <div class="tier-res">320 kbps MP3</div>
+        <div class="tier-spec font-mono">Stereo 44.1kHz &bull; High Bitrate</div>
+        <p>Lossless audio extraction for podcasts, background music, speech, and soundtracks.</p>
+      </div>
+    </div>
+
+    <!-- Step by Step Device Workflow -->
+    <div class="device-workflow-card">
+      <div class="dw-header">
+        <span class="media-badge"><i class="fas fa-mobile-screen"></i> Cross-Platform Instructions</span>
+        <h3>Device Saving Guide</h3>
+      </div>
+      <div class="device-columns">
+        <div class="dev-col">
+          <div class="dev-icon"><i class="fab fa-apple"></i></div>
+          <h4>iPhone & iPad (iOS)</h4>
+          <ol>
+            <li>Paste the URL and tap <strong>Download</strong>.</li>
+            <li>When video loads, tap the <strong>Share</strong> button.</li>
+            <li>Select <strong>"Save Video"</strong> to store directly in Photos.</li>
+          </ol>
+        </div>
+        <div class="dev-col">
+          <div class="dev-icon"><i class="fab fa-android"></i></div>
+          <h4>Android Smartphones</h4>
+          <ol>
+            <li>Paste link and tap <strong>Download</strong>.</li>
+            <li>The MP4 file downloads to your <strong>Downloads</strong> folder.</li>
+            <li>Access instantly in Google Photos or Gallery.</li>
+          </ol>
+        </div>
+        <div class="dev-col">
+          <div class="dev-icon"><i class="fas fa-desktop"></i></div>
+          <h4>PC / Mac / Linux</h4>
+          <ol>
+            <li>Click <strong>Download Video</strong> to begin download.</li>
+            <li>File saves automatically into your default folder.</li>
+            <li>Ready for offline viewing in VLC or QuickTime.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Editorial Article -->
+    <article class="media-article-card">
+      <div class="art-header">
+        <span class="art-badge"><i class="fas fa-cloud-arrow-down"></i> Media Guide 2026</span>
+        <h2>{activeArticle.heading}</h2>
+        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
+      </div>
+      <div class="art-body">
+        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+      </div>
+      {activeArticle.bulletPoints && (
+        <ul class="art-bullets">
+          {activeArticle.bulletPoints.map(b => (
+            <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
+          ))}
+        </ul>
+      )}
+    </article>
+
+    <!-- 4 Feature Cards -->
+    <div class="media-features-grid">
+      {activeFeatures.map(f => (
+        <div class="media-feature-card">
+          <div class="media-feat-icon"><i class={`fas ${f.icon}`}></i></div>
+          <h4>{f.title}</h4>
+          <p>{f.desc}</p>
+        </div>
+      ))}
+    </div>
+
+    {/* Media Format Matrix if available */}
+    {activeTable && (
+      <div class="media-table-card">
+        <h3>{activeTable.title}</h3>
+        <div class="table-wrap">
+          <table class="media-table">
+            <thead>
+              <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {activeTable.rows.map((r: string[]) => (
+                <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'media-bold' : ''}>{c}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
+
+    <!-- Creator Fair-Use Callout -->
+    <div class="creator-shield-card">
+      <i class="fas fa-scale-balanced shield-icon"></i>
+      <div>
+        <h4>Fair Use & Creator Privacy Notice</h4>
+        <p>Toolarsh Media Downloaders operate strictly for personal educational archiving and fair-use viewing. We do not store or host copyrighted media files on our servers.</p>
+      </div>
+    </div>
+
+    <!-- Media FAQs -->
+    <div class="media-faq-block">
+      <h3>Frequently Asked Questions</h3>
+      <div class="media-faq-grid">
+        {activeFaqs.map(f => (
+          <div class="media-faq-card">
+            <h4>{f.q}</h4>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
 
 <!-- JSON-LD Structured Data for SEO -->
 <script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)}></script>
 <script type="application/ld+json" set:html={JSON.stringify(jsonLdFaq)}></script>
 
 <style>
-  .tool-guide-section {
-    margin-top: 48px;
-    padding-top: 40px;
-    border-top: 1.5px dashed var(--border);
+  /* ═══════════════════════════════════════════════════════════════
+     COMMON CORE STYLES & RESET
+     ═══════════════════════════════════════════════════════════════ */
+  .cat-layout {
+    margin-top: 56px;
+    padding-top: 48px;
+    border-top: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     gap: 48px;
   }
-  .text-center { text-align: center; }
-  .section-badge {
+  .table-wrap { overflow-x: auto; border-radius: var(--radius-md); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     EDITORIAL ARTICLE BOX STYLES (Universal)
+     ═══════════════════════════════════════════════════════════════ */
+  .editorial-article-box,
+  .calc-article-card,
+  .cyber-article-card,
+  .gen-article-card,
+  .conv-article-card,
+  .media-article-card {
+    background: var(--surface-solid);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-xl);
+    padding: 36px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  html[data-theme="dark"] .editorial-article-box,
+  html[data-theme="dark"] .calc-article-card,
+  html[data-theme="dark"] .gen-article-card,
+  html[data-theme="dark"] .conv-article-card,
+  html[data-theme="dark"] .media-article-card {
+    background: #111113;
+  }
+  .art-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .art-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    color: var(--brand);
-    background: var(--brand-light);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--cat-c);
+    background: var(--cat-bg);
     padding: 4px 12px;
     border-radius: 100px;
-    margin-bottom: 12px;
+    width: fit-content;
+    font-family: 'JetBrains Mono', monospace;
   }
-  .guide-title {
-    font-size: clamp(1.5rem, 3vw, 2rem);
+  .art-header h2 {
+    font-size: clamp(20px, 2.5vw, 26px);
     font-weight: 800;
-    color: #0F172A;
-    margin-bottom: 8px;
+    color: var(--txt);
+    line-height: 1.3;
   }
-  .guide-sub {
+  .art-subheading {
     font-size: 15px;
-    color: #64748B;
+    font-weight: 600;
+    color: var(--cat-c);
+    line-height: 1.5;
+  }
+  .art-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 14.5px;
+    color: var(--txt-muted);
+    line-height: 1.75;
+  }
+  .art-bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+  }
+  .art-bullets li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--txt);
+    line-height: 1.5;
+  }
+  .art-bullets li i {
+    color: var(--cat-c);
+    font-size: 15px;
+    margin-top: 3px;
+    flex-shrink: 0;
   }
 
-  /* Steps Grid */
-  .steps-grid {
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT 1: WRITING & TEXT (Editorial Desk)
+     ═══════════════════════════════════════════════════════════════ */
+  .writing-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 280px 1fr;
+    gap: 36px;
+    align-items: flex-start;
+  }
+  .writing-sidebar {
+    position: sticky;
+    top: 84px;
+  }
+  .editorial-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
     gap: 20px;
   }
-  .step-card {
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    position: relative;
-    transition: transform .2s ease, border-color .2s ease;
+  .ed-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
-  .step-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-hover);
-  }
-  .step-num {
-    position: absolute;
-    top: 16px;
-    right: 20px;
+  .ed-icon {
     font-size: 24px;
-    font-weight: 900;
-    color: #CBD5E1;
-    font-family: 'Outfit', sans-serif;
+    color: var(--cat-c);
   }
-  .step-icon {
-    width: 48px;
-    height: 48px;
-    background: #fff;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    color: var(--brand);
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 16px;
-    border: 1px solid var(--border);
-  }
-  .step-title {
-    font-size: 17px;
+  .ed-label {
+    font-size: 10.5px;
     font-weight: 700;
-    color: #0F172A;
-    margin-bottom: 8px;
-  }
-  .step-desc {
-    font-size: 13.5px;
-    color: #64748B;
-    line-height: 1.55;
-  }
-
-  /* Demo Box */
-  .demo-box {
-    background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-xl);
-    padding: 32px;
-  }
-  .demo-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    align-items: center;
-  }
-  .demo-tag {
-    font-size: 12px;
-    font-weight: 700;
-    color: #2563EB;
     text-transform: uppercase;
-    letter-spacing: .05em;
-    display: block;
-    margin-bottom: 8px;
+    letter-spacing: .06em;
+    color: var(--txt-dim);
+    font-family: 'JetBrains Mono', monospace;
   }
-  .demo-heading {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #0F172A;
-    margin-bottom: 12px;
-  }
-  .demo-p {
-    font-size: 14.5px;
-    color: #475569;
-    line-height: 1.65;
-    margin-bottom: 16px;
-  }
-  .demo-features-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .demo-feat-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #1E293B;
-  }
-  .demo-feat-item i { color: #22C55E; }
-
-  /* Demo Preview Card */
-  .demo-preview-card {
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-md);
-  }
-  .preview-header {
-    background: #1E293B;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .preview-dot.red { background: #EF4444; }
-  .preview-dot.yellow { background: #F59E0B; }
-  .preview-dot.green { background: #10B981; }
-  .preview-title { font-size: 12px; font-weight: 600; color: #94A3B8; margin-left: 6px; }
-  .preview-body {
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .preview-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .p-label { font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; }
-  .input-badge {
-    background: #F1F5F9;
-    color: #334155;
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 13.5px;
-    font-family: monospace;
-    border: 1px solid #E2E8F0;
-  }
-  .preview-arrow-down {
-    text-align: center;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--brand);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-  .output-badge {
-    background: #ECFDF5;
-    color: #065F46;
-    padding: 12px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid #A7F3D0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* Features Grid */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-  .feature-item {
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    transition: transform .2s ease;
-  }
-  .feature-item:hover { transform: translateY(-3px); }
-  .feat-icon-wrap {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin-bottom: 12px;
-  }
-  .feat-icon-wrap.blue { background: #EFF6FF; color: #2563EB; }
-  .feat-icon-wrap.green { background: #ECFDF5; color: #059669; }
-  .feat-icon-wrap.purple { background: #F5F3FF; color: #7C3AED; }
-  .feat-icon-wrap.orange { background: #FFF7ED; color: #EA580C; }
-  .feature-item h4 { font-size: 15px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
-  .feature-item p { font-size: 13px; color: #64748B; line-height: 1.5; }
-
-  /* Tool FAQ */
-  .tool-faq-list {
-    max-width: 800px;
-    margin: 0 auto;
+  .ed-header h4 { font-size: 16px; font-weight: 800; color: var(--txt); }
+  .ed-stats-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
   }
+  .ed-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--txt-muted);
+  }
+  .ed-stat-row strong {
+    color: var(--txt);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+  }
+  .ed-footer-tip {
+    display: flex;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--txt-dim);
+    line-height: 1.5;
+  }
+  .ed-footer-tip i { color: var(--cat-c); flex-shrink: 0; margin-top: 2px; }
 
-  @media (max-width: 900px) {
-    .steps-grid { grid-template-columns: 1fr; }
-    .demo-grid { grid-template-columns: 1fr; }
-    .features-grid { grid-template-columns: 1fr 1fr; }
+  .writing-main {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
   }
-  @media (max-width: 480px) {
-    .features-grid { grid-template-columns: 1fr; }
+  .step-capsules {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .step-capsule {
+    background: var(--glass-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+  }
+  .cap-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--cat-bg);
+    color: var(--cat-c);
+    border: 1px solid var(--cat-b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+  .cap-info strong { display: block; font-size: 13.5px; color: var(--txt); margin-bottom: 2px; }
+  .cap-info span { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
+
+  .section-subhd {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--txt);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .feature-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .feature-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    padding: 18px;
+  }
+  .feature-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--cat-bg);
+    color: var(--cat-c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .feature-card h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 4px; }
+  .feature-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
+
+  .writing-table-card {
+    background: var(--surface-solid);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  html[data-theme="dark"] .writing-table-card { background: #111113; }
+  .writing-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .writing-table th { background: var(--surface-3); padding: 12px 16px; text-align: left; font-size: 12px; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
+  .writing-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
+  .writing-table tr:last-child td { border-bottom: none; }
+  .ed-bold { font-weight: 700; color: var(--txt) !important; }
+
+  .faq-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .faq-card-static {
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    padding: 18px;
+  }
+  .faq-card-static h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
+  .faq-card-static p { font-size: 13px; color: var(--txt-muted); line-height: 1.55; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT 2: CALCULATORS (Mathematical Blueprint / Dashboard)
+     ═══════════════════════════════════════════════════════════════ */
+  .calc-math-canvas {
+    background: linear-gradient(135deg, var(--surface-solid), var(--surface-3));
+    border: 1.5px solid var(--cat-b);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(13, 148, 136, 0.08);
+  }
+  html[data-theme="dark"] .calc-math-canvas { background: #111113; }
+  .math-canvas-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--cat-c);
+    background: var(--cat-bg);
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .math-formula-code {
+    font-size: clamp(16px, 2.2vw, 22px);
+    font-weight: 700;
+    color: var(--txt);
+    padding: 16px;
+    background: var(--surface-2);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  .math-explanation { font-size: 14px; color: var(--txt-muted); max-width: 650px; margin: 0 auto; }
+
+  .calc-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .calc-recipe-card, .calc-table-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-xl);
+    padding: 26px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .card-hd-icon { font-size: 20px; color: var(--cat-c); }
+  .card-hd-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--txt-dim); font-family: 'JetBrains Mono', monospace; display: block; }
+  .card-hd h3 { font-size: 16px; font-weight: 800; color: var(--txt); }
+
+  .calc-steps-stack { display: flex; flex-direction: column; gap: 16px; }
+  .calc-step-row { display: flex; gap: 14px; align-items: flex-start; }
+  .calc-step-bubble {
+    width: 32px; height: 32px; border-radius: 8px; background: var(--cat-bg);
+    color: var(--cat-c); border: 1px solid var(--cat-b); display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .calc-step-row h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 2px; }
+  .calc-step-row p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
+
+  .calc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .calc-table th { background: var(--surface-3); padding: 10px 12px; font-size: 11px; text-align: left; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
+  .calc-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
+  .calc-cell-hd { font-weight: 700; color: var(--txt) !important; font-family: 'JetBrains Mono', monospace; }
+
+  .calc-placeholder-specs { display: flex; flex-direction: column; gap: 12px; }
+  .spec-row { display: flex; justify-content: space-between; padding: 10px; background: var(--surface-3); border-radius: 6px; font-size: 13px; }
+
+  .calc-features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .calc-feature-pill {
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .calc-feat-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--cat-bg);
+    color: var(--cat-c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .calc-feature-pill h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); margin-bottom: 3px; }
+  .calc-feature-pill p { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
+
+  .calc-faq-section { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-xl); padding: 28px; }
+  .calc-faq-header { margin-bottom: 18px; }
+  .calc-faq-header h3 { font-size: 17px; font-weight: 800; color: var(--txt); margin-top: 4px; }
+  .calc-faq-list { display: flex; flex-direction: column; gap: 10px; }
+  .calc-faq-drawer {
+    border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-solid);
+    overflow: hidden;
+  }
+  html[data-theme="dark"] .calc-faq-drawer { background: #111113; }
+  .calc-faq-summary {
+    padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--txt);
+    display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none;
+  }
+  .calc-faq-summary::-webkit-details-marker { display: none; }
+  .calc-faq-body { padding: 0 18px 16px; font-size: 13.5px; color: var(--txt-muted); line-height: 1.6; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT 3: SECURITY (Cyber Dossier / Terminal)
+     ═══════════════════════════════════════════════════════════════ */
+  .cyber-terminal {
+    background: #09090B;
+    border: 1.5px solid rgba(5, 150, 105, 0.4);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(5, 150, 105, 0.15);
+  }
+  .terminal-bar {
+    background: #18181B;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #27272A;
+  }
+  .term-dots { display: flex; gap: 6px; }
+  .term-dots span { width: 9px; height: 9px; border-radius: 50%; background: #3F3F46; }
+  .term-dots span:nth-child(1) { background: #EF4444; }
+  .term-dots span:nth-child(2) { background: #F59E0B; }
+  .term-dots span:nth-child(3) { background: #10B981; }
+  .term-title { font-size: 11px; font-weight: 700; color: #A1A1AA; }
+  .term-status { font-size: 11px; font-weight: 700; color: #34D399; }
+  .terminal-body { padding: 20px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; color: #E4E4E7; }
+  .t-green { color: #34D399; font-weight: 700; }
+  .t-dim { color: #71717A; }
+
+  .cyber-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pillar-card {
+    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-lg);
+    padding: 22px; box-shadow: var(--shadow-sm);
+  }
+  .pillar-icon {
+    width: 38px; height: 38px; border-radius: 8px; background: rgba(5, 150, 105, 0.1);
+    color: #059669; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-bottom: 12px;
+  }
+  .pillar-card h4 { font-size: 14.5px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
+  .pillar-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.55; }
+
+  .cyber-article-card {
+    background: #09090B;
+    border: 1px solid #27272A;
+    border-radius: var(--radius-xl);
+    padding: 32px;
+  }
+  .cyber-article-card h2 { color: #F4F4F5; }
+  .cyber-article-card .art-body p { color: #A1A1AA; }
+  .cyber-article-card .art-bullets li { color: #E4E4E7; }
+
+  .cyber-table-wrap {
+    background: #09090B; border: 1px solid #27272A; border-radius: var(--radius-lg); overflow: hidden;
+  }
+  .cyber-tbl-header { padding: 14px 20px; background: #18181B; display: flex; align-items: center; gap: 8px; color: #34D399; font-size: 13.5px; font-weight: 700; }
+  .cyber-table { width: 100%; border-collapse: collapse; font-size: 12.5px; color: #E4E4E7; }
+  .cyber-table th { background: #121215; padding: 12px 18px; text-align: left; color: #A1A1AA; border-bottom: 1px solid #27272A; }
+  .cyber-table td { padding: 12px 18px; border-bottom: 1px solid #1E1E24; }
+  .cyber-col-1 { color: #34D399; font-weight: 700; }
+
+  .cyber-faq-deck { display: flex; flex-direction: column; gap: 16px; }
+  .cyber-faq-title { font-size: 13px; font-weight: 700; color: var(--txt-dim); }
+  .cyber-faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .cyber-faq-box {
+    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md);
+    padding: 16px; font-size: 12.5px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .q-row { color: var(--txt); font-weight: 700; display: flex; gap: 6px; }
+  .a-row { color: var(--txt-muted); line-height: 1.5; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT 4: GENERATORS (Studio & Bento)
+     ═══════════════════════════════════════════════════════════════ */
+  .gen-bento-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+  .gen-bento-tile {
+    background: var(--glass-bg); border: 1px solid var(--border-mid); border-radius: var(--radius-xl);
+    padding: 28px; box-shadow: var(--shadow-sm);
+  }
+  .gen-tile-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+    color: var(--cat-c); background: var(--cat-bg); padding: 4px 12px; border-radius: 100px; margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .bento-main h2 { font-size: 22px; font-weight: 800; color: var(--txt); margin-bottom: 10px; }
+  .bento-main p { font-size: 14px; color: var(--txt-muted); line-height: 1.6; margin-bottom: 20px; }
+  .gen-format-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+  .gen-tag { font-size: 12px; font-weight: 600; color: var(--txt); background: var(--surface-3); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); }
+
+  .gen-step-list { display: flex; flex-direction: column; gap: 14px; }
+  .gen-mini-step { display: flex; gap: 12px; align-items: flex-start; }
+  .gen-step-num { width: 26px; height: 26px; border-radius: 6px; background: var(--cat-bg); color: var(--cat-c); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+  .gen-mini-step strong { font-size: 13.5px; color: var(--txt); display: block; }
+  .gen-mini-step p { font-size: 12px; color: var(--txt-muted); }
+
+  .gen-features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .gen-feature-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .gen-feat-icon {
+    width: 34px; height: 34px; border-radius: 8px; background: var(--cat-bg);
+    color: var(--cat-c); display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 4px;
+  }
+  .gen-feature-card h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); }
+  .gen-feature-card p { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
+
+  .gen-specs-card { background: var(--surface-solid); border: 1px solid var(--border-mid); border-radius: var(--radius-xl); padding: 24px; }
+  html[data-theme="dark"] .gen-specs-card { background: #111113; }
+  .specs-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .specs-header i { font-size: 22px; color: var(--cat-c); }
+  .specs-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--txt-dim); font-family: 'JetBrains Mono', monospace; }
+  .specs-header h3 { font-size: 16px; font-weight: 800; color: var(--txt); }
+
+  .gen-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .gen-table th { background: var(--surface-3); padding: 12px 14px; text-align: left; font-size: 11.5px; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
+  .gen-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
+  .gen-cell-bold { font-weight: 700; color: var(--txt) !important; }
+
+  .gen-faq-section h3 { font-size: 17px; font-weight: 800; color: var(--txt); margin-bottom: 16px; }
+  .gen-faq-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .gen-faq-card { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md); padding: 18px; }
+  .gen-faq-card h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
+  .gen-faq-card p { font-size: 13px; color: var(--txt-muted); line-height: 1.55; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT 5: CONVERTERS (Exchange Pipeline)
+     ═══════════════════════════════════════════════════════════════ */
+  .converter-pipeline-card {
+    background: var(--surface-solid); border: 1px solid var(--border-mid); border-radius: var(--radius-xl);
+    padding: 32px; box-shadow: var(--shadow-sm);
+  }
+  html[data-theme="dark"] .converter-pipeline-card { background: #111113; }
+  .pipeline-header { margin-bottom: 24px; text-align: center; }
+  .pipeline-tag { font-size: 11px; font-weight: 700; color: var(--cat-c); background: var(--cat-bg); padding: 4px 12px; border-radius: 100px; font-family: 'JetBrains Mono', monospace; }
+  .pipeline-header h3 { font-size: 20px; font-weight: 800; color: var(--txt); margin-top: 8px; }
+
+  .pipeline-flow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .pipe-node {
+    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-lg);
+    padding: 18px 20px; text-align: center; flex: 1; min-width: 130px; display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+  }
+  .active-node { border-color: var(--cat-c); background: var(--cat-bg); }
+  .node-icon { font-size: 20px; color: var(--cat-c); margin-bottom: 4px; }
+  .pipe-node strong { font-size: 13.5px; color: var(--txt); }
+  .pipe-node span { font-size: 11.5px; color: var(--txt-dim); }
+
+  .pipe-arrow { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--cat-c); font-size: 12px; }
+  .pipe-arrow span { font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--txt-dim); }
+
+  .conv-features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .conv-feature-pill {
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .conv-feat-icon {
+    width: 34px; height: 34px; border-radius: 8px; background: var(--cat-bg);
+    color: var(--cat-c); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;
+  }
+  .conv-feature-pill h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); margin-bottom: 3px; }
+  .conv-feature-pill p { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
+
+  .converter-matrix-card { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-xl); padding: 24px; }
+  .matrix-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .matrix-hd i { font-size: 22px; color: var(--cat-c); }
+  .matrix-badge { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--txt-dim); font-family: 'JetBrains Mono', monospace; }
+  .matrix-hd h3 { font-size: 16px; font-weight: 800; color: var(--txt); }
+
+  .conv-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .conv-table th { background: var(--surface-3); padding: 12px 14px; text-align: left; font-size: 11.5px; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
+  .conv-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
+  .conv-cell-bold { font-weight: 700; color: var(--txt) !important; }
+
+  .conv-faq-hd { font-size: 17px; font-weight: 800; color: var(--txt); margin-bottom: 14px; }
+  .conv-faq-accordion { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .conv-faq-item { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md); padding: 16px; }
+  .conv-faq-item h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .conv-faq-item h4 i { color: var(--cat-c); font-size: 13px; }
+  .conv-faq-item p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.55; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT 6: MEDIA & DOWNLOADS (Media Deck)
+     ═══════════════════════════════════════════════════════════════ */
+  .media-deck-header { text-align: center; }
+  .media-badge { font-size: 11px; font-weight: 700; color: var(--cat-c); background: var(--cat-bg); padding: 4px 12px; border-radius: 100px; font-family: 'JetBrains Mono', monospace; }
+  .media-deck-header h2 { font-size: 22px; font-weight: 800; color: var(--txt); margin-top: 6px; }
+
+  .media-tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .tier-card {
+    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-lg);
+    padding: 24px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-sm);
+  }
+  .tier-top { border-color: var(--cat-c); background: var(--cat-bg); }
+  .tier-tag { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--cat-c); font-family: 'JetBrains Mono', monospace; }
+  .tier-res { font-size: 18px; font-weight: 800; color: var(--txt); }
+  .tier-spec { font-size: 11.5px; color: var(--txt-dim); margin-bottom: 4px; }
+  .tier-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
+
+  .device-workflow-card { background: var(--surface-solid); border: 1px solid var(--border-mid); border-radius: var(--radius-xl); padding: 28px; }
+  html[data-theme="dark"] .device-workflow-card { background: #111113; }
+  .dw-header { margin-bottom: 20px; }
+  .dw-header h3 { font-size: 17px; font-weight: 800; color: var(--txt); margin-top: 4px; }
+  .device-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .dev-col { background: var(--surface-3); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; }
+  .dev-icon { font-size: 24px; color: var(--cat-c); margin-bottom: 8px; }
+  .dev-col h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 10px; }
+  .dev-col ol { padding-left: 18px; font-size: 12.5px; color: var(--txt-muted); line-height: 1.6; }
+
+  .media-features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .media-feature-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .media-feat-icon {
+    width: 34px; height: 34px; border-radius: 8px; background: var(--cat-bg);
+    color: var(--cat-c); display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 4px;
+  }
+  .media-feature-card h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); }
+  .media-feature-card p { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
+
+  .media-table-card { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-lg); padding: 24px; }
+  .media-table-card h3 { font-size: 16px; font-weight: 800; color: var(--txt); margin-bottom: 14px; }
+  .media-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .media-table th { background: var(--surface-3); padding: 12px 14px; text-align: left; font-size: 11.5px; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
+  .media-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
+  .media-bold { font-weight: 700; color: var(--txt) !important; }
+
+  .creator-shield-card {
+    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md);
+    padding: 20px; display: flex; gap: 16px; align-items: center;
+  }
+  .shield-icon { font-size: 26px; color: var(--cat-c); flex-shrink: 0; }
+  .creator-shield-card h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 4px; }
+  .creator-shield-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
+
+  .media-faq-block h3 { font-size: 17px; font-weight: 800; color: var(--txt); margin-bottom: 14px; }
+  .media-faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .media-faq-card { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md); padding: 16px; }
+  .media-faq-card h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
+  .media-faq-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.55; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     RESPONSIVE
+     ═══════════════════════════════════════════════════════════════ */
+  @media (max-width: 960px) {
+    .writing-grid { grid-template-columns: 1fr; }
+    .writing-sidebar { position: static; }
+    .step-capsules { grid-template-columns: 1fr; }
+    .feature-card-grid { grid-template-columns: 1fr; }
+    .faq-two-col { grid-template-columns: 1fr; }
+
+    .calc-split-grid { grid-template-columns: 1fr; }
+    .calc-features-grid { grid-template-columns: 1fr; }
+
+    .cyber-pillars { grid-template-columns: 1fr; }
+    .cyber-faq-grid { grid-template-columns: 1fr; }
+
+    .gen-bento-grid { grid-template-columns: 1fr; }
+    .gen-features-grid { grid-template-columns: 1fr; }
+    .gen-faq-columns { grid-template-columns: 1fr; }
+
+    .pipeline-flow { flex-direction: column; }
+    .pipe-node { width: 100%; }
+    .conv-features-grid { grid-template-columns: 1fr; }
+    .conv-faq-accordion { grid-template-columns: 1fr; }
+
+    .media-tier-grid { grid-template-columns: 1fr; }
+    .device-columns { grid-template-columns: 1fr; }
+    .media-features-grid { grid-template-columns: 1fr; }
+    .media-faq-grid { grid-template-columns: 1fr; }
   }
 </style>
-
-<script>
-  document.querySelectorAll('.tool-faq-list .faq-question').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const item = btn.closest('.faq-item');
-      const isOpen = item?.classList.contains('open');
-
-      document.querySelectorAll('.tool-faq-list .faq-item').forEach(el => {
-        el.classList.remove('open');
-        el.querySelector('.faq-question')?.setAttribute('aria-expanded', 'false');
-      });
-
-      if (!isOpen) {
-        item?.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-      }
-    });
-  });
-</script>

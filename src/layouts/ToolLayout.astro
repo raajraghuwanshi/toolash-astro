@@ -18,59 +18,65 @@ const meta = categoryMeta[tool.category];
 const related = propRelated ?? tools.filter(t => t.category === tool.category && t.slug !== tool.slug).slice(0, 4);
 ---
 
-<BaseLayout
-  title={tool.title}
-  description={tool.metaDescription}
-  keywords={tool.keywords}
->
+<BaseLayout title={tool.title} description={tool.metaDescription} keywords={tool.keywords}>
   <Navbar />
   <SearchModal />
 
   <main>
-    <!-- Tool Hero / Header -->
-    <div class="tool-hero" style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg}`}>
+    <!-- Tool Header -->
+    <div class="tool-header">
       <div class="container">
-        <nav class="breadcrumb">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
           <a href="/">Home</a>
-          <i class="fas fa-chevron-right"></i>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
           <a href={`/#${tool.category}`}>{meta.label}</a>
-          <i class="fas fa-chevron-right"></i>
-          <span>{tool.name}</span>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          <span aria-current="page">{tool.name}</span>
         </nav>
-        <div class="tool-hero-inner" data-animate="fade-up">
-          <div class="tool-hero-icon">{tool.icon}</div>
-          <div>
-            <div class="tool-hero-cat">{meta.emoji} {meta.label}</div>
-            <h1 class="font-display tool-hero-title">{tool.name}</h1>
-            <p class="tool-hero-desc">{tool.description}</p>
-            <div class="tool-hero-badges">
-              <span class="badge badge-free"><span class="pulse-dot"></span> 100% Free</span>
-              <span class="badge" style="background:#EFF6FF; color:#2563EB"><i class="fas fa-browser"></i> Browser-Based</span>
-              <span class="badge" style="background:#F5F3FF; color:#7C3AED"><i class="fas fa-user-slash"></i> No Sign-up</span>
+
+        <div class="tool-header-inner" data-animate="fade-up">
+          <div class="tool-icon-box" style={`background:${meta.bg}; color:${meta.color}`} aria-hidden="true">
+            <i class={`fas ${tool.faIcon}`}></i>
+          </div>
+          <div class="tool-header-text">
+            <div class="tool-cat-badge" style={`background:${meta.bg}; color:${meta.color}; border-color:rgba(from ${meta.color} r g b / .25)`}>
+              {meta.emoji} {meta.label}
+            </div>
+            <h1 class="tool-name">{tool.name}</h1>
+            <p class="tool-desc">{tool.description}</p>
+            <div class="tool-tags">
+              <span class="badge badge-free"><span class="pulse-dot" aria-hidden="true"></span> Free</span>
+              <span class="badge" style="background:var(--surface-3); color:var(--txt-muted); border:1px solid var(--border-mid)">
+                <i class="fas fa-globe" aria-hidden="true"></i> Browser-Based
+              </span>
+              <span class="badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid rgba(217,119,6,.25)">
+                <i class="fas fa-lock" aria-hidden="true"></i> No Sign-up
+              </span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Tool Content & Guide -->
+    <!-- Tool Body -->
     <div class="tool-body">
       <div class="container">
-        <div class="tool-content-card shadow-card">
+        <div class="tool-card-wrap">
           <slot />
         </div>
-
-        <!-- Rich Demo Content & Guide Section (like Toolesh) -->
         <ToolContentSection tool={tool} customFaqs={customFaqs} />
       </div>
     </div>
 
-    <!-- Related Tools -->
+    <!-- Related -->
     {related.length > 0 && (
-      <section class="related-tools">
+      <section class="related-section" aria-labelledby="related-h">
         <div class="container">
-          <h2 class="related-title font-display">More {meta.label} Tools</h2>
-          <div class="related-grid">
+          <span class="section-label" id="related-h">
+            <i class="fas fa-grid-2" aria-hidden="true"></i>
+            More {meta.label} Tools
+          </span>
+          <div class="related-grid" role="list" aria-label={`More ${meta.label} tools`}>
             {related.map(t => <ToolCard tool={t} />)}
           </div>
         </div>
@@ -82,68 +88,73 @@ const related = propRelated ?? tools.filter(t => t.category === tool.category &&
 </BaseLayout>
 
 <style>
-  .tool-hero {
-    background: var(--cat-bg);
+  .tool-header {
+    background: var(--surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--webkit-glass-blur);
     border-bottom: 1px solid var(--border);
-    padding: 28px 0 36px;
+    padding: 40px 0 48px;
   }
   .breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--txt-muted);
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11.5px; color: var(--txt-dim);
+    margin-bottom: 28px; flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
   }
-  .breadcrumb a { color: var(--txt-muted); text-decoration: none; }
+  .breadcrumb a { color: var(--txt-dim); text-decoration: none; transition: color .12s; }
   .breadcrumb a:hover { color: var(--brand); }
-  .breadcrumb i { font-size: 10px; opacity: .5; }
-  .breadcrumb span { color: var(--txt); font-weight: 600; }
+  .breadcrumb i { font-size: 8px; }
+  .breadcrumb span { color: var(--txt-muted); }
 
-  .tool-hero-inner { display: flex; align-items: flex-start; gap: 20px; }
-  .tool-hero-icon {
-    font-size: 48px;
-    width: 80px;
-    height: 80px;
-    background: #fff;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .tool-header-inner { display: flex; align-items: flex-start; gap: 24px; }
+  .tool-icon-box {
+    width: 64px; height: 64px; border-radius: var(--radius-lg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
     box-shadow: var(--shadow-sm);
-    flex-shrink: 0;
-    border: 1.5px solid var(--border);
   }
-  .tool-hero-cat { font-size: 13px; font-weight: 600; color: var(--cat-color); margin-bottom: 6px; }
-  .tool-hero-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: #0F172A; margin-bottom: 8px; }
-  .tool-hero-desc { font-size: 15px; color: #475569; margin-bottom: 14px; }
-  .tool-hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tool-cat-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 600;
+    border: 1px solid transparent; border-radius: 100px;
+    padding: 3px 12px; margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .02em;
+  }
+  .tool-name {
+    font-size: clamp(2rem, 3.8vw, 2.8rem);
+    font-weight: 800; color: var(--txt);
+    margin-bottom: 10px; letter-spacing: -.6px;
+  }
+  .tool-desc { font-size: 15px; color: var(--txt-muted); margin-bottom: 18px; line-height: 1.65; max-width: 620px; }
+  .tool-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  .tool-body { padding: 32px 0 60px; }
-  .tool-content-card {
-    background: #fff;
-    border: 1.5px solid var(--border);
+  .tool-body { padding: 44px 0 76px; }
+  .tool-card-wrap {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--webkit-glass-blur);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
-    padding: 32px;
-    box-shadow: var(--shadow-sm);
+    padding: 36px;
+    box-shadow: var(--glass-shadow), var(--glass-inner-glow);
   }
 
-  .related-tools { padding: 60px 0; background: var(--bg-soft); }
-  .related-title { font-size: 1.6rem; font-weight: 800; color: #0F172A; margin-bottom: 24px; }
-  .related-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+  .related-section {
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--webkit-glass-blur);
   }
+  .related-section .section-label { margin-bottom: 24px; display: flex; }
+  .related-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 
   @media (max-width: 768px) {
-    .tool-hero-inner { flex-direction: column; }
-    .tool-hero-icon { width: 64px; height: 64px; font-size: 32px; }
-    .tool-content-card { padding: 20px 16px; }
+    .tool-header-inner { flex-direction: column; }
+    .tool-icon-box { width: 52px; height: 52px; font-size: 20px; }
+    .tool-card-wrap { padding: 22px 16px; }
     .related-grid { grid-template-columns: 1fr 1fr; }
   }
-  @media (max-width: 480px) {
-    .related-grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 480px) { .related-grid { grid-template-columns: 1fr; } }
 </style>
