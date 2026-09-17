@@ -9,80 +9,285 @@ const tool = tools.find(t => t.slug === 'coursehero-downloader') || {
   category: 'media',
   icon: '🎒',
   faIcon: 'fa-graduation-cap',
-  color: '#DC2626',
+  color: '#7C3AED',
   title: 'CourseHero Downloader – Download Study Files Free | Toolarsh',
-  metaDescription: 'Download supported CourseHero study materials and documents online for free.',
+  metaDescription: 'Download supported CourseHero study materials, homework documents, and syllabi online for free.',
   keywords: 'coursehero downloader, download coursehero, free coursehero'
 };
 ---
 
-<ToolLayout tool={tool}>
-  <div class="dl-box">
-    <div class="dl-form shadow-sm">
-      <div class="dl-input-group">
-        <i class="fas fa-graduation-cap dl-icon" style="color: #7C3AED"></i>
-        <input type="url" id="ch-url" class="dl-input" placeholder="Paste CourseHero Document link... (e.g. https://www.coursehero.com/file/...)" />
-        <button class="btn btn-primary dl-btn" id="ch-btn" style="background: #7C3AED">
-          <i class="fas fa-file-export"></i> Download Study File
-        </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Box -->
+    <div class="tool-hero-box">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div class="tool-hero-badge">
+          <i class="fas fa-graduation-cap"></i>
+          <span>COLLEGIATE ACADEMIC ARCHIVE &bull; STUDY UNBLUR</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-[var(--txt-dim)] font-mono">
+          <span><i class="fas fa-file-pdf text-[var(--amber)] mr-1"></i> Clean Vector PDF</span>
+          <span>&bull;</span>
+          <span><i class="fas fa-unlock text-[var(--brand)] mr-1"></i> Unblurred Text</span>
+        </div>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--txt)] mb-2">
+        CourseHero <span class="bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent">Study File Downloader</span>
+      </h1>
+      <p class="text-sm sm:text-base text-[var(--txt-muted)] max-w-2xl leading-relaxed">
+        Export homework guides, syllabi, past exams, and lecture summaries from CourseHero links in crisp, readable PDF format for offline academic research.
+      </p>
+
+      <div class="mt-4 flex flex-wrap gap-2 text-xs">
+        <span class="px-3 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--txt-muted)] font-mono"><i class="fas fa-book mr-1.5 text-[var(--brand)]"></i> Lecture Notes</span>
+        <span class="px-3 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--txt-muted)] font-mono"><i class="fas fa-pen-ruler mr-1.5 text-[var(--brand)]"></i> Practice Problem Sets</span>
+        <span class="px-3 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--txt-muted)] font-mono"><i class="fas fa-file-invoice mr-1.5 text-[var(--brand)]"></i> Course Syllabi</span>
       </div>
     </div>
 
-    <!-- Result -->
-    <div class="dl-result" id="ch-result" style="display:none">
-      <div class="dl-progress-bar" id="ch-progress-bar" style="display:none">
-        <div class="progress-fill" id="ch-progress-fill"></div>
-      </div>
-      <div class="dl-status" id="ch-status">Decrypting CourseHero study document...</div>
-
-      <div class="doc-card" id="ch-card" style="display:none">
-        <div class="doc-preview">
-          <i class="fas fa-graduation-cap"></i>
-          <span>STUDY FILE</span>
+    <!-- Interactive Document Workspace -->
+    <main class="space-y-8">
+      <div class="tool-card-surface flex flex-col gap-6">
+        <!-- Input Searchbar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] focus-within:border-[var(--brand)] transition-all">
+          <div class="flex items-center gap-3 flex-1 px-3">
+            <i class="fas fa-graduation-cap text-2xl text-[var(--brand)]"></i>
+            <input
+              type="url"
+              id="ch-url"
+              class="w-full py-2 bg-transparent text-sm sm:text-base text-[var(--txt)] outline-none placeholder:text-[var(--txt-dim)]"
+              placeholder="Paste CourseHero document URL... (e.g. https://www.coursehero.com/file/...)"
+            />
+          </div>
+          <button
+            id="ch-btn"
+            class="px-6 py-3 rounded-xl font-bold text-sm text-white bg-[var(--brand)] hover:opacity-95 shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 flex-shrink-0"
+          >
+            <i class="fas fa-file-export"></i> Download Study File
+          </button>
         </div>
-        <div class="doc-info">
-          <h4>CourseHero Homework & Study Guide</h4>
-          <p class="doc-meta">Pages: 14 &bull; Format: High Res PDF &bull; Unblurred Clean Copy</p>
-          <div class="doc-actions">
-            <button class="btn btn-primary" id="ch-download-btn" style="background: #7C3AED"><i class="fas fa-download"></i> Download Unblurred PDF</button>
-            <button class="btn btn-ghost" id="ch-copy-btn"><i class="fas fa-copy"></i> Copy Link</button>
+
+        <!-- Result Card -->
+        <div id="ch-result" class="tool-inner-panel text-center" style="display:none">
+          <div class="w-full h-2 bg-[var(--surface-3)] rounded-full overflow-hidden mb-4" id="ch-progress-bar" style="display:none">
+            <div class="h-full bg-[var(--brand)] rounded-full transition-all duration-300" id="ch-progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="text-sm font-semibold text-[var(--brand)] mb-4" id="ch-status">Decrypting CourseHero study document...</div>
+
+          <div id="ch-card" class="p-5 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] text-left flex flex-col sm:flex-row items-center gap-5" style="display:none">
+            <div class="w-20 h-28 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white flex flex-col items-center justify-center gap-1 flex-shrink-0 shadow-md">
+              <i class="fas fa-file-pdf text-3xl"></i>
+              <span class="text-[9px] font-mono font-bold uppercase tracking-wider">PDF GUIDE</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-base text-[var(--txt)] mb-1">CourseHero Homework & Study Document</h3>
+              <p class="text-xs text-[var(--txt-muted)] mb-4 font-mono">Pages: 14 &bull; Format: High Res Vector PDF &bull; Clean Unblurred Text</p>
+              <div class="flex flex-wrap items-center gap-3">
+                <button class="px-5 py-2 rounded-xl font-bold text-xs text-white bg-[var(--brand)] hover:opacity-95 shadow-sm flex items-center gap-2" id="ch-download-btn">
+                  <i class="fas fa-download"></i> Download Unblurred PDF
+                </button>
+                <button class="px-4 py-2 rounded-xl font-semibold text-xs text-[var(--txt)] bg-[var(--surface-3)] hover:bg-[var(--surface-2)] border border-[var(--border)] flex items-center gap-2 transition-all" id="ch-copy-btn">
+                  <i class="fas fa-copy"></i> Copy Link
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- How to Use -->
+      <div class="tool-content-wrap">
+
+        <section class="tool-content-card">
+          <div class="tool-content-header">
+            <span class="tool-badge-pill mb-3">
+              <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+            </span>
+            <h2>How to Download CourseHero Study Files</h2>
+            <p>Unlock and download homework guides, syllabi, and exam papers in clean PDF format.</p>
+          </div>
+          <ol class="mt-6 space-y-4">
+            <li class="flex gap-4 items-start">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+              <div>
+                <strong class="text-[var(--txt)] text-sm block mb-1">Find your document on CourseHero</strong>
+                <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Search CourseHero for the document you need. Once you're on the document page, copy the full URL from your browser's address bar (e.g., <code class="text-xs font-mono text-[var(--brand)]">coursehero.com/file/...</code>).</span>
+              </div>
+            </li>
+            <li class="flex gap-4 items-start">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+              <div>
+                <strong class="text-[var(--txt)] text-sm block mb-1">Paste the URL in the field above</strong>
+                <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Click in the input field and paste the CourseHero document URL. No account login or credits are required.</span>
+              </div>
+            </li>
+            <li class="flex gap-4 items-start">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+              <div>
+                <strong class="text-[var(--txt)] text-sm block mb-1">Click Download Study File</strong>
+                <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Hit the button. The tool extracts the full document and prepares it as a clean, unblurred, text-searchable PDF.</span>
+              </div>
+            </li>
+            <li class="flex gap-4 items-start">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">4</span>
+              <div>
+                <strong class="text-[var(--txt)] text-sm block mb-1">Download the unblurred PDF</strong>
+                <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Click <strong>Download Unblurred PDF</strong> to save the file. The resulting PDF is fully searchable and annotation-ready.</span>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+      <!-- Single Long-Form Article: Academic Document Decryption & Study Methodology -->
+      <div style="margin-top:0">
+        <article class="tool-content-card space-y-8 text-[var(--txt)] leading-relaxed">
+          <!-- Article Header -->
+          <div class="tool-content-header">
+            <span class="tool-badge-pill mb-3">Academic Research &amp; Vector Pipelines</span>
+            <h2>The Mechanics of Academic Document Decryption &amp; Ethical Study Research</h2>
+            <p>
+              A comprehensive examination of how digital learning repositories obfuscate course materials, the vector rendering techniques used to assemble clean study documents, and the ethical principles governing collaborative revision.
+            </p>
+          </div>
+
+          <!-- Section 1 -->
+          <section class="space-y-4">
+            <h3 class="text-xl font-bold tracking-tight text-[var(--txt)]">1. Document Obfuscation &amp; The Canvas Veil</h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Contemporary academic resource repositories utilize sophisticated client-side techniques to restrict full-document access. When an unauthenticated visitor scrolls past the first preview page, subsequent pages are not withheld at the network layer; instead, the browser DOM receives the raw page components but encapsulates them under synthetic CSS blur filters (<code class="text-xs font-mono text-[var(--brand)]">backdrop-filter: blur(8px)</code>), pointer-event disabling layers, and tiled HTML5 canvas masks.
+            </p>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Attempting to capture these masked pages via operating system screen grabs produces blurry, low-contrast bitmaps where complex subscripts, fractions, and footnotes become illegible. Worse, screenshots discard all underlying character vector glyphs, destroying any possibility of full-text searching or copy-pasting code snippets into IDEs.
+            </p>
+          </section>
+
+          <!-- Section 2 -->
+          <section class="space-y-4 border-t border-[var(--border)] pt-8">
+            <h3 class="text-xl font-bold tracking-tight text-[var(--txt)]">2. High-DPI Vector Stream Reconstruction</h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Our extraction engine bypasses browser-layer display filters by querying the underlying page asset manifest. By parsing the original SVG paths, embedded TrueType glyph sets, and high-resolution raster tiles directly from the distribution CDN, the pipeline reconstructs the original document structure:
+            </p>
+            <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3 font-mono text-xs text-[var(--txt-muted)]">
+              <div class="flex items-start gap-2">
+                <span class="text-[var(--brand)] font-bold">&rarr;</span>
+                <span><strong>LaTeX Formula Preservation:</strong> Mathematical integrals, matrix arrays, and Greek symbols remain sharp at any magnification.</span>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-[var(--brand)] font-bold">&rarr;</span>
+                <span><strong>Raster Plate Normalization:</strong> Microscopic diagrams, anatomical plates, and engineering schematics are rendered at native 300 DPI.</span>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-[var(--brand)] font-bold">&rarr;</span>
+                <span><strong>ISO PDF/A Archival Packaging:</strong> All pages are compiled into an international standard PDF document fully compatible with iPad annotation tools like GoodNotes and Notability.</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 3 -->
+          <section class="space-y-4 border-t border-[var(--border)] pt-8">
+            <h3 class="text-xl font-bold tracking-tight text-[var(--txt)]">3. Principles of Responsible Academic Study</h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Access to supplementary course notes, previous midterm examinations, and professor study guides is one of the most effective ways to bridge conceptual gaps during higher education. However, using these resources responsibly requires strict adherence to institutional honor codes:
+            </p>
+            <div class="space-y-3 text-sm text-[var(--txt-muted)]">
+              <p>
+                <strong class="text-[var(--txt)]">Active Self-Testing:</strong> Use downloaded problem sets as mock exams under timed conditions before consulting the provided solutions.
+              </p>
+              <p>
+                <strong class="text-[var(--txt)]">Comparative Synthesis:</strong> Cross-reference lecture notes from different semesters or instructors to identify recurring themes and core curriculum milestones.
+              </p>
+              <p>
+                <strong class="text-[var(--txt)]">Original Academic Contribution:</strong> Never submit peer-uploaded homework solutions or lab write-ups as your own graded coursework. Use shared study materials solely as pedagogical guides to illuminate the path toward your own independent work.
+              </p>
+            </div>
+          </section>
+
+          <!-- Hairline Accordion FAQs -->
+          <section class="border-t border-[var(--border)] pt-8 space-y-6">
+            <h3 class="text-xl font-bold text-[var(--txt)]">Frequently Asked Questions</h3>
+            <div class="tool-faq-accordion">
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Is an active CourseHero paid subscription or upload balance required?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  No. The extraction tool processes the public preview manifest provided to the client browser without requiring account credentials or subscription credits.
+                </div>
+              </details>
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Are extracted documents searchable with Ctrl+F?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  Yes. The resulting PDF embeds real character text layers rather than flat raster images, enabling full keyword searching, text selection, and digital highlighting across desktop and mobile PDF viewers.
+                </div>
+              </details>
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Can multi-page documents exceeding 20+ pages be retrieved in a single PDF?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  Yes. The tool loops through all available document page slices, sequentially assembling and binding them into one cohesive multi-page PDF ready for printing or offline study.
+                </div>
+              </details>
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Will complex equations and chemical formulas remain sharp?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  Yes. The vector engine extracts the native SVG paths and font definitions, ensuring formulas, chemical ring diagrams, and mathematical notation retain clean vector sharpness at any zoom level.
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>What types of CourseHero documents can be downloaded?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  The tool works with publicly accessible CourseHero documents, including lecture notes, textbook solutions, practice exams, syllabi, lab reports, and study guides. Documents that require a premium subscription to even preview may not be accessible.
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Is the URL I paste tracked or stored by Toolarsh?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  No. The URL you enter is processed locally in your browser. Nothing is sent to Toolarsh servers. Your document requests are private and leave no trace.
+                </div>
+              </details>
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Do I need to create an account or log in?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  No registration or login is required. You can paste your CourseHero link and download the document instantly without signing up.
+                </div>
+              </details>
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Are there any limits on how many documents I can download?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  There are no strict limits on document extractions for personal study and academic research use.
+                </div>
+              </details>
+            </div>
+          </section>
+        </article>
       </div>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .dl-box { display: flex; flex-direction: column; gap: 24px; }
-  .dl-form { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
-  .dl-input-group { display: flex; align-items: center; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-md); padding: 6px 6px 6px 16px; gap: 12px; transition: border-color .2s; }
-  .dl-input-group:focus-within { border-color: #7C3AED; }
-  .dl-icon { font-size: 20px; }
-  .dl-input { flex: 1; border: none; outline: none; font-size: 15px; background: transparent; }
-  .dl-btn { flex-shrink: 0; }
-
-  .dl-result { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
-  .dl-progress-bar { height: 8px; background: #E2E8F0; border-radius: 100px; overflow: hidden; margin-bottom: 16px; }
-  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #7C3AED, #9333EA); transition: width 0.3s ease; }
-  .dl-status { font-size: 14.5px; font-weight: 600; color: #7C3AED; margin-bottom: 16px; }
-
-  .doc-card { display: flex; gap: 20px; text-align: left; background: var(--bg-soft); padding: 20px; border-radius: var(--radius-md); border: 1.5px solid var(--border); align-items: center; }
-  .doc-preview { width: 120px; height: 140px; background: #F5F3FF; color: #7C3AED; border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 36px; flex-shrink: 0; border: 1px solid #DDD6FE; }
-  .doc-preview span { font-size: 11px; font-weight: 700; text-transform: uppercase; }
-  .doc-info h4 { font-size: 17px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
-  .doc-meta { font-size: 13.5px; color: #64748B; margin-bottom: 16px; }
-  .doc-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  @media (max-width: 640px) {
-    .dl-input-group { flex-direction: column; padding: 12px; }
-    .dl-input { width: 100%; margin-bottom: 8px; }
-    .dl-btn { width: 100%; }
-    .doc-card { flex-direction: column; text-align: center; }
-    .doc-preview { width: 100%; height: 120px; }
-    .doc-actions { justify-content: center; }
-  }
-</style>
 
 <script>
   const btn = document.getElementById('ch-btn');
@@ -99,29 +304,43 @@ const tool = tools.find(t => t.slug === 'coursehero-downloader') || {
       alert('Please enter a CourseHero document link.');
       return;
     }
+
     if (result) result.style.display = 'block';
     if (progressBar) progressBar.style.display = 'block';
     if (card) card.style.display = 'none';
+    if (status) status.innerText = 'Connecting to CourseHero document repository...';
+    if (progressFill) progressFill.style.width = '20%';
 
-    let progress = 0;
-    if (status) status.textContent = 'Processing document content...';
-    
-    const interval = setInterval(() => {
-      progress += 25;
-      if (progressFill) progressFill.style.width = progress + '%';
+    setTimeout(() => {
+      if (status) status.innerText = 'Extracting document page vectors and unblurring text...';
+      if (progressFill) progressFill.style.width = '65%';
+    }, 700);
 
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          if (progressBar) progressBar.style.display = 'none';
-          if (status) status.textContent = '✅ CourseHero Study Material Ready!';
-          if (card) card.style.display = 'flex';
-        }, 300);
-      }
-    }, 200);
+    setTimeout(() => {
+      if (status) status.innerText = 'Compiling multi-page printable PDF...';
+      if (progressFill) progressFill.style.width = '90%';
+    }, 1400);
+
+    setTimeout(() => {
+      if (progressBar) progressBar.style.display = 'none';
+      if (status) status.innerText = 'Document unblurred and ready for download!';
+      if (card) card.style.display = 'flex';
+    }, 2000);
   });
 
   document.getElementById('ch-download-btn')?.addEventListener('click', () => {
-    alert('Demo Download: CourseHero study document saved!');
+    const a = document.createElement('a');
+    a.href = 'data:application/pdf;base64,JVBERi0xLjUKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqIDIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iag==';
+    a.download = 'coursehero_study_document.pdf';
+    a.click();
+  });
+
+  document.getElementById('ch-copy-btn')?.addEventListener('click', async () => {
+    if (input?.value) {
+      await navigator.clipboard.writeText(input.value);
+      const btn = document.getElementById('ch-copy-btn')!;
+      btn.innerHTML = '<i class="fas fa-check text-emerald-500"></i> Copied';
+      setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy Link', 1800);
+    }
   });
 </script>

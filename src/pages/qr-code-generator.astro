@@ -5,85 +5,293 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'qr-code-generator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="qr-wrap">
-    <div class="qr-main">
-      <div class="qr-inputs">
-        <div class="qr-type-tabs">
-          <button class="qr-tab active" data-type="url"><i class="fas fa-link"></i> URL</button>
-          <button class="qr-tab" data-type="text"><i class="fas fa-font"></i> Text</button>
-          <button class="qr-tab" data-type="email"><i class="fas fa-envelope"></i> Email</button>
-          <button class="qr-tab" data-type="phone"><i class="fas fa-phone"></i> Phone</button>
-          <button class="qr-tab" data-type="wifi"><i class="fas fa-wifi"></i> Wi-Fi</button>
-        </div>
-
-        <!-- URL -->
-        <div class="qr-form" id="qr-form-url">
-          <input type="url" id="qr-url" class="qr-input" placeholder="https://example.com" value="https://toolarsh.com" />
-        </div>
-        <!-- Text -->
-        <div class="qr-form" id="qr-form-text" style="display:none">
-          <textarea id="qr-text" class="qr-input qr-textarea" placeholder="Enter text here…" rows="4"></textarea>
-        </div>
-        <!-- Email -->
-        <div class="qr-form" id="qr-form-email" style="display:none">
-          <input type="email" id="qr-email-addr" class="qr-input" placeholder="email@example.com" />
-          <input type="text" id="qr-email-sub" class="qr-input" placeholder="Subject (optional)" />
-          <textarea id="qr-email-body" class="qr-input qr-textarea" placeholder="Body (optional)" rows="3"></textarea>
-        </div>
-        <!-- Phone -->
-        <div class="qr-form" id="qr-form-phone" style="display:none">
-          <input type="tel" id="qr-phone" class="qr-input" placeholder="+1 234 567 8900" />
-        </div>
-        <!-- Wi-Fi -->
-        <div class="qr-form" id="qr-form-wifi" style="display:none">
-          <input type="text" id="qr-wifi-ssid" class="qr-input" placeholder="Network name (SSID)" />
-          <input type="password" id="qr-wifi-pass" class="qr-input" placeholder="Password" />
-          <select id="qr-wifi-enc" class="qr-input">
-            <option value="WPA">WPA/WPA2</option>
-            <option value="WEP">WEP</option>
-            <option value="">None</option>
-          </select>
-        </div>
-
-        <div class="qr-options">
-          <div class="qr-opt-field">
-            <label class="qr-opt-label">Size (px)</label>
-            <select id="qr-size" class="qr-opt-select">
-              <option value="150">150×150</option>
-              <option value="200" selected>200×200</option>
-              <option value="300">300×300</option>
-              <option value="400">400×400</option>
-            </select>
-          </div>
-          <div class="qr-opt-field">
-            <label class="qr-opt-label">Error Correction</label>
-            <select id="qr-ecc" class="qr-opt-select">
-              <option value="L">Low (L)</option>
-              <option value="M" selected>Medium (M)</option>
-              <option value="Q">Quartile (Q)</option>
-              <option value="H">High (H)</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="btn btn-primary" id="qr-generate" style="width:100%">
-          <i class="fas fa-qrcode"></i> Generate QR Code
-        </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- QR Code Generator Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-qrcode text-[var(--brand)]"></i> ISO/IEC 18004 Standard QR Engine
       </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        QR Code <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Generator</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Create pixel-perfect, high-density QR codes for websites, Wi-Fi credentials, vCard contacts, emails, and custom text payloads.
+      </p>
+    </div>
 
-      <div class="qr-preview-col">
-        <div class="qr-preview" id="qr-preview">
-          <div class="qr-placeholder">
-            <i class="fas fa-qrcode" style="font-size:48px;color:var(--border)"></i>
-            <p>Your QR code will appear here</p>
+    <!-- Studio Work Area -->
+    <div class="tool-card-surface mb-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left Configuration Form -->
+        <div class="lg:col-span-7 space-y-5">
+          <!-- Format Pills -->
+          <div class="flex flex-wrap gap-2">
+            <button class="qr-tab active px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-[var(--brand)] text-white shadow cursor-pointer flex items-center gap-1.5" data-type="url">
+              <i class="fas fa-link text-[10px]"></i> URL
+            </button>
+            <button class="qr-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-[var(--surface-2)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] cursor-pointer flex items-center gap-1.5" data-type="text">
+              <i class="fas fa-font text-[10px]"></i> Text
+            </button>
+            <button class="qr-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-[var(--surface-2)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] cursor-pointer flex items-center gap-1.5" data-type="email">
+              <i class="fas fa-envelope text-[10px]"></i> Email
+            </button>
+            <button class="qr-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-[var(--surface-2)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] cursor-pointer flex items-center gap-1.5" data-type="phone">
+              <i class="fas fa-phone text-[10px]"></i> Phone
+            </button>
+            <button class="qr-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-[var(--surface-2)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] cursor-pointer flex items-center gap-1.5" data-type="wifi">
+              <i class="fas fa-wifi text-[10px]"></i> Wi-Fi
+            </button>
+          </div>
+
+          <!-- Dynamic Input Panels -->
+          <div class="p-5 rounded-2xl tool-inner-panel">
+            <!-- URL Form -->
+            <div class="qr-form" id="qr-form-url">
+              <label for="qr-url" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Website URL</label>
+              <input type="url" id="qr-url" class="tool-control-input text-sm font-medium" placeholder="https://example.com" value="https://toolarsh.com" />
+            </div>
+            <!-- Text Form -->
+            <div class="qr-form" id="qr-form-text" style="display:none">
+              <label for="qr-text" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Plain Text Content</label>
+              <textarea id="qr-text" rows="4" class="tool-textarea text-sm font-medium" placeholder="Enter message or notes..."></textarea>
+            </div>
+            <!-- Email Form -->
+            <div class="qr-form space-y-3" id="qr-form-email" style="display:none">
+              <div>
+                <label for="qr-email-addr" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-1">Email Address</label>
+                <input type="email" id="qr-email-addr" class="tool-control-input text-sm" placeholder="contact@domain.com" />
+              </div>
+              <div>
+                <label for="qr-email-sub" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-1">Subject</label>
+                <input type="text" id="qr-email-sub" class="tool-control-input text-sm" placeholder="Subject line" />
+              </div>
+              <div>
+                <label for="qr-email-body" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-1">Email Body</label>
+                <textarea id="qr-email-body" rows="2" class="tool-textarea text-sm" placeholder="Body text..."></textarea>
+              </div>
+            </div>
+            <!-- Phone Form -->
+            <div class="qr-form" id="qr-form-phone" style="display:none">
+              <label for="qr-phone" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Phone Number</label>
+              <input type="tel" id="qr-phone" class="tool-control-input text-sm font-medium" placeholder="+1 234 567 8900" />
+            </div>
+            <!-- Wi-Fi Form -->
+            <div class="qr-form space-y-3" id="qr-form-wifi" style="display:none">
+              <div>
+                <label for="qr-wifi-ssid" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-1">Network Name (SSID)</label>
+                <input type="text" id="qr-wifi-ssid" class="tool-control-input text-sm" placeholder="Office Wi-Fi" />
+              </div>
+              <div>
+                <label for="qr-wifi-pass" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-1">Password</label>
+                <input type="password" id="qr-wifi-pass" class="tool-control-input text-sm" placeholder="SecretPassword123" />
+              </div>
+              <div>
+                <label for="qr-wifi-enc" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-1">Encryption Protocol</label>
+                <select id="qr-wifi-enc" class="tool-control-input text-sm">
+                  <option value="WPA">WPA / WPA2 / WPA3 (Default)</option>
+                  <option value="WEP">WEP (Legacy)</option>
+                  <option value="">Open / None</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resolution & Error Correction Dropdowns -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="qr-size" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-1.5">Canvas Size</label>
+              <select id="qr-size" class="tool-control-input text-xs font-mono">
+                <option value="150">150 × 150 px</option>
+                <option value="200" selected>200 × 200 px</option>
+                <option value="300">300 × 300 px</option>
+                <option value="400">400 × 400 px</option>
+              </select>
+            </div>
+            <div>
+              <label for="qr-ecc" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-1.5">Error Correction</label>
+              <select id="qr-ecc" class="tool-control-input text-xs font-mono">
+                <option value="L">L (7% Recovery)</option>
+                <option value="M" selected>M (15% Standard)</option>
+                <option value="Q">Q (25% High)</option>
+                <option value="H">H (30% Max)</option>
+              </select>
+            </div>
+          </div>
+
+          <button
+            id="qr-generate"
+            class="w-full py-3.5 px-6 rounded-xl bg-[var(--brand)] hover:opacity-90 active:scale-[0.98] text-white font-extrabold text-xs tracking-wider uppercase transition-all shadow-lg shadow-[var(--brand)]/25 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <i class="fas fa-qrcode"></i> Generate QR Code
+          </button>
+        </div>
+
+        <!-- Right QR Preview Display -->
+        <div class="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-2xl tool-inner-panel">
+          <div class="w-56 h-56 sm:w-64 sm:h-64 bg-white rounded-2xl p-4 flex items-center justify-center shadow-xl mb-6 overflow-hidden border border-slate-200" id="qr-preview">
+            <div class="text-center text-slate-400 text-xs">
+              <i class="fas fa-qrcode text-5xl text-slate-300 mb-3 block"></i>
+              <span>Your QR code will appear here</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 w-full" id="qr-dl-actions" style="display:none">
+            <button id="qr-download-png" class="flex-1 py-3 px-4 rounded-xl bg-[var(--brand)] hover:opacity-90 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow">
+              <i class="fas fa-download"></i> Download PNG
+            </button>
+            <button id="qr-copy-img" class="py-3 px-4 rounded-xl tool-inner-panel hover:border-[var(--brand)] text-[var(--txt)] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer">
+              <i class="fas fa-copy"></i>
+            </button>
           </div>
         </div>
-        <div class="qr-dl-actions" id="qr-dl-actions" style="display:none">
-          <button class="btn btn-primary" id="qr-download-png"><i class="fas fa-download"></i> Download PNG</button>
-          <button class="btn btn-ghost" id="qr-copy-img"><i class="fas fa-copy"></i> Copy</button>
-        </div>
       </div>
+    </div>
+
+    <!-- Matrix Engineering Architecture: Stat-Hero Archetype -->
+    <div class="tool-content-wrap">
+      
+      <section class="tool-content-card">
+        <!-- Lead Editorial Header -->
+        <div class="tool-content-header">
+          <h2>ISO/IEC 18004 Matrix Standards &amp; Error Correction Physics</h2>
+          <p>
+            Invented by Masahiro Hara at Denso Wave in 1994 to track automotive components, the Quick Response (QR) matrix revolutionized two-dimensional optical data storage. Below are the definitive mathematical parameters governing data density, finder pattern ratios, and error resilience.
+          </p>
+        </div>
+
+        <!-- Monumental Stat-Hero Numerical Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 py-8 border-y border-[var(--border)]">
+          <div class="space-y-1">
+            <div class="text-3xl sm:text-4xl font-black font-mono tracking-tight text-[var(--brand)]">
+              7,089
+            </div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">
+              Max Characters
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+              Peak numeric capacity supported in a single Version 40 matrix.
+            </p>
+          </div>
+
+          <div class="space-y-1">
+            <div class="text-3xl sm:text-4xl font-black font-mono tracking-tight text-emerald-500 dark:text-emerald-400">
+              30%
+            </div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">
+              Level H Recovery
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+              Maximum surface area destruction tolerated while retaining 100% data read.
+            </p>
+          </div>
+
+          <div class="space-y-1">
+            <div class="text-3xl sm:text-4xl font-black font-mono tracking-tight text-amber-500">
+              1:1:3:1:1
+            </div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">
+              Finder Ratio
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+              The black-to-white module proportion across position detection concentric squares.
+            </p>
+          </div>
+
+          <div class="space-y-1">
+            <div class="text-3xl sm:text-4xl font-black font-mono tracking-tight text-[var(--txt)]">
+              4 Modules
+            </div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">
+              Quiet Zone Margin
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+              Mandatory blank perimeter margin required for camera threshold detection.
+            </p>
+          </div>
+        </div>
+
+        <!-- Deep Dives Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pt-8">
+          <div class="space-y-3">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Algorithm</span>
+            <h3 class="text-xl font-bold text-[var(--txt)] tracking-tight">
+              Reed-Solomon Galois Field GF(2^8) Error Recovery
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              QR codes owe their legendary real-world reliability to Reed-Solomon forward error correction—the same mathematical algorithm utilized in Voyager spacecraft transmissions and Compact Discs. Operating within Galois Field <code class="font-mono text-xs text-[var(--brand)]">GF(2<sup>8</sup>)</code>, data is modeled as coefficients of an algebraic polynomial.
+            </p>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              The encoder appends redundant parity codewords generated through synthetic polynomial division. When a QR code suffers physical damage, the decoder treats absent modules as polynomial erasures. Because it requires two parity codewords to correct one unknown error byte, Level H (30% redundancy) can fully reconstruct a damaged matrix without losing a single bit of payload data.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--amber)]">Optics</span>
+            <h3 class="text-xl font-bold text-[var(--txt)] tracking-tight">
+              Physical Sizing &amp; The 10:1 Optical Focal Distance Rule
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Smartphones with fixed-focal lenses require a minimum angular resolution to distinguish black and white module transitions. When preparing marketing materials for print, physical sizing must strictly observe the 10:1 ratio:
+            </p>
+            <div class="p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt)]">
+              Minimum Dimension = Scanning Distance &divide; 10
+            </div>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              For tabletop menus scanned at 30 cm, a 3 &times; 3 cm matrix ensures instant lock-on. For roll-ups viewed from 2 meters, a 20 &times; 20 cm code is required. Furthermore, the four-module "quiet zone" around the matrix is mathematically non-negotiable: cropping into this border prevents edge-detection filters from isolating finder squares.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>QR Matrix Engineering Frequently Asked Questions</h2>
+          <p>
+            Standard protocols, expiration mechanics, and client-side privacy.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Do QR codes generated by Toolarsh ever expire or require subscription renewal?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Never. These are 100% static QR codes. The encoded text, URL, or Wi-Fi credentials are baked directly into the black and white pixel matrix itself. Because there is no intermediary redirect server or tracking bridge, static QR codes work indefinitely for life and will never break.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>How does the Wi-Fi QR code syntax work without internet access?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Mobile operating systems (iOS and Android) support the standardized <code>WIFI:</code> URI scheme (e.g., <code>WIFI:S:MyNetwork;T:WPA;P:Password123;;</code>). When camera software parses this prefix, it passes network parameters directly to the local Wi-Fi daemon, prompting the user to connect with a single tap without exposing plaintext credentials.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why do inverted QR codes (white modules on dark background) often fail to scan?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              While modern iOS camera apps support inverted matrix polarity, dedicated hardware barcode scanners, industrial warehouse terminals, and older Android firmware expect dark modules on a light background. Inverting colors breaks the threshold binarization algorithms on legacy CMOS imagers.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>

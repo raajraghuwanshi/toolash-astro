@@ -5,97 +5,287 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'barcode-generator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="bg-wrap">
-    <div class="bg-form">
-      <div class="bg-field">
-        <label for="bg-value">Barcode Content</label>
-        <input type="text" id="bg-value" class="bg-input" placeholder="Enter text, number, or URL…" value="123456789012" maxlength="50" />
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Header -->
+    <div class="tool-hero-box">
+      <div class="tool-badge-pill">
+        <i class="fas fa-barcode animate-pulse"></i> Optical Symbology & GS1 Compliance
       </div>
-      <div class="bg-options">
-        <div class="bg-opt">
-          <label class="bg-opt-label">Barcode Type</label>
-          <select id="bg-type" class="bg-select">
-            <option value="EAN13">EAN-13 (12 digits + check)</option>
-            <option value="CODE128" selected>Code 128 (alphanumeric)</option>
-            <option value="CODE39">Code 39</option>
-            <option value="UPC">UPC-A (11 digits)</option>
-          </select>
-        </div>
-        <div class="bg-opt">
-          <label class="bg-opt-label">Scale</label>
-          <input type="number" id="bg-scale" class="bg-input-sm" value="2" min="1" max="5" />
-        </div>
-        <div class="bg-opt">
-          <label class="bg-opt-label">Height (px)</label>
-          <input type="number" id="bg-height" class="bg-input-sm" value="80" min="20" max="300" />
-        </div>
-        <div class="bg-opt">
-          <label class="bg-opt-label">Show Text</label>
-          <label class="bg-check"><input type="checkbox" id="bg-show-text" checked /> Show below barcode</label>
-        </div>
-      </div>
-      <button class="btn btn-primary" id="bg-generate"><i class="fas fa-barcode"></i> Generate Barcode</button>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--txt)] tracking-tight">
+        High-Density <span class="bg-gradient-to-r from-[var(--brand)] via-emerald-400 to-teal-500 bg-clip-text text-transparent">Barcode Generator</span>
+      </h1>
+      <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-3 max-w-2xl mx-auto">
+        Generate industrial Code 128, EAN-13, and UPC barcodes with automated modulo checksums, print-ready vector SVG, and high-DPI raster PNG export.
+      </p>
     </div>
 
-    <div id="bg-result" class="bg-result" style="display:none">
-      <div class="bg-preview" id="bg-preview"></div>
-      <div class="bg-actions">
-        <button class="btn btn-primary" id="bg-dl-png"><i class="fas fa-download"></i> Download PNG</button>
-        <button class="btn btn-ghost" id="bg-dl-svg"><i class="fas fa-code"></i> Download SVG</button>
-        <button class="btn btn-ghost" id="bg-copy-svg"><i class="fas fa-copy"></i> Copy SVG</button>
+    <!-- Main 2-Column Split Console -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left Column: Barcode Parameters (6 cols) -->
+      <div class="lg:col-span-6 tool-card-surface p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between border-b border-[var(--border)] pb-4">
+          <h3 class="text-sm font-bold text-[var(--txt)] uppercase tracking-wider flex items-center gap-2">
+            <i class="fas fa-sliders text-[var(--brand)]"></i> Barcode Parameters
+          </h3>
+          <span class="text-xs font-mono text-[var(--brand)] bg-[var(--brand-glow)] px-2.5 py-1 rounded-lg border border-[var(--border)]">Configuration</span>
+        </div>
+
+        <!-- Content Input -->
+        <div class="space-y-2">
+          <label for="bg-value" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+            Barcode Data / Payload Content
+          </label>
+          <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+            <input type="text" id="bg-value" value="123456789012" maxlength="50" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold outline-none px-2" />
+            <span class="text-xs font-mono text-[var(--txt-dim)] pr-2">DATA</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Type Select -->
+          <div class="space-y-2">
+            <label for="bg-type" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Symbology Standard
+            </label>
+            <select id="bg-type" class="w-full tool-control-input text-xs font-medium cursor-pointer">
+              <option value="CODE128" selected>Code 128 (Alphanumeric Logistics)</option>
+              <option value="EAN13">EAN-13 (Global Retail Products)</option>
+              <option value="UPC">UPC-A (North American Retail)</option>
+              <option value="CODE39">Code 39 (Defense & Automotive)</option>
+            </select>
+          </div>
+
+          <!-- Bar Scale Multiplier -->
+          <div class="space-y-2">
+            <label for="bg-scale" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Bar Scale (Width Factor)
+            </label>
+            <input type="number" id="bg-scale" min="1" max="5" value="2" class="w-full tool-control-input font-mono text-sm font-bold" />
+          </div>
+
+          <!-- Bar Height -->
+          <div class="space-y-2">
+            <label for="bg-height" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Optical Bar Height (px)
+            </label>
+            <input type="number" id="bg-height" min="20" max="300" value="80" class="w-full tool-control-input font-mono text-sm font-bold" />
+          </div>
+
+          <!-- Show Human-Readable Text -->
+          <div class="space-y-2 flex flex-col justify-end">
+            <label class="flex items-center gap-2.5 p-3 rounded-xl tool-inner-panel cursor-pointer text-xs font-bold text-[var(--txt)]">
+              <input type="checkbox" id="bg-show-text" checked class="w-4 h-4 rounded accent-[var(--brand)]" />
+              <span>Show Human Text Label</span>
+            </label>
+          </div>
+        </div>
+
+        <button id="bg-generate" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[var(--brand)] to-teal-600 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fas fa-barcode"></i> Render Barcode
+        </button>
+      </div>
+
+      <!-- Right Column: Barcode Preview Frame & Export (6 cols) -->
+      <div class="lg:col-span-6 space-y-6">
+        <div id="bg-result" class="tool-card-surface p-6 sm:p-8 space-y-6 text-center">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)] block">
+            Optical Print Preview (Quiet Zone Included)
+          </span>
+
+          <!-- High-Contrast Preview Surface (White for barcode scanning readability) -->
+          <div class="p-8 rounded-2xl bg-white border border-[var(--border)] flex items-center justify-center overflow-x-auto shadow-inner relative">
+            <div id="bg-preview"></div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap gap-3 justify-center">
+            <button id="bg-dl-png" class="px-5 py-2.5 rounded-xl bg-[var(--brand)] hover:opacity-90 text-white font-bold text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-md">
+              <i class="fas fa-download"></i> High-DPI PNG
+            </button>
+            <button id="bg-dl-svg" class="px-5 py-2.5 rounded-xl bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt)] font-bold text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-2 border border-[var(--border)] cursor-pointer">
+              <i class="fas fa-vector-square"></i> Vector SVG
+            </button>
+            <button id="bg-copy-svg" class="px-5 py-2.5 rounded-xl bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] font-bold text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-2 border border-[var(--border)] cursor-pointer">
+              <i class="fas fa-copy"></i> Copy SVG
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="bg-info">
-      <div class="bg-info-title">Barcode Type Guide</div>
-      <div class="bg-info-grid">
-        <div><strong>EAN-13:</strong> Retail products worldwide</div>
-        <div><strong>Code 128:</strong> Logistics, general purpose</div>
-        <div><strong>Code 39:</strong> Industrial, alphanumeric</div>
-        <div><strong>UPC-A:</strong> US/Canada retail products</div>
-      </div>
+    <!-- Symbology Architecture: Tabs Archetype -->
+    <div class="tool-content-wrap">
+      
+      <!-- Interactive Tabbed Interface Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-barcode text-[var(--brand)]"></i> Symbology Architecture
+          </span>
+          <h2>Optical Symbology &amp; Industrial Print Calibration</h2>
+          <p>
+            One-dimensional barcodes encode discrete binary signals across alternating optical bars and spaces. Explore the tabbed technical modules below for symbology checksum algorithms, quiet zone reflectance margins, and thermal printhead calibration.
+          </p>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tool-tab-nav" role="tablist" aria-label="Symbology Standards Tabs">
+          <button
+            class="tool-tab-btn bc-tab-btn active"
+            data-tab="symbologies"
+            role="tab"
+            aria-selected="true"
+          >
+            <i class="fas fa-layer-group"></i> 01 Symbology Standards
+          </button>
+          <button
+            class="tool-tab-btn bc-tab-btn"
+            data-tab="quiet-zone"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-arrows-left-right"></i> 02 The Quiet Zone
+          </button>
+          <button
+            class="tool-tab-btn bc-tab-btn"
+            data-tab="thermal"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-print"></i> 03 Thermal Calibration
+          </button>
+          <button
+            class="tool-tab-btn bc-tab-btn"
+            data-tab="gs1"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-globe"></i> 04 GS1 &amp; POS Systems
+          </button>
+        </div>
+
+        <!-- Tab Panels Container -->
+        <div class="pt-2">
+
+          <!-- Panel 1: Symbology Standards -->
+          <div class="tool-tab-panel bc-tab-panel space-y-4" id="panel-symbologies" role="tabpanel">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Symbology Standards: Code 128 vs. EAN-13 vs. UPC-A vs. Code 39
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Different supply chain layers mandate distinct symbology architectures. <strong class="text-[var(--txt)]">Code 128</strong> uses high-density multi-width encoding across three character subsets (A, B, C) to encapsulate the full 128-character ASCII character set, verified via a Modulo 103 weighting algorithm. It dominates FedEx, Amazon fulfillment, and international freight pallets.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              In retail, <strong class="text-[var(--txt)]">EAN-13</strong> (International Article Number) and <strong class="text-[var(--txt)]">UPC-A</strong> (Universal Product Code) operate on fixed numeric payloads with a trailing Modulo 10 check digit calculated via alternating 3&times; and 1&times; weight additions. <strong class="text-[var(--txt)]">Code 39</strong> remains prominent in defense and automotive logistics due to its discrete self-checking architecture, where each character is separated by an inter-character gap.
+            </p>
+            <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt-muted)] space-y-1.5 shadow-sm">
+              <div class="text-[var(--txt)] font-bold">// Modulo 10 Check Digit Equation (UPC / EAN)</div>
+              <div>Sum = 3 &times; (d1 + d3 + d5 + ...) + 1 &times; (d2 + d4 + d6 + ...)</div>
+              <div>Check Digit = (10 - (Sum mod 10)) mod 10</div>
+            </div>
+          </div>
+
+          <!-- Panel 2: The Quiet Zone -->
+          <div class="tool-tab-panel bc-tab-panel space-y-4 hidden" id="panel-quiet-zone" role="tabpanel">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              The Optical Quiet Zone &amp; Reflectance Ratio Physics
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Optical barcode scanners do not take photos—they sweep a red laser (650–670 nm) or diffuse LED beam across the symbol, measuring reflected voltage across a photodiode. The blank margin preceding the first bar and following the final bar is the <em>Quiet Zone</em>.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Under ANSI / ISO 15416 standards, the quiet zone must span at least 10 times the width of the narrowest bar (X-dimension) or 0.25 inches (6.35 mm). If packaging text, decorative artwork, or box folds encroach within this threshold, the scanner's automatic gain control fails to calibrate the white baseline level, reporting a complete read failure.
+            </p>
+          </div>
+
+          <!-- Panel 3: Thermal Calibration -->
+          <div class="tool-tab-panel bc-tab-panel space-y-4 hidden" id="panel-thermal" role="tabpanel">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Industrial Thermal Printhead Calibration &amp; BWR
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              When printing adhesive logistics labels on Zebra, Sato, or Datamax thermal transfer printers, the heat of the ceramic heating elements causes thermal ribbon wax/resin to bleed outward into adjacent white spaces.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Engineers implement <strong class="text-[var(--txt)]">Bar Width Reduction (BWR)</strong>, deliberately narrowing dark bars in the vector source to compensate for print growth. Always orient barcodes in the "picket fence" direction (bars perpendicular to the printhead) rather than the "ladder" direction to ensure printhead speed variations do not distort individual bar thicknesses.
+            </p>
+          </div>
+
+          <!-- Panel 4: GS1 & POS Systems -->
+          <div class="tool-tab-panel bc-tab-panel space-y-4 hidden" id="panel-gs1" role="tabpanel">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              GS1 General Specifications &amp; Global Trade Item Numbers (GTIN)
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              To sell consumer goods at retail stores or major online marketplaces like Amazon, brands must license an authentic GS1 Company Prefix. Randomly generating numbers for commercial retail without registering with GS1 creates collisions with existing international products.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              In enterprise pharmaceutical and healthcare distribution, GS1-128 barcodes utilize Application Identifiers (AIs) like `(01)` for GTIN, `(17)` for Expiration Date (YYMMDD), and `(10)` for Batch/Lot number, enabling automated warehouse scanners to parse multidimensional inventory data in a single scan.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-circle-question text-[var(--brand)]"></i> Common Inquiries
+          </span>
+          <h3>Barcode Engineering Frequently Asked Questions</h3>
+          <p>
+            Vector export, scanner compatibility, and commercial retail requirements.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why should vector SVG be chosen over PNG for commercial packaging?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Raster image formats (PNG, JPEG) introduce anti-aliasing pixels (grey transition fringes) along bar boundaries when scaled. Optical barcode scanners rely on razor-sharp contrast transitions between pure black and pure white. Vector SVG scales mathematically to any physical packaging dimension without anti-aliasing blur.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can barcodes be printed using colored ink on colored packaging?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Because most commercial laser scanners operate at red wavelengths (650 nm), red surfaces reflect light exactly like white paper. Printing red bars on white or black bars on red paper will cause complete scan failure. The safest pairing is dark blue or black ink printed against an opaque white background.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is the difference between 1D barcodes and 2D QR codes?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              1D barcodes encode data horizontally only (typically 20–30 alphanumeric characters) and require laser line scanners. 2D codes (like QR or Data Matrix) encode data horizontally and vertically, holding up to 7,000 characters with built-in Reed-Solomon error correction readable by cameras from any angle.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Are generated barcodes confidential and client-side safe?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              100% private. The SVG vector paths and raster pixel canvas are constructed entirely in your browser's local memory via JavaScript. Proprietary internal serial numbers, SKU payloads, and warehouse asset tags are never transmitted across the network.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .bg-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .bg-form { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .bg-field { display: flex; flex-direction: column; gap: 8px; }
-  .bg-field label { font-size: 14px; font-weight: 600; color: var(--txt); }
-  .bg-input {
-    width: 100%;
-    padding: 12px 14px;
-    font-size: 15px;
-    font-family: 'Courier New', monospace;
-    font-weight: 600;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: border-color .2s;
-  }
-  .bg-input:focus { border-color: var(--brand); }
-  .bg-options { display: flex; gap: 16px; flex-wrap: wrap; }
-  .bg-opt { display: flex; flex-direction: column; gap: 8px; }
-  .bg-opt-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
-  .bg-select { padding: 9px 12px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--txt); background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; cursor: pointer; }
-  .bg-input-sm { padding: 9px 12px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--txt); background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; width: 80px; }
-  .bg-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--txt); cursor: pointer; padding: 9px 0; }
-  .bg-check input { accent-color: var(--brand); width: 14px; height: 14px; }
-
-  .bg-result { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: fadeIn .3s ease; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .bg-preview { padding: 24px 32px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); }
-  .bg-preview svg { display: block; }
-  .bg-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-
-  .bg-info { padding: 14px 16px; background: #F8FAFC; border: 1.5px solid var(--border); border-radius: var(--radius-sm); }
-  .bg-info-title { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; margin-bottom: 10px; }
-  .bg-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: var(--txt-muted); }
-</style>
 
 <script>
   let svgContent = '';
@@ -123,7 +313,6 @@ const tool = tools.find(t => t.slug === 'barcode-generator')!;
       [1,1,4,3,1,1],[4,1,1,1,1,3],[4,1,1,3,1,1],[1,1,3,1,4,1],[1,1,4,1,3,1],[3,1,1,1,4,1],
       [4,1,1,1,3,1],[2,1,1,4,1,2],[2,1,1,2,1,4],[2,1,1,2,3,2],[2,3,3,1,1,1,2]
     ];
-    // Start B = 104, Stop = 106
     const chars: number[] = [104]; // Start B
     let checksum = 104;
     for (let i = 0; i < data.length; i++) {
@@ -161,7 +350,7 @@ const tool = tools.find(t => t.slug === 'barcode-generator')!;
       x += w;
     }
 
-    const textEl = showText ? `<text x="${totalWidth / 2}" y="${height + 4 + textHeight - 2}" font-family="monospace" font-size="10" text-anchor="middle" fill="#000">${value}</text>` : '';
+    const textEl = showText ? `<text x="${totalWidth / 2}" y="${height + 4 + textHeight - 2}" font-family="monospace" font-size="11" text-anchor="middle" fill="#000" font-weight="bold">${value}</text>` : '';
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" style="background:#fff">
   ${barsHTML}
@@ -171,12 +360,15 @@ const tool = tools.find(t => t.slug === 'barcode-generator')!;
 
   document.getElementById('bg-generate')?.addEventListener('click', () => {
     svgContent = generateSVG();
-    document.getElementById('bg-preview')!.innerHTML = svgContent;
-    document.getElementById('bg-result')!.style.display = '';
+    const prev = document.getElementById('bg-preview');
+    if (prev) prev.innerHTML = svgContent;
+    const res = document.getElementById('bg-result');
+    if (res) res.style.display = '';
   });
 
   document.getElementById('bg-dl-png')?.addEventListener('click', () => {
-    const svg = document.getElementById('bg-preview')!.querySelector('svg')!;
+    const svg = document.getElementById('bg-preview')?.querySelector('svg');
+    if (!svg) return;
     const canvas = document.createElement('canvas');
     const w = svg.width.baseVal.value, h = svg.height.baseVal.value;
     canvas.width = w * 2; canvas.height = h * 2;
@@ -204,10 +396,34 @@ const tool = tools.find(t => t.slug === 'barcode-generator')!;
 
   document.getElementById('bg-copy-svg')?.addEventListener('click', async () => {
     await navigator.clipboard.writeText(svgContent);
-    const btn = document.getElementById('bg-copy-svg')!;
-    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-    setTimeout(() => btn.innerHTML = '<i class="fas fa-code"></i> Copy SVG', 2000);
+    const btn = document.getElementById('bg-copy-svg');
+    if (btn) {
+      btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i> Copied!';
+      setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy SVG', 2000);
+    }
   });
 
+  // Barcode Tabs Switching
+  const tabBtns = document.querySelectorAll<HTMLButtonElement>('.bc-tab-btn');
+  const tabPanels = document.querySelectorAll<HTMLElement>('.bc-tab-panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-tab');
+      tabBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      tabPanels.forEach(p => p.classList.add('hidden'));
+
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      const activePanel = document.getElementById(`panel-${target}`);
+      if (activePanel) activePanel.classList.remove('hidden');
+    });
+  });
+
+  // Run on mount
   document.getElementById('bg-generate')?.click();
 </script>

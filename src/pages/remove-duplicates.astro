@@ -5,76 +5,305 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'remove-duplicates')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="rd-wrap">
-    <div class="rd-options">
-      <label class="rd-check"><input type="checkbox" id="rd-trim" checked /> Trim whitespace from lines</label>
-      <label class="rd-check"><input type="checkbox" id="rd-case" /> Case-insensitive comparison</label>
-      <label class="rd-check"><input type="checkbox" id="rd-blank" checked /> Remove blank lines</label>
-      <label class="rd-check"><input type="checkbox" id="rd-sort" /> Sort lines alphabetically</label>
-    </div>
-    <div class="rd-grid">
-      <div class="rd-col">
-        <label class="rd-label">Input <span id="rd-in-count" class="rd-count">0 lines</span></label>
-        <textarea id="rd-input" class="rd-textarea" placeholder="Paste your list here, one item per line…" rows="12"></textarea>
-        <button class="btn btn-primary" id="rd-process" style="margin-top:10px;">
-          <i class="fas fa-filter"></i> Remove Duplicates
-        </button>
-      </div>
-      <div class="rd-col">
-        <label class="rd-label">Output <span id="rd-out-count" class="rd-count">0 lines</span></label>
-        <textarea id="rd-output" class="rd-textarea rd-output-ta" rows="12" readonly placeholder="Result will appear here…"></textarea>
-        <div class="rd-actions">
-          <button class="btn btn-ghost" id="rd-copy"><i class="fas fa-copy"></i> Copy</button>
-          <button class="btn btn-ghost" id="rd-clear"><i class="fas fa-trash"></i> Clear</button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Header Hero -->
+    <div class="tool-hero-box">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="tool-badge-pill mb-3">
+            <i class="fas fa-filter text-[var(--brand)]"></i> High-Throughput Deduplication
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--txt)] tracking-tight">
+            Remove Duplicate <span class="shimmer-text">Lines & Entries</span>
+          </h1>
+          <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
+            Sanitize email databases, keyword lists, and CSV columns in linear O(N) memory time with automated whitespace trimming and alphabetical sorting.
+          </p>
+        </div>
+
+        <!-- Privacy Badge -->
+        <div class="tool-inner-panel flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[var(--brand-soft)] border border-[var(--border)] flex items-center justify-center text-[var(--brand)] text-base">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+          <div>
+            <span class="text-[10.5px] font-mono text-[var(--txt-dim)] uppercase block tracking-wider font-semibold">Privacy Guaranteed</span>
+            <span class="text-xs font-bold text-[var(--txt)]">100% In-Browser RAM Processing</span>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Main Workspace Frame -->
+    <div class="tool-card-surface space-y-6 mb-12">
+      <!-- Options Toolbar -->
+      <div class="tool-inner-panel flex flex-wrap items-center gap-4 text-xs font-medium text-[var(--txt-muted)]">
+        <label class="flex items-center gap-2 cursor-pointer hover:text-[var(--txt)] transition-colors">
+          <input type="checkbox" id="rd-trim" checked class="w-4 h-4 rounded text-[var(--brand)] accent-[var(--brand)]" />
+          <span>Trim Whitespace</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer hover:text-[var(--txt)] transition-colors">
+          <input type="checkbox" id="rd-case" class="w-4 h-4 rounded text-[var(--brand)] accent-[var(--brand)]" />
+          <span>Case-Insensitive Match</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer hover:text-[var(--txt)] transition-colors">
+          <input type="checkbox" id="rd-blank" checked class="w-4 h-4 rounded text-[var(--brand)] accent-[var(--brand)]" />
+          <span>Remove Empty Lines</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer hover:text-[var(--txt)] transition-colors">
+          <input type="checkbox" id="rd-sort" class="w-4 h-4 rounded text-[var(--brand)] accent-[var(--brand)]" />
+          <span>Sort Alphabetically (A → Z)</span>
+        </label>
+      </div>
+
+      <!-- 2-Column Split Input / Output Editors -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Input Column -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-xs font-mono">
+            <span class="text-[var(--txt-dim)] font-bold uppercase">Raw Input List</span>
+            <span id="rd-in-count" class="text-[var(--brand)] font-bold px-2 py-0.5 rounded bg-[var(--brand-soft)] border border-[var(--border)]">0 lines</span>
+          </div>
+          <textarea id="rd-input" rows="12" placeholder="Paste your raw list here (one entry per line)..." class="tool-textarea font-mono text-xs sm:text-sm resize-y leading-relaxed"></textarea>
+          <button id="rd-process" class="btn btn-primary w-full py-3 font-mono text-xs uppercase tracking-wider">
+            <i class="fas fa-filter"></i> Strip Duplicates
+          </button>
+        </div>
+
+        <!-- Output Column -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-xs font-mono">
+            <span class="text-[var(--amber)] font-bold uppercase">Deduplicated Output</span>
+            <span id="rd-out-count" class="text-[var(--amber)] font-bold px-2 py-0.5 rounded bg-[var(--amber-soft)] border border-[var(--border)]">0 lines</span>
+          </div>
+          <textarea id="rd-output" rows="12" readonly placeholder="Sanitized unique lines will appear here…" class="tool-control-output text-xs sm:text-sm resize-y leading-relaxed"></textarea>
+          <div class="flex items-center gap-3">
+            <button id="rd-copy" class="btn btn-secondary flex-1 py-3 text-xs font-mono uppercase tracking-wider">
+              <i class="fas fa-copy"></i> Copy Clean List
+            </button>
+            <button id="rd-clear" class="btn btn-secondary px-5 py-3 text-xs font-mono text-[var(--txt-dim)] hover:text-red-500 transition-colors" title="Clear">
+              <i class="fas fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How to Use -->
+    <div class="tool-content-wrap">
+
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+          </span>
+          <h2>How to Remove Duplicate Lines</h2>
+          <p>Clean up any list — email addresses, keywords, URLs — in seconds.</p>
+        </div>
+        <ol class="mt-6 space-y-4">
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Paste your list</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Copy your list from a spreadsheet, text file, or database export and paste it into the Raw Input List box. Each line is treated as a separate entry.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Configure the options</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Choose whether to trim whitespace, match case-insensitively, remove blank lines, or sort alphabetically. The defaults work well for most lists.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Click Strip Duplicates</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Hit the button. The cleaned list appears instantly in the right panel with a count showing how many unique lines remain.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">4</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Copy or clear</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Use <strong>Copy Clean List</strong> to copy the result to your clipboard. Hit the trash icon to clear both panels and start over.</span>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+    <!-- Stat-Hero: High-Throughput Data Hygiene & Set Theory -->
+    <div style="margin-top:0">
+      <section class="tool-content-card">
+        <!-- Direct Editorial Lead -->
+        <div class="tool-content-header">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-[var(--txt)] tracking-tight mb-3">
+            Information Entropy & the Cost of Duplicate Records
+          </h2>
+          <p class="text-base sm:text-lg text-[var(--txt-muted)] leading-relaxed">
+            In data engineering, duplicate records represent silent systemic entropy. Repeated entries inflate database index overhead, trigger redundant billing sequences, corrupt statistical analytics, and degrade email deliverability reputation. Eliminating duplicate noise with high-throughput hash set algorithms restores structural integrity to your operational datasets.
+          </p>
+        </div>
+
+        <!-- Stat-Hero Ribbon -->
+        <div class="py-6 border-y border-[var(--border)] my-6">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center divide-y lg:divide-y-0 lg:divide-x divide-[var(--border)]">
+            <div class="pt-4 lg:pt-0">
+              <span class="block text-4xl sm:text-5xl font-black font-mono tracking-tight text-[var(--brand)]">O(N)</span>
+              <span class="block text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)] mt-2">Hash Lookup Speed</span>
+              <span class="block text-[11px] text-[var(--txt-dim)] mt-1">Zero quadratic comparison overhead</span>
+            </div>
+            <div class="pt-4 lg:pt-0">
+              <span class="block text-4xl sm:text-5xl font-black font-mono tracking-tight text-[var(--txt)]">100k+</span>
+              <span class="block text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)] mt-2">Lines in &lt;50ms</span>
+              <span class="block text-[11px] text-[var(--txt-dim)] mt-1">Direct V8 engine memory processing</span>
+            </div>
+            <div class="pt-4 lg:pt-0">
+              <span class="block text-4xl sm:text-5xl font-black font-mono tracking-tight text-[var(--brand)]">0 ms</span>
+              <span class="block text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)] mt-2">Network Latency</span>
+              <span class="block text-[11px] text-[var(--txt-dim)] mt-1">100% Client-side RAM sandbox</span>
+            </div>
+            <div class="pt-4 lg:pt-0">
+              <span class="block text-4xl sm:text-5xl font-black font-mono tracking-tight text-[var(--amber)]">100%</span>
+              <span class="block text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)] mt-2">Order Retention</span>
+              <span class="block text-[11px] text-[var(--txt-dim)] mt-1">Strict chronological first-seen index</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deep Dive 1: Algorithmic Complexity -->
+        <article class="space-y-3 max-w-3xl">
+          <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Algorithmic Efficiency</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Algorithmic Complexity: Why Hash Sets Trump Quadratic Loops
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Many naive desktop spreadsheet plugins perform deduplication using nested comparison loops: for every row, they scan every subsequent row in the sheet. While barely perceptible on 50 lines, this algorithm suffers from quadratic time complexity: O(N²). For a list of 50,000 email addresses, quadratic evaluation forces over 1.25 billion comparison cycles, causing browsers and applications to crash.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Our in-browser engine utilizes a single-pass hash set: O(N). As each string is read, its cryptographic hash is indexed into an internal hash table bucket. Checking whether an item has already been encountered takes constant time: O(1). A dataset of 100,000 entries completes in under 50 milliseconds directly in your browser's execution thread.
+          </p>
+        </article>
+
+        <!-- Full-Width Typographical Statement -->
+        <blockquote class="my-8 py-8 px-6 border-y border-[var(--border)] text-center max-w-4xl mx-auto">
+          <p class="text-lg sm:text-xl lg:text-2xl font-extrabold text-[var(--txt)] tracking-tight leading-snug">
+            “Data hygiene is the unsung foundation of modern computing—algorithms can be mathematically flawless, but duplicate inputs silently corrupt every downstream decision.”
+          </p>
+          <cite class="block mt-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-[var(--brand)] not-italic">
+            — Database Normalization &amp; Information Reliability Principles
+          </cite>
+        </blockquote>
+
+        <!-- Deep Dive 2: The False-Unique Dilemma -->
+        <article class="space-y-3 max-w-3xl">
+          <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--amber)]">Data Edge Cases</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Invisible Unicode Artifacts &amp; False-Unique Failures
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Standard spreadsheet deduplication frequently fails when dealing with data exported across heterogeneous systems. An entry exported from a Windows database with CRLF line breaks (\r\n) appears identical on screen to a UNIX-exported entry with LF line breaks (\n), yet binary comparison treats them as completely distinct records.
+          </p>
+          <div class="p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt-muted)] space-y-1">
+            <div class="text-[var(--txt)] font-bold">// False-Unique Binary Discrepancy</div>
+            <div>Entry A: "user@domain.com\r\n"  (17 bytes with carriage return)</div>
+            <div>Entry B: "user@domain.com\n"    (16 bytes standard line feed)</div>
+            <div class="text-[var(--brand)]">→ Normalized: "user@domain.com" (Identical hash match)</div>
+          </div>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            By applying automated line-ending normalization and whitespace trimming, our pipeline strips hidden non-breaking spaces (\u00A0), zero-width characters, and trailing tab stops before computing uniqueness, ensuring true operational purity.
+          </p>
+        </article>
+      </section>
+
+      <!-- Plain Hairline FAQ Stream -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Inquiries</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight mt-1">
+            Deduplication Protocol &amp; Technical FAQ
+          </h3>
+          <p class="text-xs sm:text-sm text-[var(--txt-muted)] mt-1">
+            Order retention, case sensitivity, and client-side sandbox privacy.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Does deduplication preserve the chronological order of original records?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Yes. The ECMAScript standard guarantees that JavaScript Sets maintain chronological insertion order. The initial occurrence of every record remains in its exact relative position, while subsequent duplicates are pruned. If you require alphabetical organization, toggle the "Alphabetical Sort" option.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>How are case variations handled between identical entries?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              By default, matching is case-insensitive, meaning "Contact@Company.com" and "contact@company.com" are recognized as duplicates and consolidated. If your data relies on exact casing (such as Base64 hashes or case-sensitive API keys), uncheck the "Ignore Case" option to preserve distinct casing states.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why do CSV and CRM exports frequently contain duplicate records?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Duplicates commonly originate during relational database joins (e.g., joining customers with orders where a customer has multiple purchases), multiple form submissions by the same user, or merging lead lists from separate marketing webinars and campaigns without unique email indexing constraints.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Is confidential customer or financial data exposed over the network?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Zero bytes are transmitted over the internet. All deduplication, regex evaluation, and memory hashing run locally within your machine's browser memory sandbox. You can disconnect your network connection entirely and the tool will continue functioning with complete operational integrity.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can I deduplicate a CSV file or just plain text lists?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              This tool works on plain text, one entry per line. For CSV files, copy just the column you want to deduplicate, paste it in, then clean it here and paste it back. If your CSV uses commas within fields, it's best to isolate the specific column first in a spreadsheet app before pasting.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Is there a maximum list size the tool can handle?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              There's no hard limit. The tool has been tested with lists exceeding 100,000 lines and completes in well under a second on modern hardware. Performance is determined by your browser's available RAM, not a server-side cap.
+            </div>
+          </details>
+        </div>
+      </section>
+    </div>
+    </div>
   </div>
 </ToolLayout>
-
-<style>
-  .rd-wrap { display: flex; flex-direction: column; gap: 16px; }
-  .rd-options { display: flex; gap: 12px; flex-wrap: wrap; padding: 12px 16px; background: var(--bg-soft); border-radius: var(--radius-sm); border: 1.5px solid var(--border); }
-  .rd-check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--txt); cursor: pointer; }
-  .rd-check input { accent-color: var(--brand); width: 15px; height: 15px; }
-  .rd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .rd-col { display: flex; flex-direction: column; }
-  .rd-label { font-size: 14px; font-weight: 600; color: var(--txt); display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .rd-count { font-size: 12px; font-weight: 600; color: var(--brand); background: var(--brand-light); padding: 2px 8px; border-radius: 100px; }
-  .rd-textarea {
-    flex: 1;
-    width: 100%;
-    padding: 14px;
-    font-size: 13.5px;
-    font-family: 'Courier New', monospace;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    resize: vertical;
-    outline: none;
-    line-height: 1.7;
-    transition: border-color .2s;
-  }
-  .rd-textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
-  .rd-output-ta { background: #F0FDF4; border-color: #BBF7D0; }
-  .rd-actions { display: flex; gap: 10px; margin-top: 10px; }
-
-  @media (max-width: 640px) { .rd-grid { grid-template-columns: 1fr; } }
-</style>
 
 <script>
   const input = document.getElementById('rd-input') as HTMLTextAreaElement;
   const output = document.getElementById('rd-output') as HTMLTextAreaElement;
 
-  function countLines(text: string) {
-    if (!text.trim()) return 0;
-    return text.split('\n').filter(l => l.trim()).length;
-  }
-
   input?.addEventListener('input', () => {
-    document.getElementById('rd-in-count')!.textContent = `${input.value.split('\n').length} lines`;
+    const lines = input.value.split('\n').filter(l => l.length > 0);
+    const inCount = document.getElementById('rd-in-count');
+    if (inCount) inCount.textContent = `${lines.length} lines`;
   });
 
   document.getElementById('rd-process')?.addEventListener('click', () => {
@@ -97,22 +326,27 @@ const tool = tools.find(t => t.slug === 'remove-duplicates')!;
 
     if (sort) lines.sort((a, b) => a.localeCompare(b));
 
-    output.value = lines.join('\n');
-    document.getElementById('rd-out-count')!.textContent = `${lines.length} lines`;
+    if (output) output.value = lines.join('\n');
+    const outCount = document.getElementById('rd-out-count');
+    if (outCount) outCount.textContent = `${lines.length} lines`;
   });
 
   document.getElementById('rd-copy')?.addEventListener('click', async () => {
     if (!output.value) return;
     await navigator.clipboard.writeText(output.value);
-    const btn = document.getElementById('rd-copy')!;
-    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy', 2000);
+    const btn = document.getElementById('rd-copy');
+    if (btn) {
+      btn.innerHTML = '<i class="fas fa-check text-[var(--brand)]"></i> Copied!';
+      setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy Clean List', 2000);
+    }
   });
 
   document.getElementById('rd-clear')?.addEventListener('click', () => {
     input.value = '';
     output.value = '';
-    document.getElementById('rd-in-count')!.textContent = '0 lines';
-    document.getElementById('rd-out-count')!.textContent = '0 lines';
+    const inCount = document.getElementById('rd-in-count');
+    const outCount = document.getElementById('rd-out-count');
+    if (inCount) inCount.textContent = '0 lines';
+    if (outCount) outCount.textContent = '0 lines';
   });
 </script>

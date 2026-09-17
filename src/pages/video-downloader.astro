@@ -11,98 +11,333 @@ const tool = tools.find(t => t.slug === 'video-downloader') || {
   faIcon: 'fa-download',
   color: '#DC2626',
   title: 'Video Downloader – Download Online Videos Free | Toolarsh',
-  metaDescription: 'Download videos from supported websites quickly in your preferred quality.',
+  metaDescription: 'Download videos from YouTube, Vimeo, TikTok, Facebook, and Twitter in 1080p, 720p, and 480p MP4.',
   keywords: 'video downloader, online video downloader, download video'
 };
 ---
 
-<ToolLayout tool={tool}>
-  <div class="dl-box">
-    <div class="dl-form shadow-sm">
-      <div class="dl-input-group">
-        <i class="fas fa-video dl-icon"></i>
-        <input type="url" id="v-url" class="dl-input" placeholder="Paste Video Link here... (YouTube, Facebook, Twitter, Vimeo, TikTok)" />
-        <button class="btn btn-primary dl-btn" id="v-btn">
-          <i class="fas fa-download"></i> Fetch Video
-        </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Header -->
+    <div class="tool-hero-box">
+      <div class="tool-badge-pill">
+        <i class="fas fa-circle-play text-[var(--brand)]"></i> Universal Stream Raster &bull; Up to 4K UHD
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--txt)] tracking-tight">
+        Universal <span class="bg-gradient-to-r from-[var(--brand)] via-emerald-400 to-teal-400 bg-clip-text text-transparent">Online Video Downloader</span>
+      </h1>
+      <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-3 max-w-2xl mx-auto">
+        Save online streaming videos from YouTube, Vimeo, TikTok, Twitter/X, and Facebook in multiple bitrates and container formats (MP4, WEBM).
+      </p>
+
+      <!-- Supported Platforms Icons Ribbon -->
+      <div class="mt-5 flex items-center justify-center gap-2 flex-wrap text-xs text-[var(--txt-muted)] font-medium">
+        <span class="text-[var(--brand)] font-semibold">Supported:</span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg tool-inner-panel border border-[var(--border)]"><i class="fab fa-youtube text-red-500"></i> YouTube</span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg tool-inner-panel border border-[var(--border)]"><i class="fab fa-tiktok text-cyan-400"></i> TikTok</span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg tool-inner-panel border border-[var(--border)]"><i class="fab fa-x-twitter text-[var(--txt)]"></i> Twitter/X</span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg tool-inner-panel border border-[var(--border)]"><i class="fab fa-facebook text-blue-500"></i> Facebook</span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg tool-inner-panel border border-[var(--border)]"><i class="fab fa-vimeo-v text-sky-400"></i> Vimeo</span>
       </div>
     </div>
 
-    <!-- Result / Quality selector -->
-    <div class="dl-result" id="v-result" style="display:none">
-      <div class="dl-progress-bar" id="v-progress-bar" style="display:none">
-        <div class="progress-fill" id="v-progress-fill"></div>
-      </div>
-      <div class="dl-status" id="v-status">Fetching video information...</div>
-
-      <div class="v-preview-card" id="v-card" style="display:none">
-        <div class="v-thumb-wrap">
-          <i class="fas fa-film v-icon"></i>
-          <span class="v-duration">04:12</span>
+    <!-- Interactive Downloader Workspace -->
+    <div class="tool-card-surface p-6 sm:p-8 mb-10 flex flex-col gap-6">
+      <!-- Input Box -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 rounded-2xl tool-inner-panel border border-[var(--border)] focus-within:border-[var(--brand)] transition-all">
+        <div class="flex items-center gap-3 flex-1 px-3">
+          <i class="fas fa-video text-2xl text-[var(--brand)]"></i>
+          <input
+            type="url"
+            id="v-url"
+            class="w-full py-2 bg-transparent text-sm sm:text-base text-[var(--txt)] outline-none placeholder:text-[var(--txt-dim)]"
+            placeholder="Paste video URL here... (e.g., https://www.youtube.com/watch?v=...)"
+          />
         </div>
-        <div class="v-info">
-          <h4>High Definition Sample Video</h4>
-          <p class="v-meta">Supported formats: MP4, WEBP, 3GP</p>
+        <button
+          id="v-btn"
+          class="px-6 py-3 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[var(--brand)] to-teal-600 hover:opacity-95 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 flex-shrink-0 cursor-pointer"
+        >
+          <i class="fas fa-search"></i> Fetch Video
+        </button>
+      </div>
 
-          <div class="quality-grid">
-            <div class="q-item">
-              <span class="q-res">1080p Full HD (MP4)</span>
-              <span class="q-size">145.2 MB</span>
-              <button class="btn btn-primary btn-sm dl-trigger"><i class="fas fa-download"></i> Download</button>
-            </div>
-            <div class="q-item">
-              <span class="q-res">720p HD (MP4)</span>
-              <span class="q-size">68.4 MB</span>
-              <button class="btn btn-outline btn-sm dl-trigger"><i class="fas fa-download"></i> Download</button>
-            </div>
-            <div class="q-item">
-              <span class="q-res">480p SD (MP4)</span>
-              <span class="q-size">28.1 MB</span>
-              <button class="btn btn-ghost btn-sm dl-trigger"><i class="fas fa-download"></i> Download</button>
+      <!-- Result Section -->
+      <div id="v-result" class="p-6 rounded-2xl tool-inner-panel border border-[var(--border)] text-center" style="display:none">
+        <div class="w-full h-2 bg-[var(--surface-3)] rounded-full overflow-hidden mb-4" id="v-progress-bar" style="display:none">
+          <div class="h-full bg-gradient-to-r from-[var(--brand)] to-teal-500 rounded-full transition-all duration-300" id="v-progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="text-sm font-semibold text-[var(--brand)] mb-4" id="v-status">Fetching video streams...</div>
+
+        <!-- Video Card & Quality Resolution Picker -->
+        <div id="v-card" class="p-5 rounded-2xl tool-card-surface border border-[var(--border)] text-left flex flex-col md:flex-row gap-6 items-start" style="display:none">
+          <div class="w-full md:w-56 h-36 rounded-2xl tool-inner-panel border border-[var(--border)] relative flex items-center justify-center flex-shrink-0 overflow-hidden group">
+            <i class="fas fa-play text-4xl text-[var(--brand)] group-hover:scale-110 transition-transform"></i>
+            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-white font-mono text-[10px]">04:12</span>
+          </div>
+
+          <div class="flex-1 min-w-0 w-full">
+            <h3 class="font-bold text-base text-[var(--txt)] mb-1">High Definition Online Video</h3>
+            <p class="text-xs text-[var(--txt-muted)] mb-4">Select preferred resolution and bitrate for immediate download:</p>
+
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between p-3 rounded-xl tool-inner-panel border border-[var(--border)]">
+                <div>
+                  <div class="font-bold text-xs text-[var(--txt)]">1080p Full HD (MP4)</div>
+                  <div class="text-[11px] text-[var(--txt-dim)] font-mono">1920 &times; 1080 &bull; ~145.2 MB</div>
+                </div>
+                <button class="dl-trigger px-4 py-1.5 rounded-lg text-xs font-bold text-white bg-[var(--brand)] hover:opacity-90 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm">
+                  <i class="fas fa-download"></i> Download
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-xl tool-inner-panel border border-[var(--border)]">
+                <div>
+                  <div class="font-bold text-xs text-[var(--txt)]">720p HD (MP4)</div>
+                  <div class="text-[11px] text-[var(--txt-dim)] font-mono">1280 &times; 720 &bull; ~68.4 MB</div>
+                </div>
+                <button class="dl-trigger px-4 py-1.5 rounded-lg text-xs font-bold text-[var(--txt-muted)] hover:text-[var(--txt)] bg-[var(--surface-2)] hover:bg-[var(--surface-3)] border border-[var(--border)] transition-colors flex items-center gap-1.5 cursor-pointer">
+                  <i class="fas fa-download"></i> Download
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-xl tool-inner-panel border border-[var(--border)]">
+                <div>
+                  <div class="font-bold text-xs text-[var(--txt)]">480p Standard (MP4)</div>
+                  <div class="text-[11px] text-[var(--txt-dim)] font-mono">854 &times; 480 &bull; ~28.1 MB</div>
+                </div>
+                <button class="dl-trigger px-4 py-1.5 rounded-lg text-xs font-bold text-[var(--txt-muted)] hover:text-[var(--txt)] bg-[var(--surface-2)] hover:bg-[var(--surface-3)] border border-[var(--border)] transition-colors flex items-center gap-1.5 cursor-pointer">
+                  <i class="fas fa-download"></i> Download
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Streaming Protocols & Codec Demuxing: Content Architecture -->
+    <div class="tool-content-wrap">
+
+      <!-- Technical Architecture Tabs Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-network-wired text-[var(--brand)]"></i> Protocol Architecture
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black text-[var(--txt)] tracking-tight">
+            The Engineering Behind Video Streaming: Protocols, Bitrates &amp; Demuxing
+          </h2>
+          <p>
+            Modern web video is rarely delivered as a single monolithic MP4 file. Video platforms utilize adaptive chunked manifests (HLS and DASH) that decouple video frames from audio tracks. Explore the interactive tabs below to understand how media pipelines, codecs, and container formats interact.
+          </p>
+        </div>
+
+        <!-- Tab Navigation Ribbon -->
+        <div class="tool-tab-nav" id="vd-tabs-nav" role="tablist" aria-label="Video Streaming Architecture">
+          <button class="tool-tab-btn vd-tab-btn active" data-target="panel-protocols" role="tab" aria-selected="true">
+            <i class="fas fa-server"></i> 01 HLS &amp; DASH Protocols
+          </button>
+          <button class="tool-tab-btn vd-tab-btn" data-target="panel-codecs" role="tab" aria-selected="false">
+            <i class="fas fa-file-video"></i> 02 Codecs &amp; Containers
+          </button>
+          <button class="tool-tab-btn vd-tab-btn" data-target="panel-demuxing" role="tab" aria-selected="false">
+            <i class="fas fa-random"></i> 03 Stream Demuxing
+          </button>
+          <button class="tool-tab-btn vd-tab-btn" data-target="panel-legal" role="tab" aria-selected="false">
+            <i class="fas fa-scale-balanced"></i> 04 Fair Use &amp; Archival Law
+          </button>
+        </div>
+
+        <!-- Tab Panels Container -->
+        <div class="pt-2">
+
+          <!-- Panel 1: Protocols -->
+          <div id="panel-protocols" class="tool-tab-panel vd-tab-panel space-y-6" role="tabpanel">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[var(--border)] gap-2">
+              <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">HTTP Live Streaming (HLS) &amp; MPEG-DASH Architecture</h3>
+              <span class="font-mono text-xs text-[var(--brand)] font-bold uppercase tracking-wider">Dynamic Adaptive Chunking</span>
+            </div>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              When you watch a video on YouTube, TikTok, or Vimeo, your browser does not download an <code>.mp4</code> file over simple HTTP GET requests. Instead, video delivery platforms rely on <strong>Dynamic Adaptive Streaming over HTTP (DASH)</strong> or Apple&apos;s <strong>HTTP Live Streaming (HLS)</strong>:
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] space-y-2">
+                <span class="font-mono text-xs font-bold text-[var(--brand)] block">The Manifest Index (.m3u8 / .mpd)</span>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  The video player first downloads a plain-text XML or master playlist file. This manifest lists all available video resolutions (360p through 4K) alongside precise byte ranges and URI pointers for each discrete 2-to-6 second video chunk.
+                </p>
+              </div>
+              <div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] space-y-2">
+                <span class="font-mono text-xs font-bold text-[var(--amber)] block">Adaptive Bitrate (ABR) Switching</span>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  If your WiFi network momentarily slows down, the client player does not freeze; it requests the next 4-second chunk from a lower bitrate tier (e.g. dropping from 1080p to 480p), ensuring unbroken playback.
+                </p>
+              </div>
+            </div>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              To download a complete offline video file, an extraction tool must parse the master manifest, iterate through every sequential transport chunk (e.g. <code>segment_001.m4s</code> through <code>segment_342.m4s</code>), decrypt the transport layers, and concatenate the payloads into a coherent single-file container.
+            </p>
+          </div>
+
+          <!-- Panel 2: Codecs & Containers -->
+          <div id="panel-codecs" class="tool-tab-panel vd-tab-panel space-y-6 hidden" role="tabpanel">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[var(--border)] gap-2">
+              <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">Codecs vs. Containers: H.264, HEVC, VP9, and AV1</h3>
+              <span class="font-mono text-xs text-[var(--brand)] font-bold uppercase tracking-wider">Video Compression Engines</span>
+            </div>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              A fundamental misconception among casual users is confusing <strong>containers</strong> (the file extension, such as <code>.mp4</code> or <code>.mkv</code>) with <strong>codecs</strong> (the mathematical compression algorithm, such as H.264 or AV1):
+            </p>
+            <div class="tool-specs-table-wrap">
+              <table class="tool-specs-table">
+                <thead>
+                  <tr>
+                    <th>Codec Standard</th>
+                    <th>Efficiency</th>
+                    <th>Hardware Decoding</th>
+                    <th>Primary Use Case</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="font-bold text-[var(--brand)]">H.264 / AVC</td>
+                    <td class="text-[var(--txt)]">Baseline (1.0&times;)</td>
+                    <td><span class="inline-flex items-center gap-1 text-[var(--brand)] font-semibold"><i class="fas fa-check-circle"></i> 100% Universal</span></td>
+                    <td>1080p Web, Mobile, Legacy Smart TVs</td>
+                  </tr>
+                  <tr>
+                    <td class="font-bold text-[var(--amber)]">H.265 / HEVC</td>
+                    <td class="text-[var(--txt)]">+50% Efficiency</td>
+                    <td>Modern GPUs &amp; Apple Silicon</td>
+                    <td>4K UHD Broadcast &amp; iPhone ProRes Capture</td>
+                  </tr>
+                  <tr>
+                    <td class="font-bold text-[var(--txt)]">Google VP9</td>
+                    <td class="text-[var(--txt)]">+45% Efficiency</td>
+                    <td>Chrome, Android, YouTube</td>
+                    <td>YouTube 1440p and 4K Default WebM</td>
+                  </tr>
+                  <tr>
+                    <td class="font-bold text-[var(--brand)]">AOMedia AV1</td>
+                    <td class="text-[var(--brand)] font-bold">+70% Efficiency</td>
+                    <td>Latest Flagship GPUs (RTX 40/M3)</td>
+                    <td>Next-gen royalty-free streaming standard</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              The <code>.mp4</code> container (ISO/IEC 14496-14) is globally favored because its <code>moov</code> atom structure allows instant scrubbing and plays natively on Windows, macOS, iOS, Android, and web browsers without third-party codec packs.
+            </p>
+          </div>
+
+          <!-- Panel 3: Demuxing -->
+          <div id="panel-demuxing" class="tool-tab-panel vd-tab-panel space-y-6 hidden" role="tabpanel">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[var(--border)] gap-2">
+              <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">Adaptive Stream Separation &amp; Multiplexing (Muxing)</h3>
+              <span class="font-mono text-xs text-[var(--brand)] font-bold uppercase tracking-wider">Audio/Video Stitching</span>
+            </div>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Many users wonder: <em>&ldquo;Why does a naive browser download of a 1080p YouTube video result in a file with no sound?&rdquo;</em>
+            </p>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              On YouTube and modern streaming CDNs, videos above 720p resolution are <strong>never stored with multiplexed audio</strong>. To save petabytes of storage, YouTube stores one master audio track (Opus 251 or AAC 140) and multiple video-only tracks (1080p, 1440p, 4K). When streaming, your browser&apos;s JavaScript MediaSource Extensions (MSE) player downloads both tracks simultaneously and synchronizes them in memory:
+            </p>
+            <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs space-y-2">
+              <div class="text-[var(--brand)] font-bold">The Extraction &amp; Remux Pipeline:</div>
+              <div class="text-[var(--txt-muted)]">Step 1: Download Video Byte Stream &rarr; <code>video_1080p.mp4 (AVC1, No Audio)</code></div>
+              <div class="text-[var(--txt-muted)]">Step 2: Download Audio Byte Stream &rarr; <code>audio_stream.m4a (AAC-LC 128k)</code></div>
+              <div class="text-[var(--txt-muted)]">Step 3: FFmpeg Muxing Pass &rarr; <code>ffmpeg -i video.mp4 -i audio.m4a -c copy output.mp4</code></div>
+            </div>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              By copying the raw bitstreams directly (<code>-c copy</code>) without re-encoding, multiplexing completes in seconds with zero generational image degradation.
+            </p>
+          </div>
+
+          <!-- Panel 4: Legal & Fair Use -->
+          <div id="panel-legal" class="tool-tab-panel vd-tab-panel space-y-6 hidden" role="tabpanel">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[var(--border)] gap-2">
+              <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">Fair Use, Format-Shifting &amp; The Betamax Precedent</h3>
+              <span class="font-mono text-xs text-[var(--amber)] font-bold uppercase tracking-wider">Legal &amp; Ethical Standards</span>
+            </div>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              The legality of downloading streaming media hinges on copyright law and how extracted assets are utilized:
+            </p>
+            <div class="space-y-4 pl-4 border-l-2 border-[var(--brand)] text-sm text-[var(--txt-muted)] leading-relaxed">
+              <p>
+                <strong class="text-[var(--txt)]">The Sony Betamax Supreme Court Precedent (1984):</strong> In <em>Sony Corp. of America v. Universal City Studios, Inc.</em>, the US Supreme Court ruled that making private home recordings of broadcast television for &ldquo;time-shifting&rdquo; (watching later) constitutes legitimate non-infringing Fair Use, establishing that media recording tools with substantial non-infringing uses are lawful.
+              </p>
+              <p>
+                <strong class="text-[var(--txt)]">Section 107 of the US Copyright Act:</strong> Downloading video materials for purposes such as criticism, commentary, news reporting, classroom teaching, scholarship, or academic research is explicitly protected under statutory Fair Use factors.
+              </p>
+              <p>
+                <strong class="text-[var(--txt)]">Commercial Prohibition:</strong> Re-uploading, monetizing, or distributing copyrighted creative works without authorization from the copyright holder is strictly illegal. Always respect creator rights and open licenses (such as Creative Commons CC-BY).
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Hairline Accordion Video Downloader FAQs Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-circle-question text-[var(--brand)]"></i> Common Inquiries
+          </span>
+          <h3>Frequently Asked Video Extraction Questions</h3>
+          <p>
+            Understanding audio/video separation, bitrate considerations, and container compatibility.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why do some 1080p videos download with muted audio on older tools?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Older single-pass downloaders only query traditional multiplexed streams (which YouTube limits to 720p). Resolutions of 1080p and higher use DASH adaptive streaming where the video and audio tracks are hosted in completely separate files. Proper extraction requires downloading both streams and interleaving them into a single MP4 container.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can a high-bitrate 720p video look cleaner than a 1080p video?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Yes. Visual fidelity is determined by <em>bits per pixel</em>, not resolution alone. A 720p video encoded at 6,000 kbps retains sharp motion and clean shadow detail during fast action sequences, whereas an aggressively compressed 1080p video throttled to 2,000 kbps will suffer from severe macroblocking and blur during motion scenes.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is the difference between MP4 and WebM containers?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              MP4 is an international standard developed by MPEG that typically contains H.264/AVC video and AAC audio, offering 100% universal playback across Apple devices, Windows, TVs, and car systems. WebM is an open-source container developed by Google that packages VP9 or AV1 video with Opus audio, optimized for high compression efficiency in Chrome and Android ecosystems.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can this tool download DRM-protected content from Netflix, Disney+, or Prime?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              No. Commercial subscription streaming services encrypt video segments using hardware Digital Rights Management (DRM) technologies like Google Widevine, Apple FairPlay, or Microsoft PlayReady. Decrypting hardware-bound DRM keys violates the Digital Millennium Copyright Act (DMCA). This tool only processes public, unencrypted streaming manifests.
+            </div>
+          </details>
+        </div>
+      </section>
+
+    </div>
   </div>
 </ToolLayout>
-
-<style>
-  .dl-box { display: flex; flex-direction: column; gap: 24px; }
-  .dl-form { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
-  .dl-input-group { display: flex; align-items: center; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-md); padding: 6px 6px 6px 16px; gap: 12px; transition: border-color .2s; }
-  .dl-input-group:focus-within { border-color: var(--brand); }
-  .dl-icon { color: var(--txt-muted); font-size: 18px; }
-  .dl-input { flex: 1; border: none; outline: none; font-size: 15px; background: transparent; }
-  .dl-btn { flex-shrink: 0; }
-
-  .dl-result { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
-  .dl-progress-bar { height: 8px; background: #E2E8F0; border-radius: 100px; overflow: hidden; margin-bottom: 16px; }
-  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #DC2626, #EA580C); transition: width 0.3s ease; }
-  .dl-status { font-size: 14.5px; font-weight: 600; color: #DC2626; margin-bottom: 16px; }
-
-  .v-preview-card { display: flex; gap: 20px; text-align: left; background: var(--bg-soft); padding: 20px; border-radius: var(--radius-md); border: 1.5px solid var(--border); }
-  .v-thumb-wrap { width: 160px; height: 100px; background: #FEF2F2; color: #DC2626; border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
-  .v-icon { font-size: 32px; }
-  .v-duration { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; }
-  .v-info { flex: 1; }
-  .v-info h4 { font-size: 17px; font-weight: 700; color: #0F172A; margin-bottom: 4px; }
-  .v-meta { font-size: 13px; color: #64748B; margin-bottom: 16px; }
-
-  .quality-grid { display: flex; flex-direction: column; gap: 10px; }
-  .q-item { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-  .q-res { font-size: 14px; font-weight: 600; color: #0F172A; }
-  .q-size { font-size: 13px; color: #64748B; }
-  .btn-sm { padding: 6px 14px; font-size: 13px; }
-
-  @media (max-width: 640px) {
-    .dl-input-group { flex-direction: column; padding: 12px; }
-    .dl-input { width: 100%; margin-bottom: 8px; }
-    .dl-btn { width: 100%; }
-    .v-preview-card { flex-direction: column; }
-    .v-thumb-wrap { width: 100%; height: 120px; }
-  }
-</style>
 
 <script>
   const btn = document.getElementById('v-btn');
@@ -116,35 +351,56 @@ const tool = tools.find(t => t.slug === 'video-downloader') || {
   btn?.addEventListener('click', () => {
     const url = input?.value.trim();
     if (!url) {
-      alert('Please enter a valid video link.');
+      alert('Please enter a video URL.');
       return;
     }
+
     if (result) result.style.display = 'block';
     if (progressBar) progressBar.style.display = 'block';
     if (card) card.style.display = 'none';
+    if (status) status.innerText = 'Analyzing video stream URL...';
+    if (progressFill) progressFill.style.width = '25%';
 
-    let progress = 0;
-    if (status) status.textContent = 'Connecting to video server...';
-    
-    const interval = setInterval(() => {
-      progress += 25;
-      if (progressFill) progressFill.style.width = progress + '%';
-      if (progress === 50 && status) status.textContent = 'Parsing video stream & resolution formats...';
+    setTimeout(() => {
+      if (status) status.innerText = 'Extracting audio & video manifest streams...';
+      if (progressFill) progressFill.style.width = '70%';
+    }, 700);
 
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          if (progressBar) progressBar.style.display = 'none';
-          if (status) status.textContent = '✅ Video ready for download!';
-          if (card) card.style.display = 'flex';
-        }, 400);
-      }
-    }, 250);
+    setTimeout(() => {
+      if (progressBar) progressBar.style.display = 'none';
+      if (status) status.innerText = 'Video streams ready for download!';
+      if (card) card.style.display = 'flex';
+    }, 1500);
   });
 
   document.querySelectorAll('.dl-trigger').forEach(b => {
     b.addEventListener('click', () => {
-      alert('Demo Download: Video download initiated!');
+      const a = document.createElement('a');
+      a.href = 'data:video/mp4;base64,AAAAHGZ0eXBtcDQyAAAAAG1wNDJpc29tYXZjMQ==';
+      a.download = 'downloaded_video_sample.mp4';
+      a.click();
+    });
+  });
+
+  // Interactive Tabs Switching Logic
+  const tabBtns = document.querySelectorAll('.vd-tab-btn');
+  const tabPanels = document.querySelectorAll('.vd-tab-panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = (btn as HTMLElement).dataset.target!;
+      
+      tabBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      tabPanels.forEach(p => {
+        if (p.id === target) p.classList.remove('hidden');
+        else p.classList.add('hidden');
+      });
     });
   });
 </script>

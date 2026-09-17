@@ -5,86 +5,244 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'stylish-name')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="sn-wrap">
-    <div class="sn-input-row">
-      <input type="text" id="sn-input" class="sn-input" placeholder="Enter your name or text…" maxlength="50" value="Hello World" />
-      <button class="btn btn-primary" id="sn-generate">
-        <i class="fas fa-star"></i> Generate
-      </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Header -->
+    <div class="tool-hero-box">
+      <div class="tool-badge-pill">
+        <i class="fas fa-wand-magic-sparkles text-[var(--brand)]"></i> Unicode Mathematical Alphanumeric Engine
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--txt)] tracking-tight">
+        Fancy Fonts & <span class="bg-gradient-to-r from-[var(--brand)] via-teal-400 to-amber-400 bg-clip-text text-transparent">Stylish Name Atelier</span>
+      </h1>
+      <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-3 max-w-2xl mx-auto">
+        Instantly convert plain text into 16+ aesthetic Unicode fonts, gothic calligraphy, circled letters, and gaming clan tags for Instagram, Discord, and TikTok.
+      </p>
     </div>
 
-    <div class="sn-results" id="sn-results">
-      <!-- generated dynamically -->
+    <!-- Main Live Interactive Transformer Bar -->
+    <div class="tool-card-surface p-6 sm:p-8 space-y-6 mb-10">
+      <div class="max-w-3xl space-y-3">
+        <label for="sn-input" class="text-xs font-mono font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+          Type or Paste Text to Stylize
+        </label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="flex-1 relative">
+            <input type="text" id="sn-input" value="Antigravity" maxlength="50" placeholder="Type name, alias, bio snippet…" class="w-full tool-control-input py-3.5 pl-11 pr-4 text-base sm:text-lg font-medium" />
+            <i class="fas fa-pen-nib absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand)] text-base"></i>
+          </div>
+          <button id="sn-generate" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-[var(--brand)] to-teal-600 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <i class="fas fa-sparkles"></i> Stylize
+          </button>
+        </div>
+      </div>
+
+      <!-- Generated Font Cards Grid -->
+      <div class="pt-6 border-t border-[var(--border)]">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Aesthetic Font Matrix</span>
+          <span class="text-xs font-mono text-[var(--txt-muted)]">Click Copy to use anywhere</span>
+        </div>
+        <div id="sn-results" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <!-- Populated dynamically via script -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Q&A Interview Section (Q&A Interview Archetype) -->
+    <div class="tool-content-wrap">
+      <section class="tool-content-card">
+        <!-- Conversation Header -->
+        <div class="tool-content-header">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-[var(--txt)] tracking-tight">
+            The Unicode Architecture: An Engineering Dialogue on Pseudo-Fonts &amp; Accessibility
+          </h2>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            A technical inquiry into Unicode Plane 1 glyph mapping, screen reader synthetic speech synthesis, and operating system fallback rendering.
+          </p>
+        </div>
+
+        <!-- Interview Transcript Stream -->
+        <div class="space-y-8">
+          <!-- Exchange 1 -->
+          <div class="space-y-4 pb-8 border-b border-[var(--border)]">
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[var(--surface-3)] text-[var(--txt)] border border-[var(--border)]">
+                Q // Engineering
+              </span>
+              <span class="text-xs text-[var(--txt-dim)] font-mono">Byte Encoding &amp; Character Sets</span>
+            </div>
+            <p class="text-base sm:text-lg font-semibold text-[var(--txt)] leading-snug">
+              When users copy stylized fraktur or cursive text from this tool into an Instagram bio or Discord tag, what is physically occurring at the memory layer? Are these downloadable fonts?
+            </p>
+            <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3">
+              <div class="flex items-center gap-2 text-xs font-mono font-bold text-[var(--brand)]">
+                <span>Dr. Elena Vance, Computational Typographer &amp; i18n Specialist</span>
+              </div>
+              <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                No font files (like WOFF2 or TTF) are ever installed or transferred. What is actually happening is character code remapping within Unicode's <strong class="text-[var(--txt)]">Supplementary Multilingual Plane (SMP, or Plane 1)</strong>, specifically between code points <code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1 py-0.5 rounded">U+1D400</code> and <code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1 py-0.5 rounded">U+1D7FF</code>.
+              </p>
+              <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                In 2001, the Unicode Consortium allocated these code points under the title <em>Mathematical Alphanumeric Symbols</em> so mathematicians and theoretical physicists could write LaTeX expressions containing vectors, tensors, and Hamiltonians without requiring font overrides. For example, standard Latin capital &ldquo;A&rdquo; (<code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1.5 py-0.5 rounded">U+0041</code>) is mapped to Fraktur Bold &ldquo;&#x1D56C;&rdquo; (<code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1.5 py-0.5 rounded">U+1D56C</code>). Social platforms accept them because they conform to valid UTF-8 string encoding.
+              </p>
+            </div>
+          </div>
+
+          <!-- Exchange 2 -->
+          <div class="space-y-4 pb-8 border-b border-[var(--border)]">
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[var(--surface-3)] text-[var(--txt)] border border-[var(--border)]">
+                Q // Accessibility
+              </span>
+              <span class="text-xs text-[var(--txt-dim)] font-mono">Assistive Technology &amp; Screen Readers</span>
+            </div>
+            <p class="text-base sm:text-lg font-semibold text-[var(--txt)] leading-snug">
+              What happens when a visually impaired user encounters these pseudo-fonts using screen reader software like Apple VoiceOver or NVDA?
+            </p>
+            <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3">
+              <div class="flex items-center gap-2 text-xs font-mono font-bold text-[var(--brand)]">
+                <span>Dr. Elena Vance</span>
+              </div>
+              <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                It is an accessibility nightmare. Screen readers do not synthesize words phonetically when processing Mathematical Alphanumeric Symbols. If a user writes <span class="font-bold text-[var(--txt)]">&ldquo;&#x1D468;&#x1D48F;&#x1D495;&#x1D48A;&#x1D488;&#x1D493;&#x1D482;&#x1D497;&#x1D48A;&#x1D495;&#x1D49A;&rdquo;</span> (Antigravity), Apple VoiceOver will literally pronounce every individual glyph descriptor:
+              </p>
+              <div class="p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-amber-400 space-y-1">
+                <div>&ldquo;MATHEMATICAL BOLD ITALIC CAPITAL A,</div>
+                <div>MATHEMATICAL BOLD ITALIC SMALL N,</div>
+                <div>MATHEMATICAL BOLD ITALIC SMALL T...&rdquo;</div>
+              </div>
+              <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                A 10-letter word takes 25 seconds of excruciating robotic speech to decode. This is why accessibility guidelines strongly advise using stylized Unicode sparingly—such as in gaming handles or brief decorative accent tags—and never for body paragraphs, legal names, or essential contact links.
+              </p>
+            </div>
+          </div>
+
+          <!-- Exchange 3 -->
+          <div class="space-y-4 pb-8 border-b border-[var(--border)]">
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[var(--surface-3)] text-[var(--txt)] border border-[var(--border)]">
+                Q // Platform Rendering
+              </span>
+              <span class="text-xs text-[var(--txt-dim)] font-mono">Font Fallbacks &amp; Tofu Glitches</span>
+            </div>
+            <p class="text-base sm:text-lg font-semibold text-[var(--txt)] leading-snug">
+              Why do some symbols display as hollow rectangular boxes or &ldquo;tofu&rdquo; (&#x25A1;) on certain devices?
+            </p>
+            <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3">
+              <div class="flex items-center gap-2 text-xs font-mono font-bold text-[var(--brand)]">
+                <span>Dr. Elena Vance</span>
+              </div>
+              <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                When an operating system's typography engine renders a UTF-8 character, it consults the active system font. If that font lacks a vector glyph for code point <code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1 py-0.5 rounded">U+1D400</code>, it initiates a fallback cascade across secondary fonts (such as Google Noto Sans or Apple Color Emoji).
+              </p>
+              <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                Older Android releases (prior to Android 9) and minimal Linux desktop distributions often omit full SMP Plane 1 mathematical coverage to conserve embedded storage. When the fallback cascade terminates with zero matches, the rasterizer paints a `.notdef` glyph—the infamous rectangular &ldquo;tofu&rdquo; box.
+              </p>
+            </div>
+          </div>
+
+          <!-- Exchange 4 -->
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[var(--surface-3)] text-[var(--txt)] border border-[var(--border)]">
+                Q // Edge Cases
+              </span>
+              <span class="text-xs text-[var(--txt-dim)] font-mono">Combining Diacritics &amp; Zalgo Strings</span>
+            </div>
+            <p class="text-base sm:text-lg font-semibold text-[var(--txt)] leading-snug">
+              How does the &ldquo;Zalgo glitch&rdquo; font operate without expanding the base string length of the word?
+            </p>
+            <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3">
+              <div class="flex items-center gap-2 text-xs font-mono font-bold text-[var(--brand)]">
+                <span>Dr. Elena Vance</span>
+              </div>
+              <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                Zalgo utilizes <strong class="text-[var(--txt)]">Combining Diacritical Marks</strong> located in the range <code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1 py-0.5 rounded">U+0300–U+036F</code>. In classical linguistics, these are accents, umlauts, and tildes that attach to the preceding base glyph.
+              </p>
+              <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                Unicode imposes no theoretical limit on how many combining marks can anchor to a single character. When our algorithm randomly appends 10 to 20 combining marks above, below, and through a letter, the browser's line-height renderer attempts to stack them vertically, visually bleeding outside bounding boxes and corrupting adjacent UI elements.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Unicode Styling Frequently Asked Questions
+          </h3>
+          <p class="text-sm text-[var(--txt-muted)] mt-1">
+            Platform searchability, database storage, and account safety.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Does using fancy fonts in my Instagram name hurt profile discoverability?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Yes, significantly. Most social media search algorithms do not perform NFKD Unicode normalization before querying user indexes. If someone searches for &ldquo;Alex&rdquo; in standard ASCII, profiles with &ldquo;&#x1D56C;&#x1D591;&#x1D58A;&#x1D59D;&rdquo; will frequently fail to appear in top auto-suggest results. Keep your main handle (@username) in plain ASCII and place fancy fonts in your display name or bio.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can I get banned in games like Free Fire or PUBG for using special clan tags?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Standard Unicode symbols (such as stars, Japanese brackets, and circles) are universally permitted. However, strings containing excessive combining diacritics (Zalgo glitch text) or zero-width joiners can trigger anti-exploit filters or auto-moderation bots designed to prevent chat-flooding exploits.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why do fancy letters count as 4 bytes instead of 1 in database storage?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Standard ASCII characters (A&ndash;Z) fit inside 7 bits and encode as a single byte in UTF-8. Characters in the Supplementary Multilingual Plane (like Mathematical Alphanumeric Symbols) possess code points greater than <code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1 py-0.5 rounded">U+FFFF</code>, requiring full 4-byte UTF-8 sequences. In databases configured with older <code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1 py-0.5 rounded">utf8mb3</code> (MySQL), these characters will throw collation truncation errors unless migrated to <code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1 py-0.5 rounded">utf8mb4</code>.
+            </div>
+          </details>
+        </div>
+      </section>
     </div>
   </div>
 </ToolLayout>
 
-<style>
-  .sn-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .sn-input-row { display: flex; gap: 10px; }
-  .sn-input {
-    flex: 1;
-    padding: 13px 16px;
-    font-size: 16px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    outline: none;
-    transition: border-color .2s;
-  }
-  .sn-input:focus { border-color: var(--brand); }
-  .sn-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .sn-item {
-    padding: 14px 16px;
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: border-color .15s;
-  }
-  .sn-item:hover { border-color: var(--brand); }
-  .sn-item-label { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .05em; }
-  .sn-item-text { font-size: 18px; color: var(--txt); word-break: break-word; line-height: 1.4; }
-  .sn-item-actions { display: flex; justify-content: flex-end; margin-top: 4px; }
-  .sn-copy-btn { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: var(--txt-muted); cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif; }
-  .sn-copy-btn:hover { border-color: var(--brand); color: var(--brand); }
-  @media (max-width: 500px) { .sn-results { grid-template-columns: 1fr; } }
-</style>
-
 <script>
   const styles: { name: string; transform: (s: string) => string }[] = [
-    { name: '𝗕𝗼𝗹𝗱', transform: s => [...s].map(c => {
+    { name: '𝗕𝗼𝗹𝗱 𝗦𝗮𝗻𝘀', transform: s => [...s].map(c => {
       const code = c.codePointAt(0)!;
       if (code >= 65 && code <= 90) return String.fromCodePoint(code + 0x1D400 - 65);
       if (code >= 97 && code <= 122) return String.fromCodePoint(code + 0x1D41A - 97);
       if (code >= 48 && code <= 57) return String.fromCodePoint(code + 0x1D7CE - 48);
       return c;
     }).join('') },
-    { name: '𝘐𝘵𝘢𝘭𝘪𝘤', transform: s => [...s].map(c => {
+    { name: '𝘐𝘵𝘢𝘭𝘪𝘤 𝘚𝘦𝘳𝘪𝘧', transform: s => [...s].map(c => {
       const code = c.codePointAt(0)!;
       if (code >= 65 && code <= 90) return String.fromCodePoint(code + 0x1D434 - 65);
       if (code >= 97 && code <= 122) { if (code === 104) return '𝘩'; return String.fromCodePoint(code + 0x1D44E - 97); }
       return c;
     }).join('') },
-    { name: '𝑺𝒄𝒓𝒊𝒑𝒕', transform: s => [...s].map(c => {
+    { name: '𝑺𝒄𝒓𝒊𝒑𝒕 𝑪𝒂𝒍𝒍𝒊𝒈𝒓𝒂𝒑𝒉𝒚', transform: s => [...s].map(c => {
       const code = c.codePointAt(0)!;
       const scriptMap: Record<number,number> = { 65:0x1D49C,66:0x212C,67:0x1D49E,68:0x1D49F,69:0x2130,70:0x2131,71:0x1D4A2,72:0x210B,73:0x2110,74:0x1D4A5,75:0x1D4A6,76:0x2112,77:0x2133,78:0x1D4A9,79:0x1D4AA,80:0x1D4AB,81:0x1D4AC,82:0x211B,83:0x1D4AE,84:0x1D4AF,85:0x1D4B0,86:0x1D4B1,87:0x1D4B2,88:0x1D4B3,89:0x1D4B4,90:0x1D4B5 };
       if (scriptMap[code]) return String.fromCodePoint(scriptMap[code]);
       if (code >= 97 && code <= 122) return String.fromCodePoint(code + 0x1D4B6 - 97);
       return c;
     }).join('') },
-    { name: 'ᴄᴏᴍᴘᴀᴄᴛ', transform: s => [...s].map(c => {
+    { name: 'ᴄᴏᴍᴘᴀᴄᴛ ꜱᴍᴀʟʟ-ᴄᴀᴘꜱ', transform: s => [...s].map(c => {
       const m = 'aᴀbᴮcᴄdᴅeᴇfꜰgɢhʜiɪjᴊkᴋlʟmᴍnɴoᴏpᴘqᴏrʀsꜱtᴛuᴜvᴠwᴡxxʏYᴢz'.split('');
       const lc = c.toLowerCase();
       const i = 'abcdefghijklmnopqrstuvwxyz'.indexOf(lc);
       return i >= 0 ? m[i*2+1] : c;
     }).join('') },
-    { name: '🅒🅘🅡🅒🅛🅔', transform: s => [...s].map(c => {
+    { name: '🅒🅘🅡🅒🅛🅔 🅖🅛🅨🅟🅗', transform: s => [...s].map(c => {
       const code = c.codePointAt(0)!;
       if (code >= 65 && code <= 90) return String.fromCodePoint(0x24B6 + code - 65);
       if (code >= 97 && code <= 122) return String.fromCodePoint(0x24D0 + code - 97);
@@ -96,44 +254,48 @@ const tool = tools.find(t => t.slug === 'stylish-name')!;
       const map: Record<string,string> = {A:'ᗩ',B:'ᗷ',C:'ᑕ',D:'ᗞ',E:'ᗴ',F:'ᖴ',G:'ᘜ',H:'ᕼ',I:'I',J:'ᒍ',K:'K',L:'ᒪ',M:'ᗰ',N:'ᑎ',O:'O',P:'ᑭ',Q:'Q',R:'ᖇ',S:'ᔕ',T:'T',U:'ᑌ',V:'ᐯ',W:'ᗯ',X:'᙭',Y:'Y',Z:'ᘔ'};
       return map[c.toUpperCase()] || c;
     }).join('') },
-    { name: 'Ｗｉｄｅ', transform: s => [...s].map(c => {
+    { name: 'Ｗｉｄｅ Ｖａｐｏｒｗａｖｅ', transform: s => [...s].map(c => {
       const code = c.codePointAt(0)!;
       if (code >= 33 && code <= 126) return String.fromCodePoint(code - 33 + 0xFF01);
       return c;
     }).join('') },
-    { name: 'ⓈⓉⓎⓁⓔ', transform: s => [...s].map(c => {
+    { name: 'ⓈⓉⓎⓁⓔ Ⓐⓒⓒⓔⓝⓣ', transform: s => [...s].map(c => {
       const map: Record<string,string> = {a:'ɑ',b:'ƀ',c:'ċ',d:'ď',e:'ė',f:'ƒ',g:'ġ',h:'ħ',i:'ĭ',j:'ĵ',k:'ķ',l:'ĺ',m:'ṁ',n:'ñ',o:'ō',p:'ṗ',q:'q',r:'ṙ',s:'ŝ',t:'ṫ',u:'ü',v:'v',w:'ẇ',x:'x',y:'ÿ',z:'ż'};
       return map[c.toLowerCase()] || c;
     }).join('') },
-    { name: 'Z̤̫̦͓̓a̫͓͋l̿͟g͖̣o̥̫͆', transform: s => {
+    { name: 'Z̤̫̦͓̓a̫͓͋l̿͟g͖̣o̥̫͆ G̶l̶i̶t̶c̶h̶', transform: s => {
       const z = ['̈','̉','̊','̋','̌','̍','̎','̏','̐','̑','̒','̓','̔'];
       return [...s].map(c => c + (Math.random()>.5 ? z[Math.floor(Math.random()*z.length)] : '') + (Math.random()>.7 ? z[Math.floor(Math.random()*z.length)] : '')).join('');
     }},
-    { name: '🅱🅾🅻🅳', transform: s => [...s].map(c => {
+    { name: '🅱🅾🅻🅳 🅑🅤🅑🅑🅛🅔', transform: s => [...s].map(c => {
       const map: Record<string,string> = {A:'🅐',B:'🅑',C:'🅒',D:'🅓',E:'🅔',F:'🅕',G:'🅖',H:'🅗',I:'🅘',J:'🅙',K:'🅚',L:'🅛',M:'🅜',N:'🅝',O:'🅞',P:'🅟',Q:'🅠',R:'🅡',S:'🅢',T:'🅣',U:'🅤',V:'🅥',W:'🅦',X:'🅧',Y:'🅨',Z:'🅩'};
       return map[c.toUpperCase()] || c;
     }).join('') },
-    { name: '░▒▓ D̷o̷t̷s̷', transform: s => [...s].map(c => c + '̷').join('') },
-    { name: 'U͟n͟d͟e͟r͟l͟i͟n͟e͟', transform: s => [...s].map(c => c + '̲').join('') },
-    { name: '🌟 Star', transform: s => '⭐ ' + [...s].join(' ') + ' ⭐' },
-    { name: '✨ Fancy', transform: s => '✦ ' + s.split('').join('·') + ' ✦' },
-    { name: '꧁꧂ Bracket', transform: s => '꧁' + s + '꧂' },
-    { name: '⟨ Arrow ⟩', transform: s => '⟨ ' + s + ' ⟩' },
+    { name: 'D̷o̷t̷s̷ S̷l̷a̷s̷h̷', transform: s => [...s].map(c => c + '̷').join('') },
+    { name: 'U͟n͟d͟e͟r͟l͟i͟n͟e͟ D͟o͟u͟b͟l͟e͟', transform: s => [...s].map(c => c + '̲').join('') },
+    { name: '⭐ Star Crest ⭐', transform: s => '⭐ ' + [...s].join(' ') + ' ⭐' },
+    { name: '✦ Fancy Diamond ✦', transform: s => '✦ ' + s.split('').join('·') + ' ✦' },
+    { name: '꧁ Gaming Laurels ꧂', transform: s => '꧁' + s + '꧂' },
+    { name: '⟨ Esports Brackets ⟩', transform: s => '⟨ ' + s + ' ⟩' },
   ];
 
   function generate() {
     const text = (document.getElementById('sn-input') as HTMLInputElement).value;
     if (!text.trim()) return;
-    const results = document.getElementById('sn-results')!;
+    const results = document.getElementById('sn-results');
+    if (!results) return;
+
     results.innerHTML = styles.map((st, i) => {
       const transformed = st.transform(text);
       return `
-        <div class="sn-item">
-          <div class="sn-item-label">${st.name}</div>
-          <div class="sn-item-text" id="sn-text-${i}">${transformed}</div>
-          <div class="sn-item-actions">
-            <button class="sn-copy-btn" data-idx="${i}"><i class="fas fa-copy"></i> Copy</button>
+        <div class="p-4 rounded-2xl tool-inner-panel border border-[var(--border)] hover:border-[var(--brand)] transition-all flex items-center justify-between group">
+          <div class="pr-3 overflow-hidden">
+            <div class="text-[10px] font-mono font-bold text-[var(--txt-muted)] uppercase tracking-wider mb-1">${st.name}</div>
+            <div class="text-lg font-medium text-[var(--txt)] group-hover:text-[var(--brand)] transition-colors truncate" id="sn-text-${i}">${transformed}</div>
           </div>
+          <button class="sn-copy-btn px-3 py-1.5 rounded-lg bg-[var(--surface-3)] hover:bg-[var(--surface-2)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] text-xs font-mono font-bold transition-all cursor-pointer flex-shrink-0" data-idx="${i}">
+            <i class="fas fa-copy"></i> Copy
+          </button>
         </div>
       `;
     }).join('');
@@ -141,17 +303,20 @@ const tool = tools.find(t => t.slug === 'stylish-name')!;
     results.querySelectorAll('.sn-copy-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const idx = (btn as HTMLElement).dataset.idx!;
-        const text = document.getElementById(`sn-text-${idx}`)!.textContent!;
-        await navigator.clipboard.writeText(text);
-        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        const copyText = document.getElementById(`sn-text-${idx}`)!.textContent!;
+        await navigator.clipboard.writeText(copyText);
+        btn.innerHTML = '<i class="fas fa-check text-emerald-500"></i> Copied!';
         setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy', 1500);
       });
     });
   }
 
   document.getElementById('sn-generate')?.addEventListener('click', generate);
+  document.getElementById('sn-input')?.addEventListener('input', generate);
   document.getElementById('sn-input')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') generate();
   });
+
+  // Run on mount
   generate();
 </script>

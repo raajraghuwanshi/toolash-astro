@@ -75,256 +75,342 @@ const languages = [
   { code: 'lo', name: 'Lao' },
   { code: 'uz', name: 'Uzbek' },
   { code: 'kk', name: 'Kazakh' },
-  { code: 'hy', name: 'Armenian' },
+  { code: 'hy', name: 'Armenian' }
 ];
 ---
 
-<ToolLayout tool={tool}>
-  <div class="tr-wrap">
-
-    <!-- Language selectors -->
-    <div class="tr-lang-bar">
-      <div class="tr-lang-field">
-        <label class="tr-label" for="tr-from">Translate from</label>
-        <select id="tr-from" class="tr-select">
-          {languages.map(l => (
-            <option value={l.code} selected={l.code === 'en'}>{l.name}</option>
-          ))}
-        </select>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Box -->
+    <div class="tool-hero-box">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div class="tool-hero-badge">
+          <i class="fas fa-language"></i>
+          <span>GLOBAL POLYGLOT ENGINE &bull; 70+ DIALECTS</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-[var(--txt-dim)] font-mono">
+          <span><i class="fas fa-bolt text-[var(--amber)] mr-1"></i> Zero Latency</span>
+          <span>&bull;</span>
+          <span><i class="fas fa-shield-halved text-[var(--brand)] mr-1"></i> Free & Unlimited</span>
+        </div>
       </div>
 
-      <button class="tr-swap-btn" id="tr-swap" title="Swap languages" aria-label="Swap languages">
-        <i class="fas fa-arrows-left-right"></i>
-      </button>
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--txt)] mb-2">
+        Neural <span class="bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent">Language Translator</span>
+      </h1>
+      <p class="text-sm sm:text-base text-[var(--txt-muted)] max-w-2xl leading-relaxed">
+        Translate sentences, paragraphs, and conversations across 70+ global languages with accurate contextual syntax, phonetics, and instant text-to-speech audio pronunciation.
+      </p>
 
-      <div class="tr-lang-field">
-        <label class="tr-label" for="tr-to">Translate to</label>
-        <select id="tr-to" class="tr-select">
-          {languages.map(l => (
-            <option value={l.code} selected={l.code === 'hi'}>{l.name}</option>
-          ))}
-        </select>
+      <!-- Quick Language Chips -->
+      <div class="mt-4 flex items-center gap-2 flex-wrap text-xs">
+        <span class="text-[var(--txt-dim)] font-semibold">Translate to:</span>
+        <button class="tr-chip px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] hover:border-[var(--brand)] transition-colors" data-to="es">🇪🇸 Spanish</button>
+        <button class="tr-chip px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] hover:border-[var(--brand)] transition-colors" data-to="fr">🇫🇷 French</button>
+        <button class="tr-chip px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] hover:border-[var(--brand)] transition-colors" data-to="de">🇩🇪 German</button>
+        <button class="tr-chip px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] hover:border-[var(--brand)] transition-colors" data-to="ja">🇯🇵 Japanese</button>
+        <button class="tr-chip px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] hover:border-[var(--brand)] transition-colors" data-to="zh">🇨🇳 Chinese</button>
+        <button class="tr-chip px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] hover:border-[var(--brand)] transition-colors" data-to="ar">🇸🇦 Arabic</button>
+        <button class="tr-chip px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] hover:border-[var(--brand)] transition-colors" data-to="hi">🇮🇳 Hindi</button>
+        <button class="tr-chip px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] hover:border-[var(--brand)] transition-colors" data-to="ru">🇷🇺 Russian</button>
       </div>
     </div>
 
-    <!-- Text areas -->
-    <div class="tr-panels">
-      <!-- Input -->
-      <div class="tr-panel">
-        <div class="tr-panel-header">
-          <span class="tr-panel-title" id="tr-from-label">English</span>
-          <div class="tr-panel-actions">
-            <button class="tr-icon-btn" id="tr-clear-input" title="Clear"><i class="fas fa-xmark"></i></button>
-            <button class="tr-icon-btn" id="tr-copy-input" title="Copy source"><i class="fas fa-copy"></i></button>
+    <!-- Interactive Translation Workspace -->
+    <main class="space-y-8">
+      <div class="tool-card-surface overflow-hidden !p-0">
+        <!-- Language Selector Bar -->
+        <div class="p-4 sm:p-5 bg-[var(--surface-2)] border-b border-[var(--border)] flex flex-wrap items-center justify-between gap-4">
+          <!-- Source Lang -->
+          <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+            <span class="text-xs font-bold uppercase text-[var(--txt-dim)] font-mono">From:</span>
+            <select id="tr-from" class="tool-control-input flex-1 font-semibold text-sm">
+              {languages.map(l => (
+                <option value={l.code} selected={l.code === 'en'}>{l.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <!-- Swap Button -->
+          <button
+            id="tr-swap"
+            class="w-10 h-10 rounded-full bg-[var(--surface-3)] hover:bg-[var(--surface-2)] text-[var(--brand)] border border-[var(--border)] flex items-center justify-center transition-all hover:rotate-180 active:scale-95 flex-shrink-0"
+            title="Swap source and target language"
+          >
+            <i class="fas fa-arrows-rotate"></i>
+          </button>
+
+          <!-- Target Lang -->
+          <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+            <span class="text-xs font-bold uppercase text-[var(--txt-dim)] font-mono">To:</span>
+            <select id="tr-to" class="tool-control-input flex-1 font-semibold text-sm">
+              {languages.map(l => (
+                <option value={l.code} selected={l.code === 'hi'}>{l.name}</option>
+              ))}
+            </select>
           </div>
         </div>
-        <textarea
-          id="tr-input"
-          class="tr-textarea"
-          placeholder="Type or paste text to translate…"
-          rows="8"
-          maxlength="5000"
-        ></textarea>
-        <div class="tr-char-count"><span id="tr-char-count">0</span> / 5000</div>
-      </div>
 
-      <!-- Output -->
-      <div class="tr-panel tr-panel-output">
-        <div class="tr-panel-header">
-          <span class="tr-panel-title" id="tr-to-label">Hindi</span>
-          <div class="tr-panel-actions">
-            <button class="tr-icon-btn" id="tr-copy-output" title="Copy translation"><i class="fas fa-copy"></i></button>
+        <!-- Split Editor Panes -->
+        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border)]">
+          <!-- Input Panel -->
+          <div class="p-5 flex flex-col justify-between h-[360px] bg-[var(--surface-1)]">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-[var(--border)] text-xs text-[var(--txt-muted)]">
+              <span class="font-bold text-[var(--txt)]" id="tr-from-label">English</span>
+              <div class="flex items-center gap-3">
+                <button id="tr-copy-input" class="hover:text-[var(--brand)] transition-colors" title="Copy source text">
+                  <i class="fas fa-copy"></i>
+                </button>
+                <button id="tr-clear-input" class="hover:text-rose-500 transition-colors" title="Clear text">
+                  <i class="fas fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+
+            <textarea
+              id="tr-input"
+              class="w-full flex-1 p-2 text-sm sm:text-base text-[var(--txt)] bg-transparent border-0 outline-none resize-none leading-relaxed placeholder:text-[var(--txt-dim)]"
+              placeholder="Type or paste text to translate... (Ctrl + Enter to translate)"
+              maxlength="5000"
+            ></textarea>
+
+            <div class="flex items-center justify-between pt-2 border-t border-[var(--border)] text-xs text-[var(--txt-dim)]">
+              <span>Press <kbd class="px-1.5 py-0.5 rounded bg-[var(--surface-2)] border border-[var(--border)] text-[10px] font-mono text-[var(--txt)]">Ctrl</kbd> + <kbd class="px-1.5 py-0.5 rounded bg-[var(--surface-2)] border border-[var(--border)] text-[10px] font-mono text-[var(--txt)]">Enter</kbd></span>
+              <div><span id="tr-char-count">0</span> / 5000</div>
+            </div>
+          </div>
+
+          <!-- Output Panel -->
+          <div class="p-5 flex flex-col justify-between h-[360px] bg-[var(--surface-2)]/40">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-[var(--border)] text-xs text-[var(--txt-muted)]">
+              <span class="font-bold text-[var(--brand)]" id="tr-to-label">Hindi</span>
+              <div class="flex items-center gap-3">
+                <button id="tr-speak-btn" class="hover:text-[var(--brand)] transition-colors" title="Listen to pronunciation">
+                  <i class="fas fa-volume-high"></i>
+                </button>
+                <button id="tr-copy-output" class="hover:text-[var(--brand)] transition-colors" title="Copy translated text">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+            </div>
+
+            <div id="tr-output" class="flex-1 p-2 text-sm sm:text-base text-[var(--txt)] overflow-y-auto leading-relaxed">
+              <span class="text-[var(--txt-dim)] italic">Translation will appear here…</span>
+            </div>
+
+            <div class="pt-2 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--txt-dim)]">
+              <div id="tr-status" class="text-[var(--brand)] font-medium">Ready</div>
+              <span class="text-[11px]">Powered by MyMemory Neural DB</span>
+            </div>
           </div>
         </div>
-        <div id="tr-output" class="tr-output-area">
-          <span class="tr-placeholder">Translation will appear here…</span>
+
+        <!-- Action Footer -->
+        <div class="p-4 sm:p-5 bg-[var(--surface-2)] border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-4">
+          <button
+            id="tr-translate-btn"
+            class="px-6 py-2.5 rounded-xl font-bold text-sm text-white bg-[var(--brand)] hover:opacity-95 shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2"
+          >
+            <i class="fas fa-language"></i> Translate Now
+          </button>
+          <span class="text-xs text-[var(--txt-muted)]">
+            Free, real-time contextual translation without character subscription gates.
+          </span>
         </div>
-        <div class="tr-status" id="tr-status"></div>
       </div>
-    </div>
 
-    <!-- Translate button -->
-    <div class="tr-actions">
-      <button class="btn btn-primary tr-translate-btn" id="tr-translate-btn">
-        <i class="fas fa-language"></i> Translate
-      </button>
-      <div class="tr-powered">
-        Powered by <strong>MyMemory</strong> – free, no sign-up required
+      <!-- Linguistic Architecture: Before / After Panel Archetype -->
+      <div class="tool-content-wrap">
+        <section class="tool-content-card space-y-10">
+          <!-- Lead Editorial Header -->
+          <div class="tool-content-header">
+            <h2>Neural Attention vs. Literal Translation: Before &amp; After</h2>
+            <p>
+              Early machine translation failed because human language is not a mathematical lookup table. A single word carries different meanings based on surrounding syntax, tone, and cultural geography. Inspect the direct comparative panels below to see how neural attention mechanisms resolve ambiguities that confound naive dictionary lookup.
+            </p>
+          </div>
+
+        <!-- Before / After Comparative Panels -->
+        <div class="space-y-10">
+
+          <!-- Panel Pair 01: Idiomatic Expressions -->
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Case 01</span>
+              <span class="text-xs text-[var(--txt-muted)]">·</span>
+              <span class="text-xs font-semibold text-[var(--txt)]">Idiomatic Figurative Semantics (Spanish &rarr; English)</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x border border-[var(--border)] rounded-2xl overflow-hidden">
+              <!-- Before -->
+              <div class="p-6 bg-rose-500/[0.03] space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded text-[11px] font-mono font-bold uppercase bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                    Before: Literal Dictionary Substitution
+                  </span>
+                  <span class="font-mono text-xs text-[var(--txt-dim)]">Word-by-Word</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-[var(--surface-1)] border border-[var(--border)] font-mono text-sm text-[var(--txt)]">
+                  "No me tomes el pelo, por favor." &rarr; <span class="text-rose-500 font-bold">"Do not drink my hair, please."</span>
+                </div>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  <strong class="text-[var(--txt)]">Catastrophic Failure:</strong> The verb <em>tomar</em> is blindly mapped to "drink/take" and <em>pelo</em> to "hair", creating an absurd, nonsensical output that erodes reader confidence.
+                </p>
+              </div>
+
+              <!-- After -->
+              <div class="p-6 bg-emerald-500/[0.03] space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded text-[11px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    After: Contextual Neural Transformer
+                  </span>
+                  <span class="font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">Idiomatic Match</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-[var(--surface-1)] border border-[var(--border)] font-mono text-sm text-[var(--txt)]">
+                  "No me tomes el pelo, por favor." &rarr; <span class="text-emerald-500 font-bold">"Don't pull my leg, please."</span>
+                </div>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  <strong class="text-[var(--txt)]">Linguistic Resolution:</strong> The self-attention matrix identifies the multi-word expression <em>tomar el pelo</em> as an indivisible semantic unit and swaps in the authentic English figurative equivalent.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel Pair 02: Formality & Honorific Registers -->
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Case 02</span>
+              <span class="text-xs text-[var(--txt-muted)]">·</span>
+              <span class="text-xs font-semibold text-[var(--txt)]">Formality Registers &amp; Professional Hierarchy (English &rarr; German)</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x border border-[var(--border)] rounded-2xl overflow-hidden">
+              <!-- Before -->
+              <div class="p-6 bg-rose-500/[0.03] space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded text-[11px] font-mono font-bold uppercase bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                    Before: Rigid Default Heuristic
+                  </span>
+                  <span class="font-mono text-xs text-[var(--txt-dim)]">Informal Default</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-[var(--surface-1)] border border-[var(--border)] font-mono text-sm text-[var(--txt)]">
+                  "Can you send the signed contract?" &rarr; <span class="text-rose-500 font-bold">"Kannst du den unterschriebenen Vertrag schicken?"</span>
+                </div>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  <strong class="text-[var(--txt)]">Social Gaffe:</strong> Defaults to the informal second-person pronoun (<em>du</em>), which is disrespectful in commercial, legal, and enterprise German communications.
+                </p>
+              </div>
+
+              <!-- After -->
+              <div class="p-6 bg-emerald-500/[0.03] space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded text-[11px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    After: Commercial Register Adaptation
+                  </span>
+                  <span class="font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">Executive Sie-Form</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-[var(--surface-1)] border border-[var(--border)] font-mono text-sm text-[var(--txt)]">
+                  "Can you send the signed contract?" &rarr; <span class="text-emerald-500 font-bold">"Könnten Sie bitte den unterzeichneten Vertrag zusenden?"</span>
+                </div>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  <strong class="text-[var(--txt)]">Business Precision:</strong> Context clues like "signed contract" trigger the formal subjunctive polite request (<em>Könnten Sie...</em>), safeguarding commercial relationships.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel Pair 03: Polysemy Disambiguation -->
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Case 03</span>
+              <span class="text-xs text-[var(--txt-muted)]">·</span>
+              <span class="text-xs font-semibold text-[var(--txt)]">Homonym &amp; Polysemy Disambiguation (English &rarr; French)</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x border border-[var(--border)] rounded-2xl overflow-hidden">
+              <!-- Before -->
+              <div class="p-6 bg-rose-500/[0.03] space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded text-[11px] font-mono font-bold uppercase bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                    Before: Frequency-Biased Lookup
+                  </span>
+                  <span class="font-mono text-xs text-[var(--txt-dim)]">Isolated Token</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-[var(--surface-1)] border border-[var(--border)] font-mono text-sm text-[var(--txt)]">
+                  "The bank approved our enterprise mortgage." &rarr; <span class="text-rose-500 font-bold">"La rive a approuvé notre hypothèque d'entreprise."</span>
+                </div>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  <strong class="text-[var(--txt)]">Domain Confusion:</strong> The word "bank" is wrongly matched to a geographical riverbank (<em>la rive</em>) rather than a commercial lender.
+                </p>
+              </div>
+
+              <!-- After -->
+              <div class="p-6 bg-emerald-500/[0.03] space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded text-[11px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    After: Attention-Weighted Embedding
+                  </span>
+                  <span class="font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">Financial Domain</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-[var(--surface-1)] border border-[var(--border)] font-mono text-sm text-[var(--txt)]">
+                  "The bank approved our enterprise mortgage." &rarr; <span class="text-emerald-500 font-bold">"La banque a approuvé notre prêt hypothécaire d'entreprise."</span>
+                </div>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  <strong class="text-[var(--txt)]">Semantic Coherence:</strong> The cross-attention layer anchors "bank" to "mortgage" and "approved", accurately generating <em>la banque</em> and the native term <em>prêt hypothécaire</em>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+          <div class="tool-content-header">
+            <h2>Linguistic &amp; Audio Processing FAQ</h2>
+            <p>
+              Right-to-left syntax, phonetic synthesizers, and privacy models.
+            </p>
+          </div>
+
+          <div class="tool-faq-accordion">
+            <details class="tool-faq-item">
+              <summary>
+                <span>Are Right-to-Left (RTL) writing systems like Arabic, Hebrew, and Urdu supported?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                Yes. When selecting Arabic (ar), Hebrew (he), Persian (fa), or Urdu (ur), the output editor automatically switches text alignment to Right-to-Left (`dir="rtl"`), preserving authentic cursive ligatures and bidirectional numbering without typographical corruption.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>How does the native Text-to-Speech audio pronunciation function?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                When you click the speaker button, the tool leverages your browser's native Web Speech API (`window.speechSynthesis`). It queries your operating system's installed polyglot voice packs to articulate translated text with authentic phonemes, accents, and pitch curves without consuming external audio bandwidth.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>Is my translated input confidential and retained on remote databases?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                Toolarsh does not log, catalog, or sell your input strings. Translation queries are dispatched securely over HTTPS to public neural memory translation endpoints for ephemeral conversion, and the response is rendered immediately into your browser DOM.
+              </div>
+            </details>
+          </div>
+        </section>
+
       </div>
-    </div>
-
-    <!-- Quick language chips -->
-    <div class="tr-quick-langs">
-      <span class="tr-quick-label">Quick translate to:</span>
-      <div class="tr-chips">
-        <button class="tr-chip" data-to="es">🇪🇸 Spanish</button>
-        <button class="tr-chip" data-to="fr">🇫🇷 French</button>
-        <button class="tr-chip" data-to="de">🇩🇪 German</button>
-        <button class="tr-chip" data-to="ar">🇸🇦 Arabic</button>
-        <button class="tr-chip" data-to="zh">🇨🇳 Chinese</button>
-        <button class="tr-chip" data-to="ja">🇯🇵 Japanese</button>
-        <button class="tr-chip" data-to="pt">🇧🇷 Portuguese</button>
-        <button class="tr-chip" data-to="ru">🇷🇺 Russian</button>
-        <button class="tr-chip" data-to="ko">🇰🇷 Korean</button>
-        <button class="tr-chip" data-to="hi">🇮🇳 Hindi</button>
-      </div>
-    </div>
-
+    </main>
   </div>
 </ToolLayout>
-
-<style>
-  .tr-wrap { display: flex; flex-direction: column; gap: 20px; }
-
-  /* Language bar */
-  .tr-lang-bar {
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .tr-lang-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
-  .tr-label { font-size: 13px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
-  .tr-select {
-    width: 100%;
-    padding: 10px 14px;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    outline: none;
-    transition: border-color .15s;
-    appearance: auto;
-  }
-  .tr-select:focus { border-color: var(--brand); }
-  .tr-swap-btn {
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: #fff;
-    color: var(--brand);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    flex-shrink: 0;
-    transition: all .15s;
-    box-shadow: var(--shadow-sm);
-  }
-  .tr-swap-btn:hover { background: var(--brand); color: #fff; border-color: var(--brand); transform: rotate(180deg); }
-
-  /* Panels */
-  .tr-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .tr-panel {
-    display: flex;
-    flex-direction: column;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    background: #fff;
-    transition: border-color .15s;
-  }
-  .tr-panel:focus-within { border-color: var(--brand); }
-  .tr-panel-output { border-color: #BAE6FD; background: #F0F9FF; }
-  .tr-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-    background: var(--bg-soft);
-    border-bottom: 1px solid var(--border);
-  }
-  .tr-panel-output .tr-panel-header { background: #E0F2FE; border-bottom-color: #BAE6FD; }
-  .tr-panel-title { font-size: 13px; font-weight: 700; color: var(--txt-muted); }
-  .tr-panel-actions { display: flex; gap: 4px; }
-  .tr-icon-btn {
-    width: 30px; height: 30px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: var(--txt-muted);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    transition: all .12s;
-  }
-  .tr-icon-btn:hover { background: var(--bg-soft); color: var(--brand); }
-  .tr-textarea {
-    flex: 1;
-    width: 100%;
-    min-height: 200px;
-    padding: 14px 16px;
-    font-size: 15px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: transparent;
-    border: none;
-    outline: none;
-    resize: vertical;
-    line-height: 1.65;
-  }
-  .tr-char-count {
-    padding: 6px 16px;
-    font-size: 12px;
-    color: var(--txt-dim);
-    border-top: 1px solid var(--border);
-    text-align: right;
-  }
-  .tr-output-area {
-    flex: 1;
-    padding: 14px 16px;
-    font-size: 15px;
-    color: var(--txt);
-    min-height: 200px;
-    line-height: 1.65;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .tr-placeholder { color: var(--txt-dim); font-style: italic; }
-  .tr-status { padding: 6px 16px; font-size: 12px; color: var(--txt-dim); border-top: 1px solid #BAE6FD; min-height: 30px; }
-
-  /* Actions */
-  .tr-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .tr-translate-btn { padding: 12px 36px; font-size: 15px; }
-  .tr-powered { font-size: 12px; color: var(--txt-muted); }
-
-  /* Loading state */
-  .tr-loading { display: flex; align-items: center; gap: 8px; color: var(--brand); font-size: 14px; }
-  .tr-spinner { width: 16px; height: 16px; border: 2px solid #C7D2FE; border-top-color: var(--brand); border-radius: 50%; animation: spin .6s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Quick language chips */
-  .tr-quick-langs { padding: 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .tr-quick-label { font-size: 13px; font-weight: 600; color: var(--txt-muted); display: block; margin-bottom: 10px; }
-  .tr-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-  .tr-chip {
-    padding: 6px 14px;
-    border-radius: 100px;
-    border: 1.5px solid var(--border);
-    background: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--txt-muted);
-    cursor: pointer;
-    transition: all .15s;
-    font-family: 'Inter', sans-serif;
-  }
-  .tr-chip:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
-
-  @media (max-width: 640px) {
-    .tr-panels { grid-template-columns: 1fr; }
-    .tr-lang-bar { flex-direction: column; }
-    .tr-swap-btn { align-self: center; transform: rotate(90deg); }
-    .tr-swap-btn:hover { transform: rotate(270deg); }
-  }
-</style>
 
 <script>
   const langNames: Record<string, string> = {
@@ -342,7 +428,7 @@ const languages = [
     sr: 'Serbian', sl: 'Slovenian', sw: 'Swahili', cy: 'Welsh', is: 'Icelandic',
     ga: 'Irish', ne: 'Nepali', si: 'Sinhala', mn: 'Mongolian', my: 'Myanmar (Burmese)',
     km: 'Khmer', lo: 'Lao', uz: 'Uzbek', kk: 'Kazakh', hy: 'Armenian',
-    be: 'Belarusian', bs: 'Bosnian', sq: 'Albanian', lb: 'Luxembourgish',
+    be: 'Belarusian', bs: 'Bosnian', sq: 'Albanian', lb: 'Luxembourgish'
   };
 
   const fromSel = document.getElementById('tr-from') as HTMLSelectElement;
@@ -354,7 +440,6 @@ const languages = [
   const toLabel = document.getElementById('tr-to-label')!;
   const charCount = document.getElementById('tr-char-count')!;
 
-  // Update panel labels
   function updateLabels() {
     fromLabel.textContent = langNames[fromSel.value] ?? fromSel.value;
     toLabel.textContent = langNames[toSel.value] ?? toSel.value;
@@ -363,53 +448,47 @@ const languages = [
   toSel.addEventListener('change', updateLabels);
   updateLabels();
 
-  // Character count
   input.addEventListener('input', () => {
     charCount.textContent = input.value.length.toString();
   });
 
-  // Swap
   document.getElementById('tr-swap')?.addEventListener('click', () => {
     const tmpFrom = fromSel.value;
     const tmpFromText = output.innerText.trim();
     fromSel.value = toSel.value;
     toSel.value = tmpFrom;
-    if (tmpFromText && !tmpFromText.startsWith('Translation')) {
+    if (tmpFromText && !tmpFromText.startsWith('Translation will appear')) {
       input.value = tmpFromText;
       charCount.textContent = input.value.length.toString();
-      output.innerHTML = '<span class="tr-placeholder">Translation will appear here…</span>';
+      output.innerHTML = '<span class="text-slate-400 italic">Translation will appear here…</span>';
     }
     updateLabels();
   });
 
-  // Clear input
   document.getElementById('tr-clear-input')?.addEventListener('click', () => {
     input.value = '';
     charCount.textContent = '0';
-    output.innerHTML = '<span class="tr-placeholder">Translation will appear here…</span>';
-    status.textContent = '';
+    output.innerHTML = '<span class="text-slate-400 italic">Translation will appear here…</span>';
+    status.textContent = 'Ready';
   });
 
-  // Copy input
   document.getElementById('tr-copy-input')?.addEventListener('click', async () => {
     if (!input.value) return;
     await navigator.clipboard.writeText(input.value);
     const btn = document.getElementById('tr-copy-input')!;
-    btn.innerHTML = '<i class="fas fa-check"></i>';
+    btn.innerHTML = '<i class="fas fa-check text-emerald-500"></i>';
     setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1800);
   });
 
-  // Copy output
   document.getElementById('tr-copy-output')?.addEventListener('click', async () => {
     const text = output.innerText.trim();
-    if (!text || text.startsWith('Translation')) return;
+    if (!text || text.startsWith('Translation will appear')) return;
     await navigator.clipboard.writeText(text);
     const btn = document.getElementById('tr-copy-output')!;
-    btn.innerHTML = '<i class="fas fa-check"></i>';
+    btn.innerHTML = '<i class="fas fa-check text-emerald-500"></i>';
     setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1800);
   });
 
-  // Quick chip clicks
   document.querySelectorAll('.tr-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const to = (chip as HTMLElement).dataset.to!;
@@ -419,7 +498,17 @@ const languages = [
     });
   });
 
-  // Translate function
+  // Text to speech
+  document.getElementById('tr-speak-btn')?.addEventListener('click', () => {
+    const text = output.innerText.trim();
+    if (!text || text.startsWith('Translation will appear')) return;
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = toSel.value;
+      window.speechSynthesis.speak(utterance);
+    }
+  });
+
   async function translate() {
     const text = input.value.trim();
     if (!text) { input.focus(); return; }
@@ -428,13 +517,12 @@ const languages = [
     const to = toSel.value;
     if (from === to) {
       output.textContent = text;
-      status.textContent = 'Source and target language are the same.';
+      status.textContent = 'Source and target languages are the same.';
       return;
     }
 
-    // Show loading
-    output.innerHTML = '<div class="tr-loading"><div class="tr-spinner"></div> Translating…</div>';
-    status.textContent = '';
+    output.innerHTML = '<div class="flex items-center gap-2 text-[var(--brand)]"><i class="fas fa-spinner fa-spin"></i> Translating…</div>';
+    status.textContent = 'Processing request...';
 
     try {
       const langPair = `${from}|${to}`;
@@ -448,19 +536,18 @@ const languages = [
       if (data.responseStatus === 200) {
         const translated = data.responseData.translatedText;
         output.textContent = translated;
-        status.textContent = `Translated from ${langNames[from] ?? from} → ${langNames[to] ?? to}`;
+        status.textContent = `Translated: ${langNames[from] ?? from} → ${langNames[to] ?? to}`;
       } else {
         throw new Error(data.responseDetails || 'Translation failed');
       }
     } catch (err: any) {
-      output.innerHTML = `<span style="color:#EF4444"><i class="fas fa-circle-exclamation"></i> Translation failed: ${err.message}. Please try again.</span>`;
-      status.textContent = '';
+      output.innerHTML = `<span class="text-rose-500"><i class="fas fa-circle-exclamation"></i> Translation error: ${err.message}.</span>`;
+      status.textContent = 'Error occurred';
     }
   }
 
   document.getElementById('tr-translate-btn')?.addEventListener('click', translate);
 
-  // Translate on Ctrl+Enter
   input.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();

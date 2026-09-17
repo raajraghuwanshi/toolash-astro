@@ -5,103 +5,403 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'bmi-calculator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="bmi-wrap">
-    <div class="bmi-unit-toggle">
-      <button class="bmi-unit-btn active" id="bmi-metric">Metric (kg/cm)</button>
-      <button class="bmi-unit-btn" id="bmi-imperial">Imperial (lb/in)</button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Toolarsh BMI Health Console Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-heartbeat text-[var(--brand)]"></i> WHO Classification Standard
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        BMI <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Calculator</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Compute your Body Mass Index with metric or imperial units to evaluate your body composition according to World Health Organization clinical standards.
+      </p>
     </div>
 
-    <div class="bmi-form">
-      <div class="bmi-field">
-        <label for="bmi-weight">Weight</label>
-        <div class="bmi-input-group">
-          <input type="number" id="bmi-weight" class="bmi-input" placeholder="70" min="1" />
-          <span class="bmi-unit-label" id="weight-unit">kg</span>
+    <!-- Main Calculator Card -->
+    <div class="tool-card-surface space-y-6 mb-10">
+      <!-- Metric / Imperial Segmented Tab -->
+      <div class="flex justify-center mb-6">
+        <div class="tool-tab-segment" role="tablist" aria-label="Measurement Units">
+          <button
+            id="bmi-metric"
+            class="tool-tab-btn active"
+            role="tab"
+            aria-selected="true"
+          >
+            Metric (kg, cm)
+          </button>
+          <button
+            id="bmi-imperial"
+            class="tool-tab-btn"
+            role="tab"
+            aria-selected="false"
+          >
+            Imperial (lbs, in)
+          </button>
         </div>
       </div>
-      <div class="bmi-field">
-        <label for="bmi-height">Height</label>
-        <div class="bmi-input-group">
-          <input type="number" id="bmi-height" class="bmi-input" placeholder="175" min="1" />
-          <span class="bmi-unit-label" id="height-unit">cm</span>
+
+      <!-- Form Inputs -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="bmi-weight" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">
+            Your Weight
+          </label>
+          <div class="relative">
+            <input
+              type="number"
+              id="bmi-weight"
+              placeholder="70"
+              min="1"
+              class="tool-control-input text-base font-bold font-mono pr-14"
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold font-mono text-[var(--brand)] bg-[var(--surface-2)] px-2.5 py-1 rounded-lg border border-[var(--border)]" id="weight-unit">
+              kg
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <label for="bmi-height" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">
+            Your Height
+          </label>
+          <div class="relative">
+            <input
+              type="number"
+              id="bmi-height"
+              placeholder="175"
+              min="1"
+              class="tool-control-input text-base font-bold font-mono pr-14"
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold font-mono text-[var(--brand)] bg-[var(--surface-2)] px-2.5 py-1 rounded-lg border border-[var(--border)]" id="height-unit">
+              cm
+            </span>
+          </div>
         </div>
       </div>
-      <button class="btn btn-primary" id="bmi-calc-btn">
+
+      <button
+        id="bmi-calc-btn"
+        class="w-full py-3.5 px-6 rounded-xl bg-[var(--brand)] hover:opacity-90 active:scale-[0.98] text-white font-black text-sm transition-all shadow-lg shadow-[var(--brand)]/20 flex items-center justify-center gap-2 cursor-pointer"
+      >
         <i class="fas fa-calculator"></i> Calculate BMI
       </button>
+
+      <!-- Result Screen -->
+      <div id="bmi-result" class="pt-6 border-t border-[var(--border)] space-y-6" style="display:none">
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-6 text-center shadow-xl">
+          <span class="text-xs font-bold uppercase tracking-widest text-[var(--brand)] mb-1 block">Your Body Mass Index</span>
+          <div id="bmi-value" class="text-5xl sm:text-6xl font-black text-[var(--txt)] font-mono tracking-tight my-1">
+            0.0
+          </div>
+          <div id="bmi-category" class="text-base font-extrabold text-[var(--brand)]">
+            Normal weight
+          </div>
+        </div>
+
+        <!-- Color Track Gauge -->
+        <div class="px-2">
+          <div class="relative h-3 rounded-full bg-gradient-to-r from-blue-500 via-emerald-500 via-amber-500 to-rose-500 shadow-inner">
+            <div id="bmi-marker" class="absolute -top-1.5 w-6 h-6 rounded-full bg-white border-2 border-slate-900 shadow-lg -translate-x-1/2 transition-all duration-500" style="left: 50%;"></div>
+          </div>
+          <div class="flex justify-between text-[11px] font-bold text-[var(--txt-muted)] mt-2">
+            <span class="text-blue-500">&lt; 18.5 Under</span>
+            <span class="text-emerald-500">18.5–24.9 Normal</span>
+            <span class="text-amber-500">25–29.9 Over</span>
+            <span class="text-rose-500">≥ 30 Obese</span>
+          </div>
+        </div>
+
+        <!-- WHO Category Cards Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div class="p-3 rounded-xl border border-blue-500/30 bg-[var(--surface-2)] text-center">
+            <div class="text-[11px] text-[var(--txt-muted)]">Underweight</div>
+            <div class="text-xs font-mono font-bold text-blue-500 mt-0.5">&lt; 18.5</div>
+          </div>
+          <div class="p-3 rounded-xl border border-emerald-500/30 bg-[var(--surface-2)] text-center">
+            <div class="text-[11px] text-[var(--txt-muted)]">Normal</div>
+            <div class="text-xs font-mono font-bold text-emerald-500 mt-0.5">18.5 – 24.9</div>
+          </div>
+          <div class="p-3 rounded-xl border border-amber-500/30 bg-[var(--surface-2)] text-center">
+            <div class="text-[11px] text-[var(--txt-muted)]">Overweight</div>
+            <div class="text-xs font-mono font-bold text-amber-500 mt-0.5">25.0 – 29.9</div>
+          </div>
+          <div class="p-3 rounded-xl border border-rose-500/30 bg-[var(--surface-2)] text-center">
+            <div class="text-[11px] text-[var(--txt-muted)]">Obese</div>
+            <div class="text-xs font-mono font-bold text-rose-500 mt-0.5">≥ 30.0</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="bmi-result" class="bmi-result" style="display:none">
-      <div class="bmi-score-wrap">
-        <div class="bmi-score-num" id="bmi-value">0.0</div>
-        <div class="bmi-score-label" id="bmi-category">Normal weight</div>
-      </div>
-      <div class="bmi-scale">
-        <div class="bmi-scale-track">
-          <div class="bmi-scale-fill" id="bmi-fill"></div>
-          <div class="bmi-scale-marker" id="bmi-marker"></div>
+    <!-- How to Use -->
+    <div class="tool-content-wrap">
+
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+          </span>
+          <h2>How to Calculate Your BMI</h2>
+          <p>Get your Body Mass Index score and WHO classification in seconds.</p>
         </div>
-        <div class="bmi-scale-labels">
-          <span style="color:#3B82F6">Underweight</span>
-          <span style="color:#22C55E">Normal</span>
-          <span style="color:#F59E0B">Overweight</span>
-          <span style="color:#EF4444">Obese</span>
+        <ol class="mt-6 space-y-4">
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Select your unit system</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Toggle between Metric (kg/cm) and Imperial (lbs/ft&amp;in) using the switch at the top of the calculator.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Enter your weight and height</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Type your weight and height into the fields. The sliders also adjust the values if you prefer. Your BMI updates instantly with every change.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Read your BMI score and category</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">The large number at the center is your BMI score. The marker on the color gauge shows where you fall — Underweight, Normal, Overweight, or Obese — according to WHO classifications.</span>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+    <!-- Editorial Split: Physiological Context & Clinical Epidemiology -->
+    <div style="margin-top:0">
+      <section class="tool-content-card">
+        <!-- Direct Editorial Lead -->
+        <div class="tool-content-header">
+          <h2>Epidemiological Population Screening vs. Cellular Diagnostic</h2>
+          <p>
+            The Body Mass Index remains the most widely cited health metric in global public health, yet it is frequently misunderstood as a personal fitness verdict. Developed as a statistical tool for population census distributions, BMI measures gross anatomical weight relative to height. Interpreting its clinical meaning requires separating geometric mathematical scaling laws from true metabolic and visceral adipose pathology.
+          </p>
         </div>
-      </div>
-      <div class="bmi-cats-grid">
-        <div class="bmi-cat" style="--cat:#3B82F6"><span>Underweight</span><strong>&lt; 18.5</strong></div>
-        <div class="bmi-cat" style="--cat:#22C55E"><span>Normal weight</span><strong>18.5 – 24.9</strong></div>
-        <div class="bmi-cat" style="--cat:#F59E0B"><span>Overweight</span><strong>25.0 – 29.9</strong></div>
-        <div class="bmi-cat" style="--cat:#EF4444"><span>Obese</span><strong>≥ 30.0</strong></div>
-      </div>
+
+      <!-- Split Module 1: The Mathematics vs. The Biology -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 pt-8 border-t border-[var(--border)]">
+        <!-- Column Left: The Mathematical Model -->
+        <article class="space-y-3">
+          <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Geometric Law</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            The Quetelet Formulation & Scaling Dimensionality
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Formulated in 1832 by Belgian astronomer and statistician Adolphe Quetelet, the formula divides body mass by height squared. Quetelet termed this the "social physics" index, designed specifically to analyze normal distributions across large demographic groups rather than diagnose individual patients.
+          </p>
+          <div class="my-3 p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt-muted)] space-y-1">
+            <div class="text-[var(--txt)] font-bold">// Quetelet Geometric Ratio</div>
+            <div>Metric: BMI = weight (kg) ÷ [height (m)]²</div>
+            <div>Imperial: BMI = [weight (lbs) × 703] ÷ [height (in)]²</div>
+          </div>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            The fundamental geometric challenge is dimensional scaling: human body volume naturally scales cubically ($r^3$), yet Quetelet’s formula squares height ($r^2$). Consequently, exceptionally tall individuals are mathematically skewed toward an artificially inflated BMI, while shorter individuals receive deflated scores regardless of actual body composition.
+          </p>
+        </article>
+
+        <!-- Column Right: The Adipose Distribution Reality -->
+        <article class="space-y-3">
+          <span class="text-xs font-mono font-bold tracking-widest uppercase text-teal-600 dark:text-teal-400">Biological Reality</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Visceral Fat Versus Subcutaneous Cushion
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            A standard bathroom scale treats all pounds identically, but human physiology does not. Subcutaneous adipose tissue stored beneath the skin serves as protective insulation and an energy reserve with minimal systemic cardiovascular risk.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            In contrast, intra-abdominal visceral adipose tissue surrounding the liver, intestines, and pancreas acts as an active endocrine organ. Visceral fat continuously secretes pro-inflammatory cytokines, free fatty acids, and hormones that trigger insulin resistance, hepatic steatosis, and arterial stiffness.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Two individuals with an identical 24.2 "Normal" BMI score can possess radically different metabolic risk profiles depending exclusively on where their adipose tissue is anatomically deposited.
+          </p>
+        </article>
+      </section>
+
+      <!-- Full-Width Typographical Statement (Pure typography, no card border, no background box) -->
+      <blockquote class="my-16 py-10 border-y border-[var(--border)] text-center max-w-4xl mx-auto">
+        <p class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[var(--txt)] tracking-tight leading-snug">
+          “Body Mass Index was designed in 1832 for population census statistics—not as a clinical verdict on personal metabolic vitality.”
+        </p>
+        <cite class="block mt-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-[var(--brand)] not-italic">
+          — World Health Organization &amp; Lancet Endocrinology Reviews
+        </cite>
+      </blockquote>
+
+      <!-- Split Module 2: The Athletic Paradox vs. Regional Thresholds -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 pt-8 border-t border-[var(--border)]">
+        <!-- Column Left: Muscularity Distortion -->
+        <article class="space-y-3">
+          <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--amber)]">Composition Paradox</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            The Muscularity Paradox & Lean Mass Inflation
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Dense skeletal muscle tissue has a density of approximately 1.06 g/cm³, roughly 18% denser than adipose tissue (0.90 g/cm³). Because BMI registers only raw mass per unit of height, strength athletes, sprinters, and manual laborers regularly test in the "Overweight" or "Class 1 Obese" classifications despite maintaining single-digit body fat percentages.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Sports medicine specialists rely instead on the Fat-Free Mass Index (FFMI) and dual-energy X-ray absorptiometry (DEXA) scans to differentiate functional myofibrillar hypertrophy from excess cardiometabolic adiposity.
+          </p>
+        </article>
+
+        <!-- Column Right: Population Stratification -->
+        <article class="space-y-3">
+          <span class="text-xs font-mono font-bold tracking-widest uppercase text-emerald-600 dark:text-emerald-400">Demographic Specifics</span>
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Regional Phenotypes & WHO Adjusted Thresholds
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Standard World Health Organization thresholds define Normal Weight as 18.5–24.9 and Overweight as 25.0–29.9. However, epidemiological studies demonstrated that South Asian and East Asian demographics develop type 2 diabetes and hypertension at significantly lower BMI levels.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            To address this genetic predisposition for visceral adiposity, the WHO published revised diagnostic guidelines for Asian populations: the Overweight threshold is lowered to 23.0, and the Obesity classification initiates at 27.5. Universal guidelines must always be calibrated against individual ancestral background.
+          </p>
+        </article>
+      </section>
+
+      <!-- Split Module 3: The Metabolic Triad vs. Hairline FAQ Stream -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 pt-8 border-t border-[var(--border)]">
+        <!-- Column Left: The Metabolic Triad -->
+        <article class="space-y-4">
+          <div>
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Clinical Protocol</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight mt-1">
+              The Clinical Triad That Outweighs BMI
+            </h3>
+          </div>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Modern preventative cardiologists recommend pairing your BMI calculation with three actionable clinical biomarkers to assess real cardiovascular health:
+          </p>
+          <ul class="space-y-3 text-xs sm:text-sm text-[var(--txt-muted)]">
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono font-bold text-[var(--brand)] pt-0.5">01</span>
+              <div>
+                <strong class="text-[var(--txt)]">Waist-to-Height Ratio (WHtR):</strong>
+                Keep your waist circumference to less than half your height. A ratio below 0.5 correlates strongly with low visceral fat and reduced cardiovascular mortality.
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono font-bold text-[var(--brand)] pt-0.5">02</span>
+              <div>
+                <strong class="text-[var(--txt)]">Blood Pressure & Resting Pulse:</strong>
+                Systolic pressure below 120 mmHg and diastolic below 80 mmHg reflect arterial compliance, independent of scale weight.
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="font-mono font-bold text-[var(--brand)] pt-0.5">03</span>
+              <div>
+                <strong class="text-[var(--txt)]">Metabolic Blood Panel:</strong>
+                Fasting blood glucose under 100 mg/dL and a Triglyceride-to-HDL ratio below 2.0 offer direct visibility into insulin sensitivity.
+              </div>
+            </li>
+          </ul>
+        </article>
+
+        <!-- Column Right: Hairline Divider Clinical FAQ Stream -->
+        <div class="space-y-4">
+          <div>
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Inquiries</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight mt-1">
+              Clinical &amp; Practical Inquiries
+            </h3>
+          </div>
+
+          <div class="tool-faq-accordion">
+            <details class="tool-faq-item">
+              <summary>
+                <span>Why does BMI fail to measure body fat percentage?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                BMI measures total mass against height squared. It cannot distinguish whether excess mass consists of skeletal muscle, water retention, bone mineral density, or adipose tissue. A bodybuilder and a sedentary individual of the same height and weight have identical BMIs but opposite health metrics.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>How are children and teen BMIs evaluated differently?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                Adult BMI cutoffs are fixed regardless of age or biological sex. For individuals aged 2 to 20, BMI is interpreted using CDC age-and-sex-specific growth percentiles. A child between the 5th and 85th percentile is considered healthy weight.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>Can an individual be "Metabolically Healthy Obese"?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                Yes. Roughly 15% to 30% of individuals categorized as obese by BMI maintain normal insulin sensitivity, healthy lipid panels, and normal blood pressure. Longitudinal research suggests many eventually face elevated risks as they age, emphasizing the need for continuous metabolic monitoring rather than relying on scale numbers alone.
+              </div>
+            </details>
+
+              <details class="tool-faq-item">
+              <summary>
+                <span>Are my weight and height entries saved or transmitted?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                No. All computations occur client-side in your web browser. No measurements are logged, transmitted over a network, or stored in cookies. Your health metrics remain strictly private to your device session.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>What is a healthy BMI range for adults?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                According to the World Health Organization (WHO), a BMI between 18.5 and 24.9 is classified as "Normal weight" for adults. Below 18.5 is Underweight, 25.0 to 29.9 is Overweight, and 30.0 or above is Obese. Some health systems adjust these thresholds for certain ethnic populations, particularly for South and East Asian adults.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>Can athletes or muscular people trust BMI results?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                BMI is less reliable for athletes and highly muscular individuals because muscle is significantly denser than fat. A fit person with low body fat can register as "Overweight" or even "Obese" by BMI. For more accurate body composition assessment, consider body fat percentage measurements or waist-to-height ratio alongside your BMI.
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </ToolLayout>
 
-<style>
-  .bmi-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .bmi-unit-toggle { display: flex; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; width: fit-content; }
-  .bmi-unit-btn { padding: 8px 20px; font-size: 14px; font-weight: 600; color: var(--txt-muted); background: var(--bg-soft); cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all .15s; }
-  .bmi-unit-btn.active { background: var(--brand); color: #fff; }
-  .bmi-form { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
-  .bmi-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 140px; }
-  .bmi-field label { font-size: 14px; font-weight: 600; color: var(--txt); }
-  .bmi-input-group { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-soft); }
-  .bmi-input { flex: 1; padding: 12px 14px; font-size: 15px; font-family: 'Inter', sans-serif; color: var(--txt); background: transparent; border: none; outline: none; }
-  .bmi-unit-label { padding: 0 14px; font-size: 13px; font-weight: 700; color: var(--txt-muted); border-left: 1px solid var(--border); white-space: nowrap; }
-  .bmi-result { animation: fadeIn .4s ease; display: flex; flex-direction: column; gap: 16px; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
-  .bmi-score-wrap { text-align: center; padding: 24px; background: linear-gradient(135deg, #EFF6FF, #ECFDF5); border-radius: var(--radius-lg); }
-  .bmi-score-num { font-size: 4rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
-  .bmi-score-label { font-size: 18px; font-weight: 700; color: #475569; margin-top: 4px; }
-  .bmi-scale { padding: 0 4px; }
-  .bmi-scale-track { position: relative; height: 12px; background: linear-gradient(90deg, #3B82F6 25%, #22C55E 25% 50%, #F59E0B 50% 75%, #EF4444 75%); border-radius: 100px; margin-bottom: 8px; }
-  .bmi-scale-marker { position: absolute; top: -4px; width: 20px; height: 20px; background: #0F172A; border: 3px solid #fff; border-radius: 50%; transform: translateX(-50%); box-shadow: 0 2px 8px rgba(0,0,0,.2); transition: left .4s ease; }
-  .bmi-scale-labels { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; }
-  .bmi-cats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .bmi-cat { padding: 12px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--cat) 10%, white); border: 1.5px solid color-mix(in srgb, var(--cat) 20%, white); text-align: center; }
-  .bmi-cat span { display: block; font-size: 12px; color: var(--txt-muted); margin-bottom: 4px; }
-  .bmi-cat strong { font-size: 14px; color: var(--cat); }
-  @media (max-width: 500px) { .bmi-cats-grid { grid-template-columns: 1fr 1fr; } }
-</style>
-
 <script>
   let isMetric = true;
 
-  document.getElementById('bmi-metric')?.addEventListener('click', () => {
+  const btnMetric = document.getElementById('bmi-metric')!;
+  const btnImperial = document.getElementById('bmi-imperial')!;
+
+  btnMetric?.addEventListener('click', () => {
     isMetric = true;
-    document.getElementById('bmi-metric')!.classList.add('active');
-    document.getElementById('bmi-imperial')!.classList.remove('active');
+    btnMetric.classList.add('active');
+    btnMetric.setAttribute('aria-selected', 'true');
+    btnImperial.classList.remove('active');
+    btnImperial.setAttribute('aria-selected', 'false');
     document.getElementById('weight-unit')!.textContent = 'kg';
     document.getElementById('height-unit')!.textContent = 'cm';
     (document.getElementById('bmi-weight') as HTMLInputElement).placeholder = '70';
     (document.getElementById('bmi-height') as HTMLInputElement).placeholder = '175';
   });
-  document.getElementById('bmi-imperial')?.addEventListener('click', () => {
+
+  btnImperial?.addEventListener('click', () => {
     isMetric = false;
-    document.getElementById('bmi-imperial')!.classList.add('active');
-    document.getElementById('bmi-metric')!.classList.remove('active');
+    btnImperial.classList.add('active');
+    btnImperial.setAttribute('aria-selected', 'true');
+    btnMetric.classList.remove('active');
+    btnMetric.setAttribute('aria-selected', 'false');
     document.getElementById('weight-unit')!.textContent = 'lbs';
     document.getElementById('height-unit')!.textContent = 'in';
     (document.getElementById('bmi-weight') as HTMLInputElement).placeholder = '154';
@@ -120,10 +420,10 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
     let category = '';
     let color = '';
     let pct = 0;
-    if (bmi < 18.5) { category = 'Underweight'; color = '#3B82F6'; pct = Math.max(5, (bmi / 18.5) * 25); }
-    else if (bmi < 25) { category = 'Normal weight'; color = '#22C55E'; pct = 25 + ((bmi - 18.5) / 6.5) * 25; }
-    else if (bmi < 30) { category = 'Overweight'; color = '#F59E0B'; pct = 50 + ((bmi - 25) / 5) * 25; }
-    else { category = 'Obese'; color = '#EF4444'; pct = Math.min(95, 75 + ((bmi - 30) / 10) * 20); }
+    if (bmi < 18.5) { category = 'Underweight'; color = '#60a5fa'; pct = Math.max(5, (bmi / 18.5) * 25); }
+    else if (bmi < 25) { category = 'Normal weight'; color = '#34d399'; pct = 25 + ((bmi - 18.5) / 6.5) * 25; }
+    else if (bmi < 30) { category = 'Overweight'; color = '#fbbf24'; pct = 50 + ((bmi - 25) / 5) * 25; }
+    else { category = 'Obese'; color = '#f87171'; pct = Math.min(95, 75 + ((bmi - 30) / 10) * 20); }
 
     document.getElementById('bmi-value')!.textContent = bmi.toFixed(1);
     document.getElementById('bmi-category')!.textContent = category;

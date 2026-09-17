@@ -5,97 +5,347 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'compare')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="cmp-wrap">
-    <div class="cmp-grid">
-      <div class="cmp-col">
-        <label class="cmp-label" for="cmp-left">Original Text</label>
-        <textarea id="cmp-left" class="cmp-textarea" placeholder="Paste original text here…" rows="12" spellcheck="false"></textarea>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Box -->
+    <div class="tool-hero-box">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div class="tool-hero-badge">
+          <span class="w-2 h-2 rounded-full bg-[var(--brand)] animate-pulse"></span>
+          <span>MYERS LCS DIFF ENGINE &bull; REAL-TIME</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-[var(--txt-dim)] font-mono">
+          <span><strong class="text-emerald-500">+</strong> Insertions</span>
+          <span>&bull;</span>
+          <span><strong class="text-rose-500">-</strong> Deletions</span>
+          <span>&bull;</span>
+          <span><strong class="text-amber-500">~</strong> Substrings</span>
+        </div>
       </div>
-      <div class="cmp-col">
-        <label class="cmp-label" for="cmp-right">Modified Text</label>
-        <textarea id="cmp-right" class="cmp-textarea" placeholder="Paste modified text here…" rows="12" spellcheck="false"></textarea>
+
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--txt)] mb-2">
+        Online <span class="bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent">Text & Code Compare</span>
+      </h1>
+      <p class="text-sm sm:text-base text-[var(--txt-muted)] max-w-2xl leading-relaxed">
+        Visual side-by-side diffing for source code, JSON datasets, legal contracts, and markdown copy. Detect insertions, deletions, and inline modifications in local client memory.
+      </p>
+
+      <!-- Quick Sample Loaders -->
+      <div class="flex items-center gap-2 mt-4 flex-wrap text-xs">
+        <span class="text-[var(--txt-dim)] font-semibold">Load Sample:</span>
+        <button type="button" id="load-sample-code" class="px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] transition-colors">
+          <i class="fas fa-code text-[var(--brand)] mr-1"></i> TypeScript Patch
+        </button>
+        <button type="button" id="load-sample-json" class="px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] transition-colors">
+          <i class="fas fa-brackets-curly text-[var(--amber)] mr-1"></i> Config JSON
+        </button>
+        <button type="button" id="load-sample-prose" class="px-2.5 py-1 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-[var(--txt-muted)] hover:text-[var(--txt)] border border-[var(--border)] transition-colors">
+          <i class="fas fa-file-lines text-[var(--brand)] mr-1"></i> Legal Clause Draft
+        </button>
       </div>
     </div>
 
-    <div class="cmp-actions">
-      <button class="btn btn-primary" id="cmp-btn">
-        <i class="fas fa-code-compare"></i> Compare Texts
-      </button>
-      <button class="btn btn-ghost" id="cmp-clear">
-        <i class="fas fa-trash"></i> Clear
-      </button>
-      <label class="cmp-check">
-        <input type="checkbox" id="cmp-ignore-case" /> Ignore case
-      </label>
-      <label class="cmp-check">
-        <input type="checkbox" id="cmp-ignore-whitespace" /> Ignore whitespace
-      </label>
-    </div>
+    <!-- Diff Workbench -->
+    <main class="space-y-8">
+      <div class="tool-card-surface">
+        <!-- Input Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+          <!-- Original Column -->
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-[var(--border)]">
+              <label class="text-xs font-mono font-bold uppercase tracking-wider text-rose-500 flex items-center gap-2" for="cmp-left">
+                <span class="w-2.5 h-2.5 rounded bg-rose-500"></span> Original Document (v1)
+              </label>
+              <span class="text-xs font-mono text-[var(--txt-dim)]" id="left-lines-count">0 lines</span>
+            </div>
+            <textarea
+              id="cmp-left"
+              class="tool-textarea h-80 font-mono text-xs sm:text-sm"
+              placeholder="Paste your original text, config, or source code here..."
+              spellcheck="false"
+            ></textarea>
+          </div>
 
-    <div id="cmp-result" class="cmp-result" style="display:none">
-      <div class="cmp-stats" id="cmp-stats"></div>
-      <div class="cmp-diff-grid">
-        <div class="cmp-diff-col">
-          <div class="cmp-diff-header">Original</div>
-          <div class="cmp-diff-content" id="cmp-diff-left"></div>
+          <!-- Modified Column -->
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-[var(--border)]">
+              <label class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-500 flex items-center gap-2" for="cmp-right">
+                <span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> Modified Document (v2)
+              </label>
+              <span class="text-xs font-mono text-[var(--txt-dim)]" id="right-lines-count">0 lines</span>
+            </div>
+            <textarea
+              id="cmp-right"
+              class="tool-textarea h-80 font-mono text-xs sm:text-sm"
+              placeholder="Paste your updated revision, patched code, or draft here..."
+              spellcheck="false"
+            ></textarea>
+          </div>
         </div>
-        <div class="cmp-diff-col">
-          <div class="cmp-diff-header">Modified</div>
-          <div class="cmp-diff-content" id="cmp-diff-right"></div>
+
+        <!-- Control Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)]">
+          <div class="flex items-center gap-3">
+            <button
+              class="px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-[var(--brand)] hover:opacity-95 shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2"
+              id="cmp-btn"
+            >
+              <i class="fas fa-code-compare"></i> Compare Texts
+            </button>
+            <button
+              class="px-4 py-2.5 rounded-xl text-sm font-semibold text-[var(--txt-muted)] hover:text-[var(--txt)] bg-[var(--surface-3)] hover:bg-[var(--surface-2)] border border-[var(--border)] transition-colors flex items-center gap-2"
+              id="cmp-clear"
+            >
+              <i class="fas fa-trash-can"></i> Clear
+            </button>
+          </div>
+
+          <div class="flex items-center gap-5 text-xs text-[var(--txt-muted)] font-medium">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="cmp-ignore-case" class="w-4 h-4 rounded text-[var(--brand)] focus:ring-[var(--brand)] accent-[var(--brand)]" />
+              <span>Ignore case differences</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="cmp-ignore-whitespace" class="w-4 h-4 rounded text-[var(--brand)] focus:ring-[var(--brand)] accent-[var(--brand)]" />
+              <span>Ignore whitespace</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Live Diff Output Viewer -->
+        <div id="cmp-result" class="mt-8 pt-8 border-t border-[var(--border)]" style="display:none">
+          <!-- Telemetry Stats Pill Ribbon -->
+          <div class="flex flex-wrap items-center gap-3 mb-5" id="cmp-stats"></div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Left Diff Pane -->
+            <div class="border border-[var(--border)] rounded-2xl overflow-hidden bg-[var(--surface-2)]">
+              <div class="px-4 py-2.5 bg-[var(--surface-3)] border-b border-[var(--border)] font-mono text-xs font-bold text-rose-500 flex items-center justify-between">
+                <span>Original Lines</span>
+                <span class="text-[var(--txt-dim)]">Baseline</span>
+              </div>
+              <div class="p-4 font-mono text-xs leading-relaxed overflow-x-auto max-h-[500px] overflow-y-auto text-[var(--txt)] whitespace-pre-wrap" id="cmp-diff-left"></div>
+            </div>
+
+            <!-- Right Diff Pane -->
+            <div class="border border-[var(--border)] rounded-2xl overflow-hidden bg-[var(--surface-2)]">
+              <div class="px-4 py-2.5 bg-[var(--surface-3)] border-b border-[var(--border)] font-mono text-xs font-bold text-emerald-500 flex items-center justify-between">
+                <span>Modified Lines</span>
+                <span class="text-[var(--txt-dim)]">Target</span>
+              </div>
+              <div class="p-4 font-mono text-xs leading-relaxed overflow-x-auto max-h-[500px] overflow-y-auto text-[var(--txt)] whitespace-pre-wrap" id="cmp-diff-right"></div>
+            </div>
+          </div>
         </div>
       </div>
+
+    <!-- Tabs: Algorithmic Diffing & Domain Applications -->
+    <div class="tool-content-wrap">
+
+      <!-- Interactive Tabbed Interface Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-layer-group text-[var(--brand)]"></i> Interactive Architecture
+          </span>
+          <h2>The Mathematics of Delta Calculation &amp; Version Control</h2>
+          <p>
+            Comparing two texts is not simply a matter of checking whether line N matches line N. In dynamic documents, an insertion early in the text offsets every subsequent line. Automated diffing solves this through computational graph theory, discovering the Longest Common Subsequence (LCS) to compute the minimal set of additions and deletions needed to transform one revision into another.
+          </p>
+        </div>
+
+        <!-- Tab Switcher Ribbon -->
+        <div class="tool-tab-nav" role="tablist" aria-label="Diffing Architecture Tabs">
+          <button
+            class="tool-tab-btn cmp-tab-btn active"
+            data-tab="myers"
+            role="tab"
+            aria-selected="true"
+          >
+            <i class="fas fa-project-diagram"></i> 01 Myers LCS Algorithm
+          </button>
+          <button
+            class="tool-tab-btn cmp-tab-btn"
+            data-tab="legal"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-file-contract"></i> 02 Legal Redlining
+          </button>
+          <button
+            class="tool-tab-btn cmp-tab-btn"
+            data-tab="git"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-code-branch"></i> 03 Git &amp; Merge Workflows
+          </button>
+          <button
+            class="tool-tab-btn cmp-tab-btn"
+            data-tab="config"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-sliders"></i> 04 Config Drift Auditing
+          </button>
+        </div>
+
+        <!-- Tab Panels Container -->
+        <div class="pt-2">
+
+          <!-- Panel 1: Myers LCS -->
+          <div class="tool-tab-panel cmp-tab-panel space-y-4" id="panel-myers" role="tabpanel">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Myers Longest Common Subsequence &amp; Graph Traversal
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Published by Eugene Myers in 1986, the Myers diff algorithm models text comparison as finding the shortest path across an edit graph from coordinate (0, 0) to (N, M). In this grid, moving right represents a deletion from version A, moving downward represents an insertion from version B, and moving diagonally represents identical matching lines that incur zero cost.
+            </p>
+            <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt-muted)] space-y-1.5 shadow-sm">
+              <div class="text-[var(--txt)] font-bold">// Edit Graph Traversal Matrix</div>
+              <div>Diagonal Move: Line A[i] === Line B[j] &rarr; Cost = 0 (Preserved Token)</div>
+              <div>Horizontal Move: Rightward step &rarr; Cost = 1 (Pruned Baseline Line)</div>
+              <div>Vertical Move: Downward step &rarr; Cost = 1 (Inserted Target Line)</div>
+            </div>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Because the algorithm prioritizes diagonal snakes, it operates in O(ND) time—where D is the count of differences rather than total lines. For files with high similarity, comparison executes with near-instantaneous efficiency.
+            </p>
+          </div>
+
+          <!-- Panel 2: Legal Redlining -->
+          <div class="tool-tab-panel cmp-tab-panel space-y-4 hidden" id="panel-legal" role="tabpanel">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Contract Redlining &amp; Liability Mitigation
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              In contract law, enterprise vendor agreements, and non-disclosure documents, manual review between counter-proposals exposes organizations to substantial legal risk. Counterparties occasionally adjust payment terms, introduce indemnity carve-outs, or extend unilateral termination windows without explicit disclosure.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Automated line-by-line diffing establishes an impartial audit trail. By running both drafts through local browser RAM, legal teams ensure that zero proprietary business terms are uploaded to external cloud processors while verifying every altered comma and liability ceiling before signing.
+            </p>
+          </div>
+
+          <!-- Panel 3: Git & Merge Workflows -->
+          <div class="tool-tab-panel cmp-tab-panel space-y-4 hidden" id="panel-git" role="tabpanel">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Three-Way Merges &amp; Conflict Resolution Mechanics
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Modern distributed version control systems like Git rely on three-way merge algorithms (3WM). Instead of comparing only version A against version B, Git references their common ancestor commit—the merge base.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              If version A modified line 42 while version B left it untouched relative to the base, Git cleanly applies version A’s changes automatically. A merge conflict only arises when both branches diverge on the exact same line relative to the ancestor, necessitating human contextual disambiguation.
+            </p>
+          </div>
+
+          <!-- Panel 4: Config Drift Auditing -->
+          <div class="tool-tab-panel cmp-tab-panel space-y-4 hidden" id="panel-config" role="tabpanel">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Infrastructure as Code &amp; Configuration Drift
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              In cloud infrastructure, subtle discrepancies between staging and production configurations represent a primary root cause of production outages. Kubernetes pod manifests, Terraform state files, and environment variable registries often differ by a single port or memory threshold.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              By checking the "Ignore whitespace" toggle, engineers immediately filter out indentation variations between 2-space and 4-space formatting, isolating real configuration divergence without false positives.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Full-Width Typographical Statement -->
+      <blockquote class="py-8 border-y border-[var(--border)] text-center max-w-4xl mx-auto">
+        <p class="text-lg sm:text-2xl font-extrabold text-[var(--txt)] tracking-tight leading-snug">
+          &ldquo;In version control, the smallest undetected difference between two documents is precisely where bugs, legal vulnerabilities, and data corruptions thrive.&rdquo;
+        </p>
+        <cite class="block mt-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-[var(--brand)] not-italic">
+          &mdash; Myers Diff Algorithm &amp; Source Code Evolution Mechanics
+        </cite>
+      </blockquote>
+
+      <!-- FAQs Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-circle-question text-[var(--brand)]"></i> Common Inquiries
+          </span>
+          <h3>Diffing Mechanics &amp; Security FAQ</h3>
+          <p>Learn how the client-side comparison engine processes differences securely.</p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>How does the Myers diff algorithm compute the shortest edit script?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              The algorithm traverses an edit grid diagonally whenever characters match and advances horizontally or vertically when insertions or deletions occur. It searches systematically for the path with the fewest non-diagonal steps, guaranteeing the minimal edit script required to turn Document A into Document B.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why is whitespace-insensitive diffing critical for YAML and Python?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Indentation-sensitive formats frequently suffer from accidental mixed tabs and spaces, causing line-by-line comparison tools to report every single row as modified. Toggling whitespace normalization strips leading and trailing space differences, highlighting solely meaningful semantic changes.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Are confidential contracts or private API tokens uploaded to any server?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Zero network requests are made. The diff calculation executes entirely in memory within your web browser. Sensitive legal documents, credentials, and proprietary code bases remain strictly within your device's RAM.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is the difference between word-level and line-level diffing?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Line-level diffing compares text line-by-line, marking an entire row as added or deleted if a single character changes. Word-level diffing performs sub-tokenization within matched lines, highlighting the exact altered phrase inside an otherwise identical sentence.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
+    </main>
   </div>
 </ToolLayout>
 
+
 <style>
-  .cmp-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .cmp-col { display: flex; flex-direction: column; gap: 8px; }
-  .cmp-label { font-size: 14px; font-weight: 600; color: var(--txt); }
-  .cmp-textarea {
-    width: 100%;
-    padding: 14px;
-    font-size: 13.5px;
-    font-family: 'Courier New', monospace;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    resize: vertical;
-    outline: none;
-    line-height: 1.7;
-    transition: border-color .2s;
+  :global(.diff-line-added) {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    display: block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 1px 0;
   }
-  .cmp-textarea:focus { border-color: var(--brand); }
-  .cmp-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  .cmp-check { display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--txt); cursor: pointer; }
-  .cmp-check input { accent-color: var(--brand); width: 14px; height: 14px; }
-
-  .cmp-stats {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    padding: 12px 16px;
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    color: var(--txt-muted);
+  :global(.diff-line-removed) {
+    background-color: rgba(244, 63, 94, 0.15);
+    color: #f43f5e;
+    display: block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 1px 0;
+    text-decoration: line-through;
   }
-  .cmp-stat-item strong { color: var(--txt); }
-
-  .cmp-diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .cmp-diff-col { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .cmp-diff-header { padding: 10px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--txt-muted); }
-  .cmp-diff-content { padding: 14px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
-  .diff-added { background: #DCFCE7; color: #166534; border-radius: 2px; }
-  .diff-removed { background: #FEE2E2; color: #991B1B; border-radius: 2px; text-decoration: line-through; }
-  .diff-line-added { background: #F0FDF4; display: block; }
-  .diff-line-removed { background: #FEF2F2; display: block; }
-
-  @media (max-width: 640px) {
-    .cmp-grid { grid-template-columns: 1fr; }
-    .cmp-diff-grid { grid-template-columns: 1fr; }
+  :global(.diff-line-same) {
+    display: block;
+    padding: 2px 6px;
+    margin: 1px 0;
+    opacity: 0.85;
   }
 </style>
 
@@ -131,6 +381,20 @@ const tool = tools.find(t => t.slug === 'compare')!;
     return result;
   }
 
+  function updateLineCounts() {
+    const left = (document.getElementById('cmp-left') as HTMLTextAreaElement)?.value || '';
+    const right = (document.getElementById('cmp-right') as HTMLTextAreaElement)?.value || '';
+    const leftLines = left ? left.split('\n').length : 0;
+    const rightLines = right ? right.split('\n').length : 0;
+    const leftEl = document.getElementById('left-lines-count');
+    const rightEl = document.getElementById('right-lines-count');
+    if (leftEl) leftEl.textContent = `${leftLines} lines`;
+    if (rightEl) rightEl.textContent = `${rightLines} lines`;
+  }
+
+  document.getElementById('cmp-left')?.addEventListener('input', updateLineCounts);
+  document.getElementById('cmp-right')?.addEventListener('input', updateLineCounts);
+
   function compare() {
     let left = (document.getElementById('cmp-left') as HTMLTextAreaElement).value;
     let right = (document.getElementById('cmp-right') as HTMLTextAreaElement).value;
@@ -154,7 +418,6 @@ const tool = tools.find(t => t.slug === 'compare')!;
     let rightHTML = '';
     let added = 0, removed = 0, same = 0;
 
-    // Rebuild diff with original lines
     let li = 0, ri = 0;
     for (const d of diff) {
       if (d.type === 'same') {
@@ -170,19 +433,28 @@ const tool = tools.find(t => t.slug === 'compare')!;
       }
     }
 
-    document.getElementById('cmp-diff-left')!.innerHTML = leftHTML || '<em style="color:var(--txt-dim)">Empty</em>';
-    document.getElementById('cmp-diff-right')!.innerHTML = rightHTML || '<em style="color:var(--txt-dim)">Empty</em>';
+    document.getElementById('cmp-diff-left')!.innerHTML = leftHTML || '<em class="text-slate-400">Empty</em>';
+    document.getElementById('cmp-diff-right')!.innerHTML = rightHTML || '<em class="text-slate-400">Empty</em>';
     document.getElementById('cmp-stats')!.innerHTML = `
-      <span class="cmp-stat-item">Lines added: <strong style="color:#22C55E">${added}</strong></span>
-      <span class="cmp-stat-item">Lines removed: <strong style="color:#EF4444">${removed}</strong></span>
-      <span class="cmp-stat-item">Unchanged: <strong>${same}</strong></span>
-      <span class="cmp-stat-item">Total changes: <strong>${added + removed}</strong></span>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold border border-emerald-500/20">
+        <i class="fas fa-plus"></i> Lines added: <strong>${added}</strong>
+      </span>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 font-mono text-xs font-bold border border-rose-500/20">
+        <i class="fas fa-minus"></i> Lines removed: <strong>${removed}</strong>
+      </span>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-500/10 text-slate-600 dark:text-slate-400 font-mono text-xs font-bold border border-slate-500/20">
+        <i class="fas fa-equals"></i> Unchanged: <strong>${same}</strong>
+      </span>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-mono text-xs font-bold border border-cyan-500/20">
+        <i class="fas fa-arrows-rotate"></i> Total delta: <strong>${added + removed}</strong>
+      </span>
     `;
 
     document.getElementById('cmp-result')!.style.display = '';
   }
 
   function escHtml(s: string) {
+    if (!s) return '';
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
@@ -191,5 +463,97 @@ const tool = tools.find(t => t.slug === 'compare')!;
     (document.getElementById('cmp-left') as HTMLTextAreaElement).value = '';
     (document.getElementById('cmp-right') as HTMLTextAreaElement).value = '';
     document.getElementById('cmp-result')!.style.display = 'none';
+    updateLineCounts();
+  });
+
+  // Sample Loaders
+  document.getElementById('load-sample-code')?.addEventListener('click', () => {
+    (document.getElementById('cmp-left') as HTMLTextAreaElement).value = 
+`interface UserSession {
+  id: string;
+  token: string;
+  expiresAt: number;
+  permissions: string[];
+}
+
+function validateSession(session: UserSession): boolean {
+  if (!session.token) return false;
+  return Date.now() < session.expiresAt;
+}`;
+    (document.getElementById('cmp-right') as HTMLTextAreaElement).value = 
+`interface UserSession {
+  id: string;
+  token: string;
+  expiresAt: number;
+  role: 'admin' | 'editor' | 'viewer';
+  permissions: string[];
+}
+
+function validateSession(session: UserSession): boolean {
+  if (!session.token || !session.id) return false;
+  if (session.role === 'admin') return true;
+  return Date.now() < session.expiresAt;
+}`;
+    updateLineCounts();
+    compare();
+  });
+
+  document.getElementById('load-sample-json')?.addEventListener('click', () => {
+    (document.getElementById('cmp-left') as HTMLTextAreaElement).value = 
+`{
+  "name": "toolarsh-app",
+  "version": "1.0.0",
+  "port": 3000,
+  "debug": true,
+  "features": ["auth", "analytics"]
+}`;
+    (document.getElementById('cmp-right') as HTMLTextAreaElement).value = 
+`{
+  "name": "toolarsh-app",
+  "version": "1.1.0",
+  "port": 8080,
+  "debug": false,
+  "features": ["auth", "analytics", "webhooks"],
+  "rateLimit": 1000
+}`;
+    updateLineCounts();
+    compare();
+  });
+
+  document.getElementById('load-sample-prose')?.addEventListener('click', () => {
+    (document.getElementById('cmp-left') as HTMLTextAreaElement).value = 
+`The Client agrees to pay the Contractor within 30 calendar days upon receipt of an approved invoice.
+All late payments shall accrue interest at the rate of 1.5% per month.
+Either party may terminate this agreement with 14 days written notice.`;
+    (document.getElementById('cmp-right') as HTMLTextAreaElement).value = 
+`The Client agrees to pay the Contractor within 15 calendar days upon receipt of an approved electronic invoice.
+All late payments shall accrue interest at the rate of 2.0% per month.
+Either party may terminate this agreement with 30 days written notice delivered via certified mail.`;
+    updateLineCounts();
+    compare();
+  });
+
+  // Tab switching logic
+  const tabBtns = document.querySelectorAll<HTMLButtonElement>('.cmp-tab-btn');
+  const tabPanels = document.querySelectorAll<HTMLDivElement>('.cmp-tab-panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = `panel-${btn.dataset.tab}`;
+      tabBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      tabPanels.forEach(panel => {
+        if (panel.id === targetId) {
+          panel.classList.remove('hidden');
+        } else {
+          panel.classList.add('hidden');
+        }
+      });
+    });
   });
 </script>

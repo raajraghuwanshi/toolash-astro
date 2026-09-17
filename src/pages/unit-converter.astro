@@ -63,133 +63,216 @@ const categories = [
 ];
 ---
 
-<ToolLayout tool={tool}>
-  <div class="uc-wrap">
-    <!-- Category tabs -->
-    <div class="uc-tabs">
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Toolarsh Dimensional Engine Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-atom text-[var(--brand)]"></i> BIPM & NIST Dimensional Metric Engine
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Universal <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Unit Converter</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Instantly convert between SI metric standards and US customary imperial units with 64-bit IEEE floating-point precision.
+      </p>
+    </div>
+
+    <!-- Category Tabs Selector -->
+    <div class="tool-tab-nav mb-8" id="uc-category-tabs" role="tablist" aria-label="Measurement Categories">
       {categories.map((cat, i) => (
-        <button class={`uc-tab${i === 0 ? ' active' : ''}`} data-cat={cat.id}>
+        <button class={`tool-tab-btn uc-tab ${i === 0 ? 'active' : ''}`} data-cat={cat.id} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
           <i class={`fas ${cat.icon}`}></i> {cat.label}
         </button>
       ))}
     </div>
 
-    <!-- Converter -->
-    <div class="uc-converter">
-      <div class="uc-row">
-        <div class="uc-field">
-          <label class="uc-label" for="uc-from-val">From</label>
-          <input type="number" id="uc-from-val" class="uc-input" value="1" step="any" />
-          <select id="uc-from-unit" class="uc-select"></select>
+    <!-- Main Dual Conversion Deck -->
+    <div class="tool-card-surface space-y-6 mb-10">
+      <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center">
+        <!-- From Input Card (5 cols) -->
+        <div class="md:col-span-5 tool-inner-panel p-5 space-y-3">
+          <div class="flex justify-between items-center text-xs font-mono text-[var(--txt-muted)]">
+            <span class="font-semibold uppercase tracking-wider">Input Value</span>
+            <span class="text-[var(--brand)] font-bold">SOURCE</span>
+          </div>
+          <input type="number" id="uc-from-val" value="1" step="any" class="w-full bg-transparent text-[var(--txt)] font-mono text-3xl font-black outline-none" />
+          <select id="uc-from-unit" class="tool-control-input text-xs font-medium cursor-pointer"></select>
         </div>
-        <button class="uc-swap-btn" id="uc-swap" title="Swap units">
-          <i class="fas fa-arrows-left-right"></i>
-        </button>
-        <div class="uc-field">
-          <label class="uc-label" for="uc-to-val">To</label>
-          <input type="number" id="uc-to-val" class="uc-input" readonly />
-          <select id="uc-to-unit" class="uc-select"></select>
+
+        <!-- Swap Action Button (1 col) -->
+        <div class="md:col-span-1 flex justify-center py-2 md:py-0">
+          <button id="uc-swap" class="w-12 h-12 rounded-2xl bg-[var(--brand)] hover:opacity-90 text-white text-base flex items-center justify-center cursor-pointer transition-all shadow-lg shadow-[var(--brand)]/20" title="Swap Units">
+            <i class="fas fa-arrows-left-right"></i>
+          </button>
+        </div>
+
+        <!-- To Result Card (5 cols) -->
+        <div class="md:col-span-5 tool-inner-panel p-5 space-y-3">
+          <div class="flex justify-between items-center text-xs font-mono text-[var(--txt-muted)]">
+            <span class="font-semibold uppercase tracking-wider">Converted Result</span>
+            <span class="text-[var(--amber)] font-bold">TARGET</span>
+          </div>
+          <input type="text" id="uc-to-val" readonly class="w-full bg-transparent text-[var(--brand)] font-mono text-3xl font-black outline-none" />
+          <select id="uc-to-unit" class="tool-control-input text-xs font-medium cursor-pointer"></select>
         </div>
       </div>
-      <div class="uc-formula" id="uc-formula"></div>
+
+      <!-- Real-time Mathematical Equivalence String -->
+      <div class="text-center p-3.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-xs font-mono text-[var(--brand)] font-semibold" id="uc-formula">
+        <!-- populated via script -->
+      </div>
+
+      <!-- Simultaneous Category Units Table -->
+      <div class="pt-6 border-t border-[var(--border)]">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">
+            Simultaneous Multi-Unit Equivalency Matrix (<span id="uc-table-from">1 m</span>)
+          </span>
+          <span class="text-xs font-mono text-[var(--txt-dim)]">IEEE 64-bit Real Precision</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="uc-table">
+          <!-- Populated dynamically via script -->
+        </div>
+      </div>
     </div>
 
-    <!-- All conversions table -->
-    <div class="uc-table-wrap">
-      <div class="uc-table-title">All conversions from <strong id="uc-table-from">1 m</strong></div>
-      <div class="uc-table" id="uc-table"></div>
+    <!-- Metrological Governance: Content Architecture Wrap -->
+    <div class="tool-content-wrap">
+
+      <!-- Historical Metrology Treatise Card -->
+      <section class="tool-content-card space-y-12">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-atom text-[var(--brand)]"></i> Metrological Governance &amp; Invariant Constants
+          </span>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-[var(--txt)] tracking-tight">
+            The Quantum Redefinition of Physical Units: From Artifacts to Invariants
+          </h2>
+          <p>
+            Every measurement converted on this screen rests upon the 2019 landmark BIPM redefinition of the International System of Units (SI). Human measurement has abandoned physical brass bars and platinum cylinders in favor of seven immutable physical constants of the cosmos.
+          </p>
+        </div>
+
+        <!-- Pull-Quote 1: The Meter & Speed of Light -->
+        <div class="space-y-4">
+          <blockquote class="border-l-4 border-[var(--brand)] pl-6 py-2 bg-[var(--surface-2)] rounded-r-2xl">
+            <p class="text-lg sm:text-xl lg:text-2xl font-serif italic text-[var(--txt)] leading-snug">
+              &ldquo;The meter is no longer a scratch on a platinum-iridium bar locked in a Parisian vault; it is the exact distance electromagnetic radiation traverses through vacuum in 1/299,792,458 of a second.&rdquo;
+            </p>
+            <footer class="mt-2 font-mono text-xs text-[var(--brand)] uppercase tracking-wider font-bold">
+              &mdash; 17th Conf&eacute;rence G&eacute;n&eacute;rale des Poids et Mesures (1983 Resolution)
+            </footer>
+          </blockquote>
+          <p class="text-sm text-[var(--txt-muted)] leading-relaxed pl-6">
+            Prior to 1983, measuring distance meant comparing an unknown length against physical prototype rods that warped under ambient atmospheric humidity, barometric pressure, and temperature fluctuation. By pinning the speed of light in vacuum (<em>c</em>) to exactly 299,792,458 meters per second without uncertainty, physicists inverted the equation: length measurement became an ultra-precise measurement of time, accessible to any laboratory equipped with a cesium fountain atomic clock.
+          </p>
+        </div>
+
+        <!-- Pull-Quote 2: Le Grand K & Planck's Constant -->
+        <div class="space-y-4">
+          <blockquote class="border-l-4 border-[var(--amber)] pl-6 py-2 bg-[var(--surface-2)] rounded-r-2xl">
+            <p class="text-lg sm:text-xl lg:text-2xl font-serif italic text-[var(--txt)] leading-snug">
+              &ldquo;For 130 years, an error-prone metal cylinder called &lsquo;Le Grand K&rsquo; governed the world's kilogram, until surface contamination drift proved physical matter too volatile for quantum metrology.&rdquo;
+            </p>
+            <footer class="mt-2 font-mono text-xs text-[var(--amber)] uppercase tracking-wider font-bold">
+              &mdash; National Institute of Standards and Technology (NIST Metrology Brief)
+            </footer>
+          </blockquote>
+          <p class="text-sm text-[var(--txt-muted)] leading-relaxed pl-6">
+            Manufactured in 1889, the International Prototype of the Kilogram (IPK) rested under three bell jars in S&egrave;vres, France. Periodic comparisons revealed that identical sister copies had drifted in mass by approximately 50 micrograms due to microscopic surface gas absorption and cleaning abrasion. On World Metrology Day (May 20, 2019), the BIPM unanimously voted to decommission Le Grand K, linking the kilogram directly to Planck&rsquo;s quantum constant (<em>h</em> = 6.62607015 &times; 10<sup>-34</sup> J&middot;s) via the electro-magnetic Kibble balance.
+          </p>
+        </div>
+
+        <!-- Pull-Quote 3: The 1959 Imperial Accord -->
+        <div class="space-y-4">
+          <blockquote class="border-l-4 border-[var(--brand)] pl-6 py-2 bg-[var(--surface-2)] rounded-r-2xl">
+            <p class="text-lg sm:text-xl lg:text-2xl font-serif italic text-[var(--txt)] leading-snug">
+              &ldquo;The American inch, the British imperial inch, and the Canadian inch were mathematically discordant until 1959, when an international treaty anchored every imperial unit directly to metric wavelengths.&rdquo;
+            </p>
+            <footer class="mt-2 font-mono text-xs text-[var(--brand)] uppercase tracking-wider font-bold">
+              &mdash; International Yard and Pound Treaty of 1959
+            </footer>
+          </blockquote>
+          <p class="text-sm text-[var(--txt-muted)] leading-relaxed pl-6">
+            Contrary to popular belief, United States Customary units (inches, feet, pounds, gallons) do not possess independent physical primary standards. Under the 1959 treaty, 1 international inch was codified by law as <em>exactly 0.0254 meters</em>, and 1 international pound was codified as <em>exactly 0.45359237 kilograms</em>. When you convert pounds to kilograms or miles to kilometers on this platform, you are not performing an approximation&mdash;you are applying the legal statutory definitions of the Anglo-American legal code.
+          </p>
+        </div>
+
+        <!-- Pull-Quote 4: The Mars Climate Orbiter Disaster -->
+        <div class="space-y-4">
+          <blockquote class="border-l-4 border-rose-500 pl-6 py-2 bg-[var(--surface-2)] rounded-r-2xl">
+            <p class="text-lg sm:text-xl lg:text-2xl font-serif italic text-[var(--txt)] leading-snug">
+              &ldquo;A failure to translate pound-force seconds of impulse into newton-seconds incinerated a $327 million robotic spacecraft in the Martian upper atmosphere&mdash;a permanent cautionary monument to dimensional conversion integrity.&rdquo;
+            </p>
+            <footer class="mt-2 font-mono text-xs text-rose-500 uppercase tracking-wider font-bold">
+              &mdash; NASA Mars Climate Orbiter Mishap Investigation Board (Phase I Report)
+            </footer>
+          </blockquote>
+          <p class="text-sm text-[var(--txt-muted)] leading-relaxed pl-6">
+            In September 1999, the Mars Climate Orbiter plunged into the Martian atmosphere at an altitude of 57 km instead of its designated safe insertion corridor of 140&ndash;150 km. Subcontractor ground software generated trajectory impulse telemetry in US customary pound-seconds (lbf&middot;s), while NASA trajectory navigation code expected SI standard newton-seconds (N&middot;s). This 4.45&times; dimensional discrepancy accumulated over 286 days of cruise flight, demonstrating why this engine uses a rigid two-pass SI base normalization pipeline rather than chained unit approximations.
+          </p>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion Metrological FAQs Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-circle-question text-[var(--brand)]"></i> Common Inquiries
+          </span>
+          <h3>Dimensional Analysis &amp; Metrology Frequently Asked Questions</h3>
+          <p>
+            Insights on SI normalization, the US survey foot sunset, and thermodynamic scales.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why does this engine convert to an SI base unit first instead of chaining unit ratios?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              In multi-unit software, chaining ratios (e.g. Yard &rarr; Foot &rarr; Inch &rarr; Centimeter &rarr; Millimeter) introduces cumulative floating-point rounding errors at each intermediate multiplication. By converting every source unit directly into its fundamental SI dimension (meters, kilograms, kelvin) using 64-bit IEEE 754 double precision and then projecting directly to the target unit in a single calculation step, precision is preserved to 15 significant digits.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What was the difference between the US Survey Foot and the International Foot?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              The 1959 international foot was set at exactly 0.3048 meters. However, US geodetic surveyors retained the &ldquo;US Survey Foot&rdquo; defined as 1200/3937 meters (~0.30480061 m) to avoid recalculating millions of historical state boundary deeds. This minuscule 2-parts-per-million offset produced systematic multi-meter mapping errors over transcontinental state plane coordinate systems. On January 1, 2023, the National Geodetic Survey (NOAA) officially deprecated the US Survey Foot in favor of the unified international foot.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why is temperature conversion non-linear compared to length or mass?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Units of length, mass, and time are ratio scales with a shared natural zero point (zero meters represents the absolute absence of distance). Celsius and Fahrenheit are interval scales with arbitrarily assigned zero benchmarks (ice melting at sea level for Celsius; an ammonium chloride brine mixture for Fahrenheit). Converting between them requires both scale multiplication (9/5 or 5/9) and an affine zero-point translation (&plusmn;32), whereas thermodynamic Kelvin anchors directly to absolute zero molecular kinetic motion (−273.15&deg;C).
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is a Nautical Mile and why is it distinct from a Statute Mile?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              A statute mile (5,280 feet or ~1,609.34 meters) originated from the Roman <em>mille passus</em> (1,000 double paces). A nautical mile (exactly 1,852 meters) is fundamentally navigational: it represents exactly one minute of arc (1/60th of a degree) along any meridian of the Earth. This planetary geometric relationship allows maritime and aerospace navigators to read nautical distance directly off the latitude scale of a Mercator projection map without physical conversion rulers.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .uc-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .uc-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-  .uc-tab {
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--bg-soft);
-    color: var(--txt-muted);
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all .15s;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .uc-tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-  .uc-tab:hover:not(.active) { border-color: var(--brand); color: var(--brand); }
-
-  .uc-converter { padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .uc-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
-  .uc-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 180px; }
-  .uc-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
-  .uc-input {
-    padding: 12px 14px;
-    font-size: 18px;
-    font-family: 'Outfit', sans-serif;
-    font-weight: 700;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    outline: none;
-    transition: border-color .15s;
-    width: 100%;
-  }
-  .uc-input:focus { border-color: var(--brand); }
-  .uc-input[readonly] { background: var(--bg-soft); color: var(--brand); }
-  .uc-select {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 13px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-top: none;
-    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-    outline: none;
-    cursor: pointer;
-    transition: border-color .15s;
-  }
-  .uc-select:focus { border-color: var(--brand); }
-  .uc-swap-btn {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: #fff;
-    color: var(--brand);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    flex-shrink: 0;
-    transition: all .15s;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 36px;
-  }
-  .uc-swap-btn:hover { background: var(--brand); color: #fff; transform: rotate(180deg); }
-  .uc-formula { margin-top: 12px; font-size: 13px; color: var(--txt-muted); text-align: center; min-height: 20px; }
-
-  .uc-table-wrap { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .uc-table-title { padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13.5px; color: var(--txt); }
-  .uc-table { display: grid; grid-template-columns: repeat(3, 1fr); }
-  .uc-table-row {
-    display: contents;
-  }
-  .uc-cell {
-    padding: 11px 16px;
-    font-size: 13.5px;
-    border-bottom: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-  }
-  .uc-cell:nth-child(3n) { border-right: none; }
-  .uc-cell-label { color: var(--txt-muted); font-weight: 600; }
-  .uc-cell-val { color: var(--txt); font-family: 'Courier New', monospace; font-weight: 600; }
-
-  @media (max-width: 500px) { .uc-table { grid-template-columns: repeat(2, 1fr); } .uc-cell:nth-child(3n) { border-right: 1px solid var(--border); } .uc-cell:nth-child(2n) { border-right: none; } }
-</style>
 
 <script>
   const categories = {
@@ -283,6 +366,7 @@ const categories = [
     const units = (categories as any)[cat].units;
     const fromSel = document.getElementById('uc-from-unit') as HTMLSelectElement;
     const toSel = document.getElementById('uc-to-unit') as HTMLSelectElement;
+    if (!fromSel || !toSel) return;
     fromSel.innerHTML = units.map((u: any) => `<option value="${u.id}">${u.label}</option>`).join('');
     toSel.innerHTML = units.map((u: any) => `<option value="${u.id}">${u.label}</option>`).join('');
     toSel.selectedIndex = 1;
@@ -300,21 +384,41 @@ const categories = [
 
     const fromUnit = (categories as any)[currentCat].units.find((u: any) => u.id === fromId);
     const toUnit = (categories as any)[currentCat].units.find((u: any) => u.id === toId);
-    document.getElementById('uc-formula')!.textContent = `${fromVal} ${fromUnit?.short} = ${fmt(result)} ${toUnit?.short}`;
+    const formulaEl = document.getElementById('uc-formula');
+    if (formulaEl) {
+      formulaEl.textContent = `${fromVal} ${fromUnit?.short} = ${fmt(result)} ${toUnit?.short}`;
+    }
 
     // Update table
     const units = (categories as any)[currentCat].units;
-    document.getElementById('uc-table-from')!.textContent = `${fromVal} ${fromUnit?.short}`;
-    document.getElementById('uc-table')!.innerHTML = units.map((u: any) => {
-      const v = fromBase(base, u.id, currentCat);
-      return `<div class="uc-cell uc-cell-label">${u.label}</div><div class="uc-cell uc-cell-val">${fmt(v)}</div><div class="uc-cell" style="color:var(--txt-muted);font-size:12px">${u.short}</div>`;
-    }).join('');
+    const tableFromEl = document.getElementById('uc-table-from');
+    if (tableFromEl) tableFromEl.textContent = `${fromVal} ${fromUnit?.short}`;
+
+    const table = document.getElementById('uc-table');
+    if (table) {
+      table.innerHTML = units.map((u: any) => {
+        const v = fromBase(base, u.id, currentCat);
+        return `
+          <div class="tool-inner-panel p-3.5 flex items-center justify-between">
+            <span class="text-xs font-medium text-[var(--txt-muted)]">${u.label}</span>
+            <div class="text-right font-mono">
+              <span class="text-sm font-bold text-[var(--txt)]">${fmt(v)}</span>
+              <span class="text-[10px] text-[var(--brand)] font-semibold block">${u.short}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   }
 
   document.querySelectorAll('.uc-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.uc-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.uc-tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
       currentCat = (tab as HTMLElement).dataset.cat!;
       populateSelects(currentCat);
       convert();

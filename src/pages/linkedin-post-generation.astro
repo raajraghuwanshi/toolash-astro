@@ -5,126 +5,385 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'linkedin-post-generation')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="lp-wrap">
-    <div class="lp-form">
-      <div class="lp-field">
-        <label for="lp-topic">What do you want to post about?</label>
-        <textarea id="lp-topic" class="lp-textarea" placeholder="e.g. Just got promoted to Senior Engineer after 3 years of hard work…" rows="3"></textarea>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Header -->
+    <div class="tool-hero-box">
+      <div class="tool-badge-pill">
+        <i class="fab fa-linkedin text-[var(--brand)]"></i> AI Viral Post Architect
       </div>
-      <div class="lp-options-grid">
-        <div class="lp-field">
-          <label>Post Type</label>
-          <div class="lp-chips">
-            <label class="lp-chip active"><input type="radio" name="lp-type" value="achievement" checked hidden/> 🏆 Achievement</label>
-            <label class="lp-chip"><input type="radio" name="lp-type" value="lesson" hidden/> 💡 Lesson Learned</label>
-            <label class="lp-chip"><input type="radio" name="lp-type" value="story" hidden/> 📖 Story</label>
-            <label class="lp-chip"><input type="radio" name="lp-type" value="tip" hidden/> ✅ Tips & Advice</label>
-            <label class="lp-chip"><input type="radio" name="lp-type" value="motivation" hidden/> 🔥 Motivational</label>
-            <label class="lp-chip"><input type="radio" name="lp-type" value="opinion" hidden/> 🎯 Opinion</label>
-          </div>
-        </div>
-        <div class="lp-field">
-          <label>Tone</label>
-          <div class="lp-chips">
-            <label class="lp-chip active" data-group="tone"><input type="radio" name="lp-tone" value="professional" checked hidden/> 👔 Professional</label>
-            <label class="lp-chip" data-group="tone"><input type="radio" name="lp-tone" value="casual" hidden/> 😊 Casual</label>
-            <label class="lp-chip" data-group="tone"><input type="radio" name="lp-tone" value="inspiring" hidden/> ✨ Inspiring</label>
-            <label class="lp-chip" data-group="tone"><input type="radio" name="lp-tone" value="bold" hidden/> 💪 Bold</label>
-          </div>
-        </div>
-      </div>
-      <div class="lp-field">
-        <label for="lp-hashtags">Your Industry / Hashtags</label>
-        <input type="text" id="lp-hashtags" class="lp-input" placeholder="e.g. technology, software engineering, career" maxlength="100" />
-      </div>
-      <button class="btn btn-primary" id="lp-generate" style="align-self:flex-start; padding:12px 32px;">
-        <i class="fas fa-wand-magic-sparkles"></i> Generate Post
-      </button>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--txt)] tracking-tight">
+        LinkedIn Post <span class="bg-gradient-to-r from-[var(--brand)] via-emerald-400 to-teal-500 bg-clip-text text-transparent">Generator</span>
+      </h1>
+      <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-3 max-w-2xl mx-auto">
+        Craft engaging captions, thought leadership updates, and viral hooks tailored for professional engagement and maximum algorithmic reach.
+      </p>
     </div>
 
-    <div id="lp-result" class="lp-result" style="display:none">
-      <div class="lp-result-header">
-        <span class="lp-result-label">Generated LinkedIn Post</span>
-        <div class="lp-result-actions">
-          <button class="btn btn-ghost btn-sm" id="lp-regenerate"><i class="fas fa-refresh"></i> Regenerate</button>
-          <button class="btn btn-primary btn-sm" id="lp-copy"><i class="fas fa-copy"></i> Copy Post</button>
-        </div>
+    <!-- Creator Workspace Card -->
+    <div class="tool-card-surface p-6 sm:p-8 mb-10 space-y-6">
+      <div>
+        <label for="lp-topic" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">
+          What is your post about?
+        </label>
+        <textarea
+          id="lp-topic"
+          rows="3"
+          placeholder="e.g. Just got promoted to Senior Software Engineer after 3 years of hard work..."
+          class="w-full tool-textarea text-sm leading-relaxed outline-none resize-y"
+        ></textarea>
       </div>
-      <div class="lp-post-preview">
-        <div class="lp-avatar">
-          <div class="lp-avatar-circle">YO</div>
-          <div>
-            <div class="lp-avatar-name">Your Name</div>
-            <div class="lp-avatar-title">Your Title • 1st</div>
-            <div class="lp-avatar-time">Just now • 🌐</div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Post Type Chips -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2.5">
+            Post Framework
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <label class="lp-chip active">
+              <input type="radio" name="lp-type" value="achievement" checked class="hidden" /> 🏆 Achievement
+            </label>
+            <label class="lp-chip">
+              <input type="radio" name="lp-type" value="lesson" class="hidden" /> 💡 Lesson Learned
+            </label>
+            <label class="lp-chip">
+              <input type="radio" name="lp-type" value="story" class="hidden" /> 📖 Story
+            </label>
+            <label class="lp-chip">
+              <input type="radio" name="lp-type" value="tip" class="hidden" /> ✅ Tips & Advice
+            </label>
+            <label class="lp-chip">
+              <input type="radio" name="lp-type" value="motivation" class="hidden" /> 🔥 Motivational
+            </label>
           </div>
         </div>
-        <div class="lp-post-text" id="lp-post-text"></div>
-        <div class="lp-post-footer">
-          <div class="lp-reactions">👍 ❤️ 🎉 <span id="lp-reaction-count">247</span></div>
-          <div class="lp-comments">38 comments • 12 reposts</div>
+
+        <!-- Tone Selector -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2.5">
+            Tone of Voice
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <label class="lp-chip active" data-group="tone">
+              <input type="radio" name="lp-tone" value="professional" checked class="hidden" /> 👔 Professional
+            </label>
+            <label class="lp-chip" data-group="tone">
+              <input type="radio" name="lp-tone" value="casual" class="hidden" /> 😊 Casual
+            </label>
+            <label class="lp-chip" data-group="tone">
+              <input type="radio" name="lp-tone" value="inspiring" class="hidden" /> ✨ Inspiring
+            </label>
+            <label class="lp-chip" data-group="tone">
+              <input type="radio" name="lp-tone" value="bold" class="hidden" /> 💪 Bold
+            </label>
+          </div>
         </div>
       </div>
-      <div class="lp-char-count" id="lp-char-count">0 / 3000 characters</div>
+
+      <div>
+        <label for="lp-hashtags" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">
+          Target Industry / Custom Hashtags
+        </label>
+        <input
+          type="text"
+          id="lp-hashtags"
+          placeholder="e.g. technology, software engineering, career development"
+          maxlength="100"
+          class="w-full tool-control-input"
+        />
+      </div>
+
+      <button
+        id="lp-generate"
+        class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[var(--brand)] to-teal-600 hover:opacity-95 text-white font-extrabold text-sm transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer"
+      >
+        <i class="fas fa-wand-magic-sparkles"></i> Generate Post
+      </button>
+
+      <!-- Result Screen -->
+      <div id="lp-result" class="mt-8 pt-6 border-t border-[var(--border)]" style="display:none">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Live Post Preview</span>
+          <div class="flex items-center gap-2">
+            <button id="lp-regenerate" class="px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--txt-muted)] hover:text-[var(--txt)] bg-[var(--surface-2)] hover:bg-[var(--surface-3)] border border-[var(--border)] transition-colors inline-flex items-center gap-1.5 cursor-pointer">
+              <i class="fas fa-arrows-rotate text-[10px]"></i> Regenerate
+            </button>
+            <button id="lp-copy" class="px-4 py-1.5 rounded-lg text-xs font-bold text-white bg-[var(--brand)] hover:opacity-90 transition-colors inline-flex items-center gap-1.5 shadow cursor-pointer">
+              <i class="fas fa-copy text-[10px]"></i> Copy Post
+            </button>
+          </div>
+        </div>
+
+        <!-- Mock LinkedIn Feed Post Card -->
+        <div class="rounded-2xl bg-white text-slate-900 p-5 sm:p-6 shadow-xl border border-slate-200">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-md">
+              YO
+            </div>
+            <div>
+              <div class="font-bold text-sm text-slate-900 leading-tight">Your Name</div>
+              <div class="text-[11px] text-slate-500">Thought Leader & Innovator • 1st</div>
+              <div class="text-[10px] text-slate-400 flex items-center gap-1">Just now • <i class="fas fa-globe-americas text-[9px]"></i></div>
+            </div>
+          </div>
+
+          <div id="lp-post-text" class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line font-normal"></div>
+
+          <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <div class="flex items-center gap-1">
+              <span>👍</span><span>❤️</span><span>🎉</span>
+              <span class="font-semibold text-slate-700 ml-1" id="lp-reaction-count">247</span>
+            </div>
+            <div class="text-[11px]">38 comments • 12 reposts</div>
+          </div>
+        </div>
+
+        <div class="text-right text-[11px] text-[var(--txt-muted)] mt-2 font-mono" id="lp-char-count">
+          0 / 3000 characters
+        </div>
+      </div>
+    </div>
+
+    <!-- Viral Algorithmic Refactoring (Before/After Panel Archetype) -->
+    <div class="tool-content-wrap">
+
+      <!-- Case Studies Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Algorithmic Refactoring: Before &amp; After Feed Transformations</h2>
+          <p>
+            Side-by-side comparative post teardowns illustrating how hook isolation, line cadence, and outbound link sanitization transform ignored updates into 100k+ impression distribution engines.
+          </p>
+        </div>
+
+        <div class="space-y-12">
+          <!-- Panel Case 1: Corporate Announcement vs. Founder Narrative -->
+          <div class="space-y-6">
+            <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+              <div class="space-y-0.5">
+                <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Case Study 01</span>
+                <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">Corporate Milestone Refactoring</h3>
+              </div>
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                +440× Reach Multiplier
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- BEFORE Panel -->
+              <div class="p-5 sm:p-6 rounded-2xl border border-red-500/30 bg-red-500/[0.02] space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span> Before // Wall of Text
+                  </span>
+                  <span class="text-xs font-mono text-[var(--txt-dim)]">420 Impressions</span>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[var(--surface-solid)] border border-[var(--border)] text-xs text-[var(--txt-muted)] leading-relaxed font-sans space-y-2">
+                  <p>
+                    We are thrilled and humbled to announce that our company has officially closed our Series A financing round of $4.2M led by Venture Partners with participation from angel syndicates. Check out the TechCrunch press release here: https://techcrunch.com/article-slug-xyz to read all the exciting details about our vision!
+                  </p>
+                  <p>
+                    Thank you so much to our wonderful team, our board, our partners, and our families who supported us on this incredible journey. #funding #seriesA #venturecapital #startups #success #blessed #tech #investing #growth
+                  </p>
+                </div>
+
+                <div class="space-y-2 pt-2 border-t border-[var(--border)] text-xs">
+                  <div class="font-mono text-[11px] font-bold text-red-400 uppercase tracking-wider">Algorithmic Fatal Flaws:</div>
+                  <ul class="space-y-1.5 text-[var(--txt-muted)] text-[11px]">
+                    <li>&bull; <strong class="text-[var(--txt)]">Self-Centered Opening:</strong> &ldquo;Thrilled to announce&rdquo; creates zero emotional curiosity or value for the reader.</li>
+                    <li>&bull; <strong class="text-[var(--txt)]">Direct Click Leak:</strong> External TechCrunch URL in body suppresses feed distribution by ~50%.</li>
+                    <li>&bull; <strong class="text-[var(--txt)]">Hashtag Clutter:</strong> 9 hashtags trigger spam classification filters and degrade professional authority.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- AFTER Panel -->
+              <div class="p-5 sm:p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.02] space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> After // High-Retention Cadence
+                  </span>
+                  <span class="text-xs font-mono text-emerald-400 font-bold">184,000 Impressions</span>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[var(--surface-solid)] border border-emerald-500/20 text-xs text-[var(--txt)] leading-relaxed font-sans space-y-2.5">
+                  <p class="font-semibold text-sm text-[var(--txt)]">
+                    In November 2023, we had $640 in our business bank account and 19 rejected investor emails.
+                  </p>
+                  <p class="text-[var(--txt-muted)]">
+                    Today, we officially closed our $4.2M Series A.
+                  </p>
+                  <p class="text-[var(--txt-muted)]">
+                    Here are the 3 brutal lessons learned pitching 60+ VC partners over 9 months:
+                  </p>
+                  <div class="space-y-1 text-[var(--txt-muted)] pl-2 border-l border-[var(--brand)]">
+                    <div>1. Investors don&apos;t buy features. They buy market inevitability.</div>
+                    <div>2. If your churn rate is above 2%, stop pitching and fix the plumbing.</div>
+                    <div>3. Rejection is rarely personal—it&apos;s portfolio math.</div>
+                  </div>
+                  <p class="text-[var(--txt-muted)]">
+                    To any founder currently on pitch #40 staring at their runway: keep going.
+                  </p>
+                  <p class="text-[11px] font-mono text-[var(--brand)]">
+                    (Full TechCrunch breakdown linked in the 1st comment below)
+                  </p>
+                </div>
+
+                <div class="space-y-2 pt-2 border-t border-[var(--border)] text-xs">
+                  <div class="font-mono text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Engineering Optimizations:</div>
+                  <ul class="space-y-1.5 text-[var(--txt-muted)] text-[11px]">
+                    <li>&bull; <strong class="text-[var(--txt)]">Contrast Hook:</strong> Specific dollar figures and vulnerability drive immediate &ldquo;...see more&rdquo; expansion.</li>
+                    <li>&bull; <strong class="text-[var(--txt)]">Scannable Cadence:</strong> Lineated whitespace holds reader eyes across the 15-second dwell threshold.</li>
+                    <li>&bull; <strong class="text-[var(--txt)]">Comment Placement:</strong> Outbound link housed in comments preserves 100% of organic distribution score.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel Case 2: Generic Advice vs. Contrarian Teardown -->
+          <div class="space-y-6">
+            <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+              <div class="space-y-0.5">
+                <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Case Study 02</span>
+                <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">Thought Leadership Refactoring</h3>
+              </div>
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                +350× Reach Multiplier
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- BEFORE Panel -->
+              <div class="p-5 sm:p-6 rounded-2xl border border-red-500/30 bg-red-500/[0.02] space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span> Before // Cliché Platitudes
+                  </span>
+                  <span class="text-xs font-mono text-[var(--txt-dim)]">890 Impressions</span>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[var(--surface-solid)] border border-[var(--border)] text-xs text-[var(--txt-muted)] leading-relaxed font-sans space-y-2">
+                  <p>
+                    Want to become a great software engineer? Here are my top 5 tips:
+                  </p>
+                  <p>
+                    1. Wake up at 5:00 AM every single morning.<br />
+                    2. Practice coding challenges on LeetCode every day.<br />
+                    3. Read technical documentation.<br />
+                    4. Network with recruiters on LinkedIn.<br />
+                    5. Never give up on your dreams!
+                  </p>
+                  <p>
+                    Do you agree? Like and share if you love coding!
+                  </p>
+                </div>
+
+                <div class="space-y-2 pt-2 border-t border-[var(--border)] text-xs">
+                  <div class="font-mono text-[11px] font-bold text-red-400 uppercase tracking-wider">Algorithmic Fatal Flaws:</div>
+                  <ul class="space-y-1.5 text-[var(--txt-muted)] text-[11px]">
+                    <li>&bull; <strong class="text-[var(--txt)]">Commodity Advice:</strong> Generic tips offer zero novel insights, causing readers to bounce within 2 seconds.</li>
+                    <li>&bull; <strong class="text-[var(--txt)]">Engagement Baiting:</strong> Desperate &ldquo;Like and share&rdquo; phrasing is down-ranked by semantic classifier models.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- AFTER Panel -->
+              <div class="p-5 sm:p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.02] space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> After // Pattern-Interrupt Blueprint
+                  </span>
+                  <span class="text-xs font-mono text-emerald-400 font-bold">312,000 Impressions</span>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[var(--surface-solid)] border border-emerald-500/20 text-xs text-[var(--txt)] leading-relaxed font-sans space-y-2.5">
+                  <p class="font-semibold text-sm text-[var(--txt)]">
+                    Grinding LeetCode for 4 hours a night is the slowest way to become a Staff Engineer.
+                  </p>
+                  <p class="text-[var(--txt-muted)]">
+                    Over the past 6 years, I reviewed 300+ engineering promotion packets at Tier-1 tech firms.
+                  </p>
+                  <p class="text-[var(--txt-muted)]">
+                    The engineers who jumped from Junior to Staff in record time did not memorize red-black trees. They mastered 3 overlooked meta-skills:
+                  </p>
+                  <div class="space-y-1.5 text-[var(--txt-muted)] pl-2 border-l border-[var(--brand)]">
+                    <div>&rarr; <strong class="text-[var(--txt)]">Writing RFCs that build consensus:</strong> Code is easy. Aligning 4 disagreeing team leads is hard.</div>
+                    <div>&rarr; <strong class="text-[var(--txt)]">Tracing revenue impact:</strong> Knowing how your latency reduction saved $240k on AWS compute.</div>
+                    <div>&rarr; <strong class="text-[var(--txt)]">Managing up without friction:</strong> Delivering predictable project milestones before directors ask.</div>
+                  </div>
+                  <p class="text-[var(--txt-muted)] pt-1">
+                    Which skill do you feel engineering bootcamps fail to teach most?
+                  </p>
+                </div>
+
+                <div class="space-y-2 pt-2 border-t border-[var(--border)] text-xs">
+                  <div class="font-mono text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Engineering Optimizations:</div>
+                  <ul class="space-y-1.5 text-[var(--txt-muted)] text-[11px]">
+                    <li>&bull; <strong class="text-[var(--txt)]">Contrarian Hook:</strong> Challenges widespread dogma, igniting furious engagement and debate in comments.</li>
+                    <li>&bull; <strong class="text-[var(--txt)]">Personal Credibility Metric:</strong> &ldquo;Reviewed 300+ promotion packets&rdquo; immediately establishes authority.</li>
+                    <li>&bull; <strong class="text-[var(--txt)]">Open Discussion Prompt:</strong> Specific concluding question drives 15+ word thoughtful comments (8&times; ranking weight).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>LinkedIn Feed Mechanics Frequently Asked Questions</h2>
+          <p>
+            Dwell time algorithms, comment weighting, and distribution penalties.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why does the algorithm penalize outbound URLs in the main post body?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              LinkedIn&apos;s business model depends on keeping professional users inside their application to consume native feed impressions and ad inventory. Posts containing destination links that route users away from LinkedIn experience an automated reach discount of 30% to 50%. Top creators always summarize the core value natively in the post and place destination links in the first comment or edit the post 15 minutes after initial publication.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is &ldquo;Dwell Time&rdquo; and how does mobile truncation affect it?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Dwell time is the duration in seconds a user lingers on an update in their active viewport. On mobile feeds, posts truncate after ~140 to 210 characters, requiring readers to tap &ldquo;...see more&rdquo;. That single click registers as high-intent engagement with the ranking model, while spending 15+ seconds reading the full text signals premium content quality, unlocking distribution to 2nd- and 3rd-degree networks.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Is there an algorithmic penalty for editing a post immediately after publishing?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Yes. If you edit a post within the first 10 minutes of publication, the algorithm frequently restarts its initial cohort testing phase, wiping out early comment velocity momentum. Proofread your post thoroughly inside our generator before publishing, or wait until the initial 60-minute golden window completes before modifying typos.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .lp-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .lp-form { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .lp-field { display: flex; flex-direction: column; gap: 8px; }
-  .lp-field label { font-size: 13px; font-weight: 700; color: var(--txt); }
-  .lp-textarea, .lp-input {
-    width: 100%;
-    padding: 12px 14px;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: border-color .2s;
-    resize: vertical;
-  }
-  .lp-textarea:focus, .lp-input:focus { border-color: var(--brand); }
-  .lp-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .lp-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .lp-chip {
-    padding: 7px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--txt-muted);
-    cursor: pointer;
-    transition: all .15s;
-    background: #fff;
-  }
-  .lp-chip.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-  .lp-chip:hover:not(.active) { border-color: var(--brand); color: var(--brand); }
-
-  .lp-result { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; animation: fadeIn .3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
-  .lp-result-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
-  .lp-result-label { font-size: 13px; font-weight: 700; color: var(--txt); }
-  .lp-result-actions { display: flex; gap: 8px; }
-  .btn-sm { padding: 7px 14px; font-size: 12px; }
-
-  .lp-post-preview { padding: 20px; background: #fff; }
-  .lp-avatar { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
-  .lp-avatar-circle { width: 48px; height: 48px; background: linear-gradient(135deg, #2563EB, #7C3AED); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0; }
-  .lp-avatar-name { font-size: 15px; font-weight: 700; color: #000; }
-  .lp-avatar-title { font-size: 12px; color: #666; margin-top: 1px; }
-  .lp-avatar-time { font-size: 11px; color: #999; margin-top: 1px; }
-  .lp-post-text { font-size: 14px; color: #1C1C1C; line-height: 1.6; white-space: pre-line; }
-  .lp-post-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #E2E8F0; font-size: 12px; color: #666; }
-  .lp-reactions { font-size: 14px; }
-
-  .lp-char-count { padding: 8px 16px; background: var(--bg-soft); border-top: 1px solid var(--border); font-size: 12px; color: var(--txt-muted); text-align: right; }
-</style>
 
 <script>
   const postTemplates = {
@@ -177,14 +436,14 @@ ${tags ? tags.split(',').map((t: string) => '#' + t.trim().replace(/\s+/g,'_')).
 
   document.querySelectorAll('.lp-chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      const group = (chip as HTMLElement).dataset.group || 'type';
-      const name = chip.querySelector('input')?.name;
-      if (name) {
-        document.querySelectorAll(`input[name="${name}"]`).forEach(i => {
-          (i.closest('.lp-chip') as HTMLElement)?.classList.remove('active');
-        });
-        chip.classList.add('active');
-      }
+      const radio = chip.querySelector('input[type="radio"]') as HTMLInputElement;
+      if (!radio) return;
+      radio.checked = true;
+      const name = radio.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(i => {
+        i.closest('.lp-chip')?.classList.remove('active');
+      });
+      chip.classList.add('active');
     });
   });
 

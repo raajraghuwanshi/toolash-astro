@@ -5,106 +5,332 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'word-counter')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="wc-wrap">
-    <div class="wc-editor">
-      <label class="wc-label" for="wc-input">Paste or type your text below</label>
-      <textarea
-        id="wc-input"
-        class="wc-textarea"
-        placeholder="Start typing here — stats update in real-time…"
-        rows="10"
-        spellcheck="false"
-      ></textarea>
-      <div class="wc-actions">
-        <button class="btn btn-ghost" id="wc-clear">
-          <i class="fas fa-trash-alt"></i> Clear
-        </button>
-        <button class="btn btn-ghost" id="wc-copy">
-          <i class="fas fa-copy"></i> Copy text
-        </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Header Hero -->
+    <div class="tool-hero-box">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="tool-badge-pill mb-3">
+            <i class="fas fa-sparkles text-[var(--brand)]"></i> Live Real-Time Counting
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--txt)] tracking-tight">
+            Word & Character <span class="shimmer-text">Analytics Counter</span>
+          </h1>
+          <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
+            Count words and characters in your text. Analyze sentence structure, reading time, and character limits as you type.
+          </p>
+        </div>
+
+        <!-- Telemetry Badge -->
+        <div class="tool-inner-panel flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[var(--brand-soft)] border border-[var(--border)] flex items-center justify-center text-[var(--brand)] text-base">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div>
+            <span class="text-[10.5px] font-mono text-[var(--txt-dim)] uppercase block tracking-wider font-semibold">Live Processing</span>
+            <span class="text-xs font-bold text-[var(--txt)]">100% In-Browser RAM Analysis</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="wc-stats-grid" id="wc-stats">
-      <div class="wc-stat" id="wc-words">
-        <div class="wc-stat-num">0</div>
-        <div class="wc-stat-label">Words</div>
+    <!-- Editor Workspace Card -->
+    <div class="tool-card-surface space-y-6 mb-12">
+      <div class="flex items-center justify-between px-1">
+        <label for="wc-input" class="text-xs font-bold uppercase tracking-wider text-[var(--txt-dim)] font-mono">
+          Interactive Text Editor
+        </label>
+        <div class="flex items-center gap-2">
+          <button
+            id="wc-clear"
+            class="btn btn-secondary text-xs text-[var(--txt-dim)] hover:text-red-500 py-1.5 px-3"
+          >
+            <i class="fas fa-trash-alt text-[10px]"></i> Clear
+          </button>
+          <button
+            id="wc-copy"
+            class="btn btn-primary text-xs py-1.5 px-3.5"
+          >
+            <i class="fas fa-copy text-[10px]"></i> Copy Text
+          </button>
+        </div>
       </div>
-      <div class="wc-stat" id="wc-chars">
-        <div class="wc-stat-num">0</div>
-        <div class="wc-stat-label">Characters</div>
+
+      <textarea
+        id="wc-input"
+        class="tool-textarea text-sm sm:text-base leading-relaxed resize-y min-h-[220px]"
+        placeholder="Type or paste your text here..."
+        rows="8"
+        spellcheck="false"
+      ></textarea>
+
+      <!-- Stats Grid (8 Metrics) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5" id="wc-stats">
+        <div class="tool-metric-card text-center" id="wc-words">
+          <div class="wc-stat-num tool-metric-val brand mb-1">0</div>
+          <div class="tool-metric-lbl">Words</div>
+        </div>
+        <div class="tool-metric-card text-center" id="wc-chars">
+          <div class="wc-stat-num tool-metric-val brand mb-1">0</div>
+          <div class="tool-metric-lbl">Characters</div>
+        </div>
+        <div class="tool-metric-card text-center" id="wc-chars-no-space">
+          <div class="wc-stat-num tool-metric-val amber mb-1">0</div>
+          <div class="tool-metric-lbl">No Spaces</div>
+        </div>
+        <div class="tool-metric-card text-center" id="wc-sentences">
+          <div class="wc-stat-num tool-metric-val brand mb-1">0</div>
+          <div class="tool-metric-lbl">Sentences</div>
+        </div>
+        <div class="tool-metric-card text-center" id="wc-paragraphs">
+          <div class="wc-stat-num tool-metric-val brand mb-1">0</div>
+          <div class="tool-metric-lbl">Paragraphs</div>
+        </div>
+        <div class="tool-metric-card text-center" id="wc-lines">
+          <div class="wc-stat-num tool-metric-val amber mb-1">0</div>
+          <div class="tool-metric-lbl">Lines</div>
+        </div>
+        <div class="tool-metric-card text-center" id="wc-read">
+          <div class="wc-stat-num tool-metric-val brand mb-1">0 min</div>
+          <div class="tool-metric-lbl">Reading Time</div>
+        </div>
+        <div class="tool-metric-card text-center" id="wc-speak">
+          <div class="wc-stat-num tool-metric-val amber mb-1">0 min</div>
+          <div class="tool-metric-lbl">Speaking Time</div>
+        </div>
       </div>
-      <div class="wc-stat" id="wc-chars-no-space">
-        <div class="wc-stat-num">0</div>
-        <div class="wc-stat-label">Chars (no space)</div>
-      </div>
-      <div class="wc-stat" id="wc-sentences">
-        <div class="wc-stat-num">0</div>
-        <div class="wc-stat-label">Sentences</div>
-      </div>
-      <div class="wc-stat" id="wc-paragraphs">
-        <div class="wc-stat-num">0</div>
-        <div class="wc-stat-label">Paragraphs</div>
-      </div>
-      <div class="wc-stat" id="wc-lines">
-        <div class="wc-stat-num">0</div>
-        <div class="wc-stat-label">Lines</div>
-      </div>
-      <div class="wc-stat" id="wc-read">
-        <div class="wc-stat-num">0 min</div>
-        <div class="wc-stat-label">Reading Time</div>
-      </div>
-      <div class="wc-stat" id="wc-speak">
-        <div class="wc-stat-num">0 min</div>
-        <div class="wc-stat-label">Speaking Time</div>
-      </div>
+    </div>
+
+    <!-- How to Use -->
+    <div class="tool-content-wrap">
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+          </span>
+          <h2>How to Use the Word Counter</h2>
+          <p>Get accurate word, character, and reading time counts in seconds.</p>
+        </div>
+        <ol class="mt-6 space-y-4">
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Paste or type your text</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Click inside the editor and paste your content, or start typing directly. The counter updates with every keystroke — no button needed.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Read your 8 live metrics</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Below the editor, eight stat cards update in real time: Words, Characters (with and without spaces), Sentences, Paragraphs, Lines, Reading Time, and Speaking Time.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Check against your target limit</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Compare your word or character count against a platform limit — for example, 650 words for a college essay, 280 characters for a tweet, or 60 characters for an SEO page title.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">4</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Copy your text</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Hit the <strong>Copy Text</strong> button in the top-right of the editor to copy your full content to the clipboard. Use <strong>Clear</strong> to start fresh.</span>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+    <!-- Editorial Split: Linguistic Computation & Cognitive Reading Dynamics -->
+    <div style="margin-top:0">
+
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Lexical Economy &amp; the Cognitive Architecture of Reading</h2>
+          <p>
+            In written communication, quantity is rarely synonymous with clarity. Words serve as discrete cognitive tokens that demand reader attention, working memory, and mental processing energy. Whether crafting an academic treatise, legal brief, or concise marketing copy, monitoring lexical density and structural rhythm ensures your prose delivers maximum informational signal with minimal extraneous noise.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pt-6 border-t border-[var(--border)]">
+          <!-- Column Left: Computational Mechanics -->
+          <article class="space-y-3">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Tokenization</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Lexical Parsing &amp; Whitespace Tokenization
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              At a computational level, a word is not simply letters grouped together—it is a bounded character sequence delimited by Unicode whitespace characters and punctuation boundaries. Simple string splitting fails when encountering non-breaking spaces, em-dashes, and irregular line feeds.
+            </p>
+            <div class="my-3 p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt-muted)] space-y-1">
+              <div class="text-[var(--txt)] font-bold">// Boundary Tokenizer Regex</div>
+              <div>words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;</div>
+              <div>sentences = text.trim() === '' ? 0 : (text.match(/[.!?]+/g) || []).length;</div>
+            </div>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Our engine processes text entirely within browser memory, normalizing consecutive whitespace strings and parsing punctuation anchors in real time without transmitting keystrokes across external networks.
+            </p>
+          </article>
+
+          <!-- Column Right: Cognitive Science -->
+          <article class="space-y-3">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-teal-600 dark:text-teal-400">Cognitive Science</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              The 200 WPM Cognitive Reading Horizon
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Extensive eye-tracking research indicates that the average adult processes silent English prose at approximately 200 to 250 words per minute, with comprehension dropping precipitously past 350 WPM. Verbal articulation operates even slower, averaging 130 to 150 words per minute.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              When sentences stretch beyond 25 words without natural syntactic breathing room, the reader’s short-term phonological loop overloads, requiring frequent regressions. Alternating between punchy, single-clause declarations and nuanced compound sentences creates a dynamic cadence that keeps attention sharp.
+            </p>
+          </article>
+        </div>
+
+        <blockquote class="my-10 py-8 border-y border-[var(--border)] text-center max-w-3xl mx-auto">
+          <p class="text-lg sm:text-xl font-extrabold text-[var(--txt)] tracking-tight leading-snug">
+            “Good writing is not measured by the volume of words committed to the page, but by the density of meaning conveyed per syllable.”
+          </p>
+          <cite class="block mt-3 text-xs font-bold uppercase tracking-widest text-[var(--brand)] not-italic">
+            — Information Theory &amp; Lexical Compression Principles
+          </cite>
+        </blockquote>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pt-6 border-t border-[var(--border)]">
+          <!-- Column Left: Academic & Professional Thresholds -->
+          <article class="space-y-3">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--amber)]">Publishing Standards</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              The Rigor of Academic &amp; Legal Length Thresholds
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              In academic admissions, peer-reviewed journals, and appellate law, word limits are not mere guidelines—they are strict procedural gates. The Common Application essay enforces an inflexible 650-word ceiling, disqualifying applicants whose text overflows by a single syllable.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Scientific journal abstracts typically cap length at 250 words, forcing researchers to eliminate passive voice, combine related observations, and distill multi-year hypotheses into high-impact lexical summaries.
+            </p>
+          </article>
+
+          <!-- Column Right: Platform Limits Table -->
+          <article class="space-y-3">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-emerald-600 dark:text-emerald-400">Distribution Limits</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Digital Platform Truncation Architectures
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Social feeds and search engine result pages enforce programmatic character ceilings before content is cut off behind expandable buttons:
+            </p>
+            <dl class="divide-y divide-[var(--border)] text-xs font-mono">
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">X / Twitter Post</dt>
+                <dd class="font-bold text-[var(--txt)] text-right">280 characters</dd>
+              </div>
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">Instagram Caption</dt>
+                <dd class="font-bold text-[var(--txt)] text-right">2,200 chars (cutoff at ~125)</dd>
+              </div>
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">LinkedIn Feed Update</dt>
+                <dd class="font-bold text-[var(--txt)] text-right">3,000 chars (cutoff at ~140)</dd>
+              </div>
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">Google SERP Title</dt>
+                <dd class="font-bold text-[var(--brand)] text-right">~60 chars (600px pixel width)</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+      </section>
+
+      <!-- FAQ Section Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Lexical &amp; Technical FAQ</h2>
+          <p>Computational tokenization, counting methodologies, and privacy guarantees.</p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why do Google Docs and Microsoft Word report different word counts?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Differences stem from how engines treat hyphenated words, slashes, em-dashes, and numbers. Microsoft Word treats hyphenated phrases as a single word, whereas Google Docs and UNIX tools often count them as two distinct tokens. Our counter uses standard Unicode whitespace segmentation for consistency.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>How are hyphenated compound words and contractions tallied?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Contractions like "don't" or "it's" are counted as single words because they represent a single lexical unit connected by an apostrophe. Hyphenated compounds like "state-of-the-art" count as one continuous word unless separated by spaces around the hyphen.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Is my pasted text stored, cached, or transmitted to any server?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              No. All processing happens entirely within your browser's local JavaScript execution thread. Zero text is uploaded to any server, cached in cloud logs, or evaluated by remote telemetry.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>How are silent reading and verbal speaking times calculated?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Reading time is estimated at 200 words per minute — a well-established average for adult silent reading. Speaking time uses 130 words per minute, which covers conversational delivery and public speaking. Both figures will vary depending on the reader's familiarity with the subject matter.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What are the character limits for major social media platforms?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              X (Twitter) allows 280 characters per post. LinkedIn statuses display up to 140 characters before truncating, though the field accepts up to 3,000. Instagram captions cut off at 125 characters in the feed, while the full caption can hold 2,200. For SEO, page title tags should stay under 60 characters and meta descriptions under 160 characters.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Is this word counter free and are there any usage limits?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Yes, completely free with no account required and no usage limits. There's no cap on text length — you can paste an entire novel if you like. Everything runs locally in your browser, so the tool works even if you go offline mid-session.
+            </div>
+          </details>
+        </div>
+      </section>
+
+    </div>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .wc-wrap { display: flex; flex-direction: column; gap: 24px; }
-  .wc-label { font-size: 14px; font-weight: 600; color: var(--txt); display: block; margin-bottom: 8px; }
-  .wc-textarea {
-    width: 100%;
-    min-height: 220px;
-    padding: 16px;
-    font-size: 15px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    resize: vertical;
-    line-height: 1.65;
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  .wc-textarea:focus {
-    border-color: var(--brand);
-    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-  }
-  .wc-actions { display: flex; gap: 10px; margin-top: 12px; }
-  .wc-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-  .wc-stat {
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    text-align: center;
-    transition: all .2s;
-  }
-  .wc-stat:hover { border-color: var(--brand); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-  .wc-stat-num { font-size: 26px; font-weight: 800; color: var(--brand); font-family: 'Outfit', sans-serif; margin-bottom: 4px; }
-  .wc-stat-label { font-size: 12px; color: var(--txt-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-
-  @media (max-width: 600px) { .wc-stats-grid { grid-template-columns: repeat(2, 1fr); } }
-</style>
 
 <script>
   const textarea = document.getElementById('wc-input') as HTMLTextAreaElement;

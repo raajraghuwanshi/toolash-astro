@@ -4,16 +4,16 @@ import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import SearchModal from '../components/SearchModal.astro';
 import ToolCard from '../components/ToolCard.astro';
-import ToolContentSection from '../components/ToolContentSection.astro';
 import { tools, categoryMeta, type Tool } from '../data/tools';
 
 export interface Props {
   tool: Tool;
   relatedTools?: Tool[];
   customFaqs?: Array<{ q: string; a: string }>;
+  customLayout?: boolean;
 }
 
-const { tool, relatedTools: propRelated, customFaqs } = Astro.props;
+const { tool, relatedTools: propRelated, customFaqs, customLayout = false } = Astro.props;
 const meta = categoryMeta[tool.category];
 const related = propRelated ?? tools.filter(t => t.category === tool.category && t.slug !== tool.slug).slice(0, 4);
 ---
@@ -22,51 +22,65 @@ const related = propRelated ?? tools.filter(t => t.category === tool.category &&
   <Navbar />
   <SearchModal />
 
-  <main>
-    <!-- Tool Header -->
-    <div class="tool-header">
-      <div class="container">
-        <nav class="breadcrumb" aria-label="Breadcrumb">
-          <a href="/">Home</a>
-          <i class="fas fa-chevron-right" aria-hidden="true"></i>
-          <a href={`/#${tool.category}`}>{meta.label}</a>
-          <i class="fas fa-chevron-right" aria-hidden="true"></i>
-          <span aria-current="page">{tool.name}</span>
-        </nav>
+  <div class="tool-layout-scope" data-category={tool.category} style={`--cat-color: ${meta.color}; --cat-bg: ${meta.bg};`}>
+    <!-- Ambient Aurora for Tool Interior with Category Color -->
+    <div class="tool-aurora-bg" aria-hidden="true">
+      <div class="tool-orb orb-1"></div>
+      <div class="tool-orb orb-2"></div>
+    </div>
 
-        <div class="tool-header-inner" data-animate="fade-up">
-          <div class="tool-icon-box" style={`background:${meta.bg}; color:${meta.color}`} aria-hidden="true">
-            <i class={`fas ${tool.faIcon}`}></i>
-          </div>
-          <div class="tool-header-text">
-            <div class="tool-cat-badge" style={`background:${meta.bg}; color:${meta.color}; border-color:rgba(from ${meta.color} r g b / .25)`}>
-              {meta.emoji} {meta.label}
-            </div>
-            <h1 class="tool-name">{tool.name}</h1>
-            <p class="tool-desc">{tool.description}</p>
-            <div class="tool-tags">
-              <span class="badge badge-free"><span class="pulse-dot" aria-hidden="true"></span> Free</span>
-              <span class="badge" style="background:var(--surface-3); color:var(--txt-muted); border:1px solid var(--border-mid)">
-                <i class="fas fa-globe" aria-hidden="true"></i> Browser-Based
-              </span>
-              <span class="badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid rgba(217,119,6,.25)">
-                <i class="fas fa-lock" aria-hidden="true"></i> No Sign-up
-              </span>
+    {customLayout ? (
+      <main class="bespoke-tool-main">
+        <slot />
+      </main>
+    ) : (
+      <main>
+        <!-- Tool Header -->
+        <div class="tool-header">
+          <div class="container">
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+              <a href="/">Home</a>
+              <i class="fas fa-chevron-right" aria-hidden="true"></i>
+              <a href={`/#${tool.category}`}>{meta.label}</a>
+              <i class="fas fa-chevron-right" aria-hidden="true"></i>
+              <span aria-current="page">{tool.name}</span>
+            </nav>
+
+            <div class="tool-header-inner" data-animate="fade-up">
+              <div class="tool-icon-box" style={`background:${meta.bg}; color:${meta.color}`} aria-hidden="true">
+                <i class={`fas ${tool.faIcon}`}></i>
+              </div>
+              <div class="tool-header-text">
+                <div class="tool-cat-badge" style={`background:${meta.bg}; color:${meta.color}; border-color:rgba(from ${meta.color} r g b / .25)`}>
+                  {meta.emoji} {meta.label}
+                </div>
+                <h1 class="tool-name">{tool.name}</h1>
+                <p class="tool-desc">{tool.description}</p>
+                <div class="tool-tags">
+                  <span class="badge badge-free"><span class="pulse-dot" aria-hidden="true"></span> Free</span>
+                  <span class="badge" style="background:var(--surface-3); color:var(--txt-muted); border:1px solid var(--border-mid)">
+                    <i class="fas fa-globe" aria-hidden="true"></i> Browser-Based
+                  </span>
+                  <span class="badge" style="background:var(--amber-soft); color:var(--amber); border:1px solid rgba(217,119,6,.25)">
+                    <i class="fas fa-lock" aria-hidden="true"></i> No Sign-up
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Tool Body -->
-    <div class="tool-body">
-      <div class="container">
-        <div class="tool-card-wrap">
-          <slot />
+        <!-- Tool Body -->
+        <div class="tool-body">
+          <div class="container">
+            <div class="tool-card-wrap">
+              <slot />
+            </div>
+            <slot name="content" />
+          </div>
         </div>
-        <ToolContentSection tool={tool} customFaqs={customFaqs} />
-      </div>
-    </div>
+      </main>
+    )}
 
     <!-- Related -->
     {related.length > 0 && (
@@ -82,18 +96,64 @@ const related = propRelated ?? tools.filter(t => t.category === tool.category &&
         </div>
       </section>
     )}
-  </main>
+  </div>
 
   <Footer />
 </BaseLayout>
 
 <style>
+  .tool-layout-scope {
+    position: relative;
+    width: 100%;
+    min-height: calc(100vh - 180px);
+  }
+
+  /* Ambient Aurora matching the tool's category color */
+  .tool-aurora-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .tool-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.28;
+    animation: toolOrbMotion 15s ease-in-out infinite alternate;
+  }
+  html[data-theme="dark"] .tool-orb {
+    opacity: 0.18;
+    filter: blur(120px);
+  }
+  .tool-orb.orb-1 {
+    width: 600px;
+    height: 600px;
+    top: -120px;
+    right: -100px;
+    background: radial-gradient(circle, var(--brand) 0%, var(--brand-soft) 60%, transparent 80%);
+  }
+  .tool-orb.orb-2 {
+    width: 500px;
+    height: 500px;
+    top: 420px;
+    left: -120px;
+    background: radial-gradient(circle, var(--brand-light, var(--brand)) 0%, transparent 70%);
+    animation-delay: -7s;
+  }
+  @keyframes toolOrbMotion {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, 35px) scale(1.06); }
+    100% { transform: translate(-25px, 20px) scale(0.96); }
+  }
+
   .tool-header {
-    background: var(--surface);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--webkit-glass-blur);
+    background: transparent;
     border-bottom: 1px solid var(--border);
     padding: 40px 0 48px;
+    position: relative;
+    z-index: 1;
   }
   .breadcrumb {
     display: flex; align-items: center; gap: 8px;
@@ -129,7 +189,7 @@ const related = propRelated ?? tools.filter(t => t.category === tool.category &&
   .tool-desc { font-size: 15px; color: var(--txt-muted); margin-bottom: 18px; line-height: 1.65; max-width: 620px; }
   .tool-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  .tool-body { padding: 44px 0 76px; }
+  .tool-body { padding: 44px 0 76px; position: relative; z-index: 1; }
   .tool-card-wrap {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
@@ -143,9 +203,9 @@ const related = propRelated ?? tools.filter(t => t.category === tool.category &&
   .related-section {
     padding: 60px 0;
     border-top: 1px solid var(--border);
-    background: var(--surface);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--webkit-glass-blur);
+    background: transparent;
+    position: relative;
+    z-index: 1;
   }
   .related-section .section-label { margin-bottom: 24px; display: flex; }
   .related-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }

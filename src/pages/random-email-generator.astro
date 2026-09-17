@@ -5,82 +5,205 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'random-email-generator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="eg-wrap">
-    <div class="eg-controls">
-      <div class="eg-control-row">
-        <label class="eg-label">How many emails? <strong id="eg-count-display">10</strong></label>
-        <input type="range" id="eg-count" min="1" max="50" value="10" class="eg-slider" />
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Temporary Email Generator Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-envelope text-[var(--brand)]"></i> Instant Alphanumeric Mock Inbox
       </div>
-      <div class="eg-options">
-        <label class="eg-check"><input type="checkbox" id="eg-real-domains" checked /> Use real domains (Gmail, Yahoo…)</label>
-        <label class="eg-check"><input type="checkbox" id="eg-dots" /> Include dots in username</label>
-        <label class="eg-check"><input type="checkbox" id="eg-numbers" checked /> Include numbers</label>
-        <label class="eg-check"><input type="checkbox" id="eg-format-name" /> Real name format (john.doe@…)</label>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Temporary <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Email Generator</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Generate random, disposable email addresses instantly. Perfect for testing, signing up for services, or protecting your privacy online without compromising security.
+      </p>
+    </div>
+
+    <!-- Main Generator Card -->
+    <div class="tool-card-surface space-y-6 mb-10">
+      <!-- Range & Batch Settings -->
+      <div class="p-4 rounded-xl tool-inner-panel">
+        <div class="flex items-center justify-between mb-2">
+          <label for="eg-count" class="text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)]">
+            Batch Quantity
+          </label>
+          <span class="px-2.5 py-0.5 rounded-md bg-[var(--brand)]/15 border border-[var(--brand)]/30 text-[var(--brand)] text-xs font-mono font-bold" id="eg-count-display">
+            10
+          </span>
+        </div>
+        <input
+          type="range"
+          id="eg-count"
+          min="1"
+          max="50"
+          value="10"
+          class="w-full accent-[var(--brand)] cursor-pointer h-2 bg-[var(--surface-3)] rounded-lg"
+        />
       </div>
-      <div class="eg-actions">
-        <button class="btn btn-primary" id="eg-generate" style="flex:1">
-          <i class="fas fa-refresh"></i> Generate Emails
+
+      <!-- Options Checklist -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <label class="flex items-center gap-2.5 p-3 rounded-xl tool-inner-panel text-xs text-[var(--txt)] cursor-pointer hover:border-[var(--brand)] transition-colors">
+          <input type="checkbox" id="eg-real-domains" checked class="accent-[var(--brand)] rounded" />
+          <span>Use real domains (Gmail, Yahoo, Outlook…)</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-3 rounded-xl tool-inner-panel text-xs text-[var(--txt)] cursor-pointer hover:border-[var(--brand)] transition-colors">
+          <input type="checkbox" id="eg-numbers" checked class="accent-[var(--brand)] rounded" />
+          <span>Include random digits in username</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-3 rounded-xl tool-inner-panel text-xs text-[var(--txt)] cursor-pointer hover:border-[var(--brand)] transition-colors">
+          <input type="checkbox" id="eg-dots" class="accent-[var(--brand)] rounded" />
+          <span>Include dots in username separator</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-3 rounded-xl tool-inner-panel text-xs text-[var(--txt)] cursor-pointer hover:border-[var(--brand)] transition-colors">
+          <input type="checkbox" id="eg-format-name" class="accent-[var(--brand)] rounded" />
+          <span>Human name format (john.doe@…)</span>
+        </label>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row items-center gap-3">
+        <button
+          id="eg-generate"
+          class="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-[var(--brand)] hover:opacity-90 active:scale-[0.98] text-white font-extrabold text-sm transition-all shadow-lg shadow-[var(--brand)]/25 flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <i class="fas fa-arrows-rotate"></i> Generate Emails
         </button>
-        <button class="btn btn-ghost" id="eg-copy-all">
-          <i class="fas fa-copy"></i> Copy All
-        </button>
-        <button class="btn btn-ghost" id="eg-clear">
-          <i class="fas fa-trash"></i> Clear
-        </button>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            id="eg-copy-all"
+            class="flex-1 sm:flex-initial py-3.5 px-5 rounded-xl tool-inner-panel hover:border-[var(--brand)] text-[var(--txt)] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <i class="fas fa-copy text-[var(--brand)]"></i> Copy All
+          </button>
+          <button
+            id="eg-clear"
+            class="py-3.5 px-4 rounded-xl tool-inner-panel hover:border-rose-500/50 text-[var(--txt-muted)] hover:text-rose-500 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Generated Output Box -->
+      <div class="pt-6 border-t border-[var(--border)]">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)]">Generated Email Addresses</span>
+          <span class="text-xs text-[var(--brand)] font-mono font-bold" id="eg-output-count">0 emails</span>
+        </div>
+        <div class="space-y-2 max-h-[360px] overflow-y-auto pr-1" id="eg-list">
+          <div class="text-center py-8 text-[var(--txt-dim)] text-xs font-mono">Click "Generate Emails" to create disposable email addresses.</div>
+        </div>
       </div>
     </div>
 
-    <div class="eg-output-wrap">
-      <div class="eg-output-header">
-        <span class="eg-output-label">Generated Emails</span>
-        <span class="eg-output-count" id="eg-output-count">0 emails</span>
-      </div>
-      <div class="eg-list" id="eg-list">
-        <div class="eg-placeholder">Click "Generate Emails" to create random email addresses.</div>
-      </div>
+    <!-- Privacy & Test Data Architecture: Pull-Quote Sections Archetype -->
+    <div class="tool-content-wrap">
+      <section class="tool-content-card">
+        <!-- Lead Section with Editorial Intro -->
+        <div class="tool-content-header">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-[var(--txt)] tracking-tight">
+            Synthetic Identity &amp; The Architecture of Mailbox Privacy
+          </h2>
+          <p class="text-base sm:text-lg text-[var(--txt-muted)] leading-relaxed">
+            Every time you enter your primary email address into a whitepaper download, SaaS free trial, or public forum, your personal identifier is ingested by customer data platforms (CDPs) and cross-referenced with third-party data broker conglomerates.
+          </p>
+        </div>
+
+        <!-- Full-Width High-Impact Pull-Quote 01 -->
+        <figure class="py-8 px-6 sm:px-10 my-6 border-y border-[var(--border)] bg-[var(--surface-2)]/30 rounded-2xl">
+          <blockquote class="text-base sm:text-xl font-serif italic text-[var(--txt)] leading-snug tracking-tight text-center max-w-3xl mx-auto">
+            &ldquo;Your primary email address is no longer merely a communication inbox—it is the universal master foreign key connecting your financial receipts, physical geolocation logs, and ad-tech tracking profiles across the modern web.&rdquo;
+          </blockquote>
+          <figcaption class="mt-4 text-center font-mono text-xs uppercase tracking-widest text-[var(--txt-muted)]">
+            &mdash; Data Privacy &amp; Digital Footprint Forensic Audit
+          </figcaption>
+        </figure>
+
+        <!-- Deep Dive 01: The Local-Part & RFC 5322 Grammar -->
+        <div class="space-y-4 max-w-3xl">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            RFC 5322 Syntax &amp; The Failure of Plus-Addressing
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Many technical users attempt to isolate their inbox using sub-addressing (also called plus-addressing, such as <code class="font-mono text-xs text-[var(--brand)]">alex+service@gmail.com</code>). While RFC 5233 compliant mail servers route these tags to your primary mailbox, modern marketing software and telemetry scripts run automatic normalization heuristics before storing records.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Aggressive ad trackers automatically strip the plus character and subsequent tag, re-collapsing your entry into your baseline address. Truly isolating development databases and public sign-ups requires completely decoupled alphanumeric identities with randomized local-parts that share zero substrings with your legal identity.
+          </p>
+        </div>
+
+        <!-- Full-Width High-Impact Pull-Quote 02 -->
+        <figure class="py-8 px-6 sm:px-10 my-6 border-y border-[var(--border)] bg-[var(--surface-2)]/30 rounded-2xl">
+          <blockquote class="text-base sm:text-xl font-serif italic text-[var(--txt)] leading-snug tracking-tight text-center max-w-3xl mx-auto">
+            &ldquo;A software test suite that relies on hardcoded employee emails will inevitably leak staging notifications into live executive inboxes. Deterministic mock generation is not an aesthetic luxury—it is compliance infrastructure.&rdquo;
+          </blockquote>
+          <figcaption class="mt-4 text-center font-mono text-xs uppercase tracking-widest text-[var(--txt-muted)]">
+            &mdash; Continuous Integration &amp; Synthetic Data Reliability Handbook
+          </figcaption>
+        </figure>
+
+        <!-- Deep Dive 02: Synthetic Data Seeding for QA & CI/CD -->
+        <div class="space-y-4 max-w-3xl">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Deterministic Data Seeding in Production Staging
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Software quality assurance teams face a constant challenge when validating registration flows, multi-tenant databases, and authentication endpoints: real emails pollute database indexes and risk violating GDPR and CCPA regulations when staging database dumps are shared among engineers.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Using instant batch generation allows engineering teams to populate hundreds of valid, syntactically verified email strings. These conform to standard email regex patterns (<code class="font-mono text-xs text-[var(--txt-dim)]">^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]&#123;2,&#125;$</code>) without risking unauthorized communications or real user credential contamination.
+          </p>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion Technical FAQ -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Synthetic Email &amp; Privacy FAQ
+          </h3>
+          <p class="text-sm text-[var(--txt-muted)] mt-1">
+            Technical boundaries, message reception limits, and protocol compliance.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can these generated email addresses receive incoming messages or verification codes?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              No. This utility produces dummy synthetic strings designed strictly for development, form validation, database seeding, and privacy obfuscation. Because these addresses do not point to live MX servers controlled by Toolarsh, they cannot receive mail. For active one-time password (OTP) verification, dedicated temporary inbox services are required.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Do these addresses comply with RFC 5321 and RFC 5322 international standards?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Every generated string strictly follows standard SMTP envelope grammar. The local-part contains only allowed ASCII alphanumerics and permissible period separators (never consecutive or leading/trailing), and the domain part features valid top-level domain syntax, ensuring zero rejections from rigorous enterprise form validators.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Are generated email strings recorded or stored in a central database?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Zero storage occurs. All name selections, numeric combinations, and domain combinations are computed instantaneously in your browser's local JavaScript execution context. Once you copy your batch or close the tab, the strings are expunged from memory.
+            </div>
+          </details>
+        </div>
+      </section>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .eg-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .eg-controls { display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .eg-control-row { display: flex; flex-direction: column; gap: 8px; }
-  .eg-label { font-size: 14px; font-weight: 600; color: var(--txt); }
-  .eg-slider { width: 100%; accent-color: var(--brand); cursor: pointer; }
-  .eg-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .eg-check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--txt); cursor: pointer; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: #fff; transition: border-color .15s; }
-  .eg-check:hover { border-color: var(--brand); }
-  .eg-check input { accent-color: var(--brand); width: 14px; height: 14px; }
-  .eg-actions { display: flex; gap: 10px; }
-
-  .eg-output-wrap { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .eg-output-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); }
-  .eg-output-label { font-size: 13px; font-weight: 700; color: var(--txt); }
-  .eg-output-count { font-size: 12px; font-weight: 600; color: var(--brand); background: var(--brand-light); padding: 2px 8px; border-radius: 100px; }
-  .eg-list { padding: 12px; display: flex; flex-direction: column; gap: 6px; max-height: 400px; overflow-y: auto; }
-  .eg-placeholder { padding: 24px; text-align: center; color: var(--txt-dim); font-size: 14px; font-style: italic; }
-  .eg-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: 'Courier New', monospace;
-    font-size: 13.5px;
-    color: var(--txt);
-    gap: 10px;
-    transition: border-color .15s;
-  }
-  .eg-item:hover { border-color: var(--brand); }
-  .eg-copy-btn { background: none; border: none; color: var(--txt-muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 12px; transition: color .15s; flex-shrink: 0; }
-  .eg-copy-btn:hover { color: var(--brand); }
-
-  @media (max-width: 480px) { .eg-options { grid-template-columns: 1fr; } }
-</style>
 
 <script>
   const firstNames = ['james','john','robert','michael','william','david','richard','joseph','thomas','charles','mary','patricia','jennifer','linda','barbara','elizabeth','susan','jessica','sarah','karen','alex','chris','jordan','taylor','morgan','casey','drew','riley','quinn','avery'];
@@ -112,7 +235,7 @@ const tool = tools.find(t => t.slug === 'random-email-generator')!;
 
   const slider = document.getElementById('eg-count') as HTMLInputElement;
   const display = document.getElementById('eg-count-display')!;
-  slider.addEventListener('input', () => display.textContent = slider.value);
+  slider?.addEventListener('input', () => display.textContent = slider.value);
 
   function generate() {
     const count = parseInt(slider.value);
@@ -124,9 +247,9 @@ const tool = tools.find(t => t.slug === 'random-email-generator')!;
     const emails = Array.from({ length: count }, () => generateEmail({ useDots, useNumbers, realDomains: realDoms, nameFormat }));
     const list = document.getElementById('eg-list')!;
     list.innerHTML = emails.map((e, i) => `
-      <div class="eg-item">
-        <span>${e}</span>
-        <button class="eg-copy-btn" data-email="${e}" title="Copy"><i class="fas fa-copy"></i></button>
+      <div class="eg-item flex items-center justify-between p-3 tool-inner-panel hover:border-[var(--brand)] rounded-xl font-mono text-xs text-[var(--txt)] transition-colors">
+        <span class="truncate pr-2">${e}</span>
+        <button class="eg-copy-btn text-[var(--txt-muted)] hover:text-[var(--brand)] p-1.5 rounded-lg hover:bg-[var(--surface-3)] transition-colors cursor-pointer flex-shrink-0" data-email="${e}" title="Copy"><i class="fas fa-copy"></i></button>
       </div>
     `).join('');
     document.getElementById('eg-output-count')!.textContent = `${count} emails`;
@@ -135,7 +258,7 @@ const tool = tools.find(t => t.slug === 'random-email-generator')!;
       btn.addEventListener('click', async () => {
         const email = (btn as HTMLElement).dataset.email!;
         await navigator.clipboard.writeText(email);
-        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.innerHTML = '<i class="fas fa-check text-[var(--brand)]"></i>';
         setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1500);
       });
     });
@@ -149,12 +272,12 @@ const tool = tools.find(t => t.slug === 'random-email-generator')!;
     const text = Array.from(items).map(i => i.textContent).join('\n');
     await navigator.clipboard.writeText(text);
     const btn = document.getElementById('eg-copy-all')!;
-    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i> Copied!';
     setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy All', 2000);
   });
 
   document.getElementById('eg-clear')?.addEventListener('click', () => {
-    document.getElementById('eg-list')!.innerHTML = '<div class="eg-placeholder">Click "Generate Emails" to create random email addresses.</div>';
+    document.getElementById('eg-list')!.innerHTML = '<div class="text-center py-8 text-zinc-600 text-xs">Click "Generate Emails" to create disposable email addresses.</div>';
     document.getElementById('eg-output-count')!.textContent = '0 emails';
   });
 

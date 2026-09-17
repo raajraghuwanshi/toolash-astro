@@ -5,94 +5,393 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'age-calculator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="age-wrap">
-    <div class="age-form">
-      <div class="age-field">
-        <label for="age-dob">Your Date of Birth</label>
-        <input type="date" id="age-dob" class="age-input" />
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Toolarsh Exact Chronological Age Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-hourglass-half text-[var(--brand)]"></i> Chronological Time & Date Engine
       </div>
-      <div class="age-field">
-        <label for="age-to">Calculate Age As Of</label>
-        <input type="date" id="age-to" class="age-input" />
-      </div>
-      <button class="btn btn-primary" id="age-calc-btn" style="align-self:flex-end; padding: 12px 32px;">
-        <i class="fas fa-calculator"></i> Calculate Age
-      </button>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Age <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Calculator</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Calculate your exact age from your date of birth in years, months, and days. See your age in total weeks, days, hours, and minutes, plus a live countdown to your next birthday.
+      </p>
     </div>
 
-    <div id="age-result" class="age-result" style="display:none">
-      <div class="age-result-main">
-        <div class="age-big">
-          <span id="age-years" class="age-num">0</span>
-          <span class="age-unit">years old</span>
+    <!-- Main Calculator Console -->
+    <div class="tool-card-surface space-y-6 mb-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="age-dob" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            id="age-dob"
+            class="tool-control-input text-sm font-medium"
+          />
+        </div>
+
+        <div>
+          <label for="age-to" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">
+            Age on Date
+          </label>
+          <input
+            type="date"
+            id="age-to"
+            class="tool-control-input text-sm font-medium"
+          />
         </div>
       </div>
-      <div class="age-result-grid">
-        <div class="age-stat">
-          <div id="res-months" class="age-stat-num">0</div>
-          <div class="age-stat-label">Total Months</div>
+
+      <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <button
+          id="age-calc-btn"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[var(--brand)] hover:opacity-90 text-white font-extrabold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-[var(--brand)]/25 active:scale-[0.98] cursor-pointer text-sm"
+        >
+          <i class="fas fa-calculator"></i>
+          Calculate Age
+        </button>
+      </div>
+
+      <!-- 4 Checkmark Badges -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[var(--border)]">
+        <div class="flex items-center gap-2 text-xs text-[var(--txt-muted)]">
+          <i class="fas fa-check-circle text-[var(--brand)]"></i>
+          <span>100% Free</span>
         </div>
-        <div class="age-stat">
-          <div id="res-weeks" class="age-stat-num">0</div>
-          <div class="age-stat-label">Total Weeks</div>
+        <div class="flex items-center gap-2 text-xs text-[var(--txt-muted)]">
+          <i class="fas fa-check-circle text-[var(--brand)]"></i>
+          <span>Leap Year Accurate</span>
         </div>
-        <div class="age-stat">
-          <div id="res-days" class="age-stat-num">0</div>
-          <div class="age-stat-label">Total Days</div>
+        <div class="flex items-center gap-2 text-xs text-[var(--txt-muted)]">
+          <i class="fas fa-check-circle text-[var(--brand)]"></i>
+          <span>No Data Stored</span>
         </div>
-        <div class="age-stat">
-          <div id="res-hours" class="age-stat-num">0</div>
-          <div class="age-stat-label">Total Hours</div>
+        <div class="flex items-center gap-2 text-xs text-[var(--txt-muted)]">
+          <i class="fas fa-check-circle text-[var(--brand)]"></i>
+          <span>Next Birthday</span>
         </div>
-        <div class="age-stat">
-          <div id="res-next-bd" class="age-stat-num">—</div>
-          <div class="age-stat-label">Next Birthday</div>
+      </div>
+
+      <!-- Result Section (Appears after calculate) -->
+      <div id="age-result" class="pt-6 border-t border-[var(--border)] space-y-6" style="display:none">
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-6 sm:p-8 text-center shadow-xl">
+          <span class="text-xs font-bold uppercase tracking-widest text-[var(--brand)] mb-1 block">Your Exact Age</span>
+          <div class="flex items-baseline justify-center gap-3">
+            <span id="age-years" class="text-5xl sm:text-7xl font-black text-[var(--brand)] font-mono tracking-tight">0</span>
+            <span class="text-xl sm:text-2xl font-bold text-[var(--txt)]">years old</span>
+          </div>
         </div>
-        <div class="age-stat">
-          <div id="res-zodiac" class="age-stat-num">—</div>
-          <div class="age-stat-label">Zodiac Sign</div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="tool-inner-panel p-4 text-center">
+            <div id="res-months" class="text-xl sm:text-2xl font-black text-[var(--brand)] font-mono mb-1">0</div>
+            <div class="text-[11px] font-bold text-[var(--txt-muted)] uppercase tracking-wider">Total Months</div>
+          </div>
+          <div class="tool-inner-panel p-4 text-center">
+            <div id="res-weeks" class="text-xl sm:text-2xl font-black text-[var(--brand)] font-mono mb-1">0</div>
+            <div class="text-[11px] font-bold text-[var(--txt-muted)] uppercase tracking-wider">Total Weeks</div>
+          </div>
+          <div class="tool-inner-panel p-4 text-center">
+            <div id="res-days" class="text-xl sm:text-2xl font-black text-[var(--brand)] font-mono mb-1">0</div>
+            <div class="text-[11px] font-bold text-[var(--txt-muted)] uppercase tracking-wider">Total Days</div>
+          </div>
+          <div class="tool-inner-panel p-4 text-center">
+            <div id="res-hours" class="text-xl sm:text-2xl font-black text-[var(--brand)] font-mono mb-1">0</div>
+            <div class="text-[11px] font-bold text-[var(--txt-muted)] uppercase tracking-wider">Total Hours</div>
+          </div>
+          <div class="tool-inner-panel p-4 text-center">
+            <div id="res-next-bd" class="text-xl sm:text-2xl font-black text-[var(--amber)] font-mono mb-1">—</div>
+            <div class="text-[11px] font-bold text-[var(--txt-muted)] uppercase tracking-wider">Next Birthday</div>
+          </div>
+          <div class="tool-inner-panel p-4 text-center">
+            <div id="res-zodiac" class="text-base sm:text-lg font-bold text-[var(--brand)] mb-1 leading-tight">—</div>
+            <div class="text-[11px] font-bold text-[var(--txt-muted)] uppercase tracking-wider">Zodiac Sign</div>
+          </div>
         </div>
       </div>
     </div>
+    <!-- Chronological Time Architecture -->
+    <!-- How to Use -->
+    <div class="tool-content-wrap">
+
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+          </span>
+          <h2>How to Calculate Your Exact Age</h2>
+          <p>Find your age down to the day, hour, or second in just two steps.</p>
+        </div>
+        <ol class="mt-6 space-y-4">
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Enter your date of birth</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Click or type your birth date in the Date of Birth field. The field accepts any date from January 1, 1900 onward.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Set a target date (optional)</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Leave the Target Date field set to today to calculate your current age, or pick any other date to find your age on that specific day — useful for anniversaries, retirement planning, or historical events.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Click Calculate Age</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Hit the button. Your result shows years, months, days, total days lived, hours, minutes, and seconds — all computed instantly in your browser.</span>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <section class="tool-content-card">
+        <!-- Direct Prose Lead -->
+        <div class="tool-content-header">
+          <h2>Chronological Time Reckoning &amp; Astronomical Drift</h2>
+          <p>
+            Measuring the span of a human life requires navigating the friction between calendar conventions and planetary motion. A solar year is not a clean integer of days, nor are calendar months uniform increments. Precise age computation accounts for variable month boundaries, leap year intercalations, and cumulative fractional drift to translate an arbitrary birth coordinate into an exact temporal measurement.
+          </p>
+        </div>
+
+        <!-- Two-Column Frame: Sidebar + Stream -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+        <!-- STICKY SIDEBAR (Col 1-4) -->
+        <aside class="lg:col-span-4 space-y-8 lg:sticky lg:top-24">
+          
+          <!-- Stream Quick-Navigation -->
+          <nav aria-label="Chronology Stream Navigation" class="pb-6 border-b border-[var(--border)]">
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--brand)] block mb-3">
+              Stream Index
+            </span>
+            <ul class="space-y-2 text-xs font-mono">
+              <li>
+                <a href="#gregorian-math" class="text-[var(--txt-muted)] hover:text-[var(--txt)] transition-colors flex items-center gap-2">
+                  <span class="text-[var(--brand)] font-bold">01</span> Calendar Drift Math
+                </a>
+              </li>
+              <li>
+                <a href="#leap-cycle" class="text-[var(--txt-muted)] hover:text-[var(--txt)] transition-colors flex items-center gap-2">
+                  <span class="text-[var(--brand)] font-bold">02</span> The 400-Year Leap Rule
+                </a>
+              </li>
+              <li>
+                <a href="#bio-vs-chrono" class="text-[var(--txt-muted)] hover:text-[var(--txt)] transition-colors flex items-center gap-2">
+                  <span class="text-[var(--brand)] font-bold">03</span> Biological vs Calendar Age
+                </a>
+              </li>
+              <li>
+                <a href="#scale-of-life" class="text-[var(--txt-muted)] hover:text-[var(--txt)] transition-colors flex items-center gap-2">
+                  <span class="text-[var(--brand)] font-bold">04</span> Life Scaled in Seconds
+                </a>
+              </li>
+              <li>
+                <a href="#chronology-faq" class="text-[var(--txt-muted)] hover:text-[var(--txt)] transition-colors flex items-center gap-2">
+                  <span class="text-[var(--brand)] font-bold">05</span> Technical FAQ
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Astronomical Reference Constants Sheet -->
+          <div class="pb-6 border-b border-[var(--border)]">
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--txt-dim)] block mb-3">
+              Astronomical Constants
+            </span>
+            <dl class="divide-y divide-[var(--border)] text-xs font-mono">
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">Mean Solar Year</dt>
+                <dd class="font-bold text-[var(--txt)] text-right">365.24219 d</dd>
+              </div>
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">Gregorian Calendar</dt>
+                <dd class="font-bold text-[var(--txt)] text-right">365.24250 d</dd>
+              </div>
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">Mean Month Span</dt>
+                <dd class="font-bold text-[var(--txt)] text-right">30.43687 d</dd>
+              </div>
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">Mean Day Length</dt>
+                <dd class="font-bold text-[var(--txt)] text-right">86,400.00 s</dd>
+              </div>
+              <div class="py-2.5 flex justify-between items-baseline">
+                <dt class="text-[var(--txt-muted)]">Heartbeats / Day</dt>
+                <dd class="font-bold text-[var(--brand)] text-right">~100,000</dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Chronological Milestones Table -->
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--txt-dim)] block mb-3">
+              Chronological Milestones
+            </span>
+            <ul class="space-y-2.5 text-xs text-[var(--txt-muted)]">
+              <li class="flex items-start gap-2">
+                <span class="font-mono font-bold text-[var(--brand)] text-[11px] pt-0.5">10k</span>
+                <span><strong>10,000 Days:</strong> Celebrated at approximately 27 years, 4 months, and 15 days.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-mono font-bold text-[var(--brand)] text-[11px] pt-0.5">20k</span>
+                <span><strong>20,000 Days:</strong> Reached at roughly 54 years and 9 months of age.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-mono font-bold text-[var(--amber)] text-[11px] pt-0.5">1B</span>
+                <span><strong>1 Billion Seconds:</strong> Occurs at 31 years, 251 days, 7 hours, and 46 minutes.</span>
+              </li>
+            </ul>
+          </div>
+
+        </aside>
+
+        <!-- MAIN EDITORIAL STREAM (Col 5-12) -->
+        <div class="lg:col-span-8 space-y-14">
+
+          <!-- Stream Entry 1 -->
+          <article id="gregorian-math" class="scroll-mt-24 space-y-3">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Mechanics</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              The Astronomical Complexity of Calendar Math
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Most people assume calculating age is simple arithmetic: subtract birth year from current year. In practice, calendrical math is notoriously uneven because months fluctuate between 28 and 31 days, and Earth's orbit does not synchronize neatly with human clock cycles. A naive day-counter that divides total elapsed days by 365 produces inaccuracies that accumulate by weeks over a multi-decade span.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Our calculation engine applies variable-month calendar progression: it rolls forward complete year blocks first, advances complete calendar month intervals based on the specific month lengths of the intervening calendar years, and finally tallies leftover residual days. This guarantees exact legal and astronomical fidelity.
+            </p>
+          </article>
+
+          <!-- Stream Entry 2 -->
+          <article id="leap-cycle" class="scroll-mt-24 space-y-3 pt-8 border-t border-[var(--border)]">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--amber)]">Intercalation</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              The 400-Year Gregorian Leap Rule
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              The Julian calendar, introduced by Julius Caesar in 46 BC, assumed the solar year was exactly 365.25 days long, adding a leap day every 4 years. By 1582, this 11-minute annual overestimation had accumulated 10 full days of error, shifting the equinoxes. Pope Gregory XIII rectified this by promulgating the Gregorian reform, establishing our modern triple-conditional leap year rule.
+            </p>
+            <div class="my-4 p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt-muted)] leading-normal space-y-1.5">
+              <div class="text-[var(--txt)] font-bold">// Gregorian Leap Rule Definition</div>
+              <div>isLeap = (year % 4 === 0) &amp;&amp; (year % 100 !== 0 || year % 400 === 0);</div>
+              <div class="text-[var(--txt-dim)] pt-1 text-[11px]">→ 1900 was common (divisible by 100) | 2000 was leap (divisible by 400) | 2100 will be common</div>
+            </div>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              When calculating age across century boundaries or evaluating birthdays for individuals born on February 29th, the calculator accounts for these exact non-leap century exceptions so that legal adulthood milestones match civil statutes.
+            </p>
+          </article>
+
+          <!-- Stream Entry 3 -->
+          <article id="bio-vs-chrono" class="scroll-mt-24 space-y-3 pt-8 border-t border-[var(--border)]">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-teal-600 dark:text-teal-400">Longevity Science</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Chronological Versus Biological Aging
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Chronological age measures purely elapsed orbital time—the number of revolutions Earth has completed around the sun since your birth. Biological age, by contrast, tracks physiological integrity, cellular senescence, telomere attrition, and DNA methylation patterns (epigenetic clocks). Two individuals sharing an identical chronological birthdate can differ by more than a decade in cellular biological health.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              While chronological age remains the universal standard for legal identity, pensions, and contractual adulthood, tracking your chronological journey serves as a powerful anchor to contextualize lifestyle interventions that slow biological decline.
+            </p>
+          </article>
+
+          <!-- Stream Entry 4 -->
+          <article id="scale-of-life" class="scroll-mt-24 space-y-3 pt-8 border-t border-[var(--border)]">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)]">Perspective</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Life Scaled in Seconds and Planetary Revolutions
+            </h3>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              Viewing age purely in years obscures the scale of everyday existence. An individual reaching their 30th birthday has experienced over 15,700,000 minutes, survived over 10,950 planetary day-night rotations, and traveled roughly 17.6 billion miles through space as Earth orbits the sun at 67,000 miles per hour.
+            </p>
+            <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+              During an average 80-year lifespan, an unassisted human heart contracts approximately 2.8 billion times without pause, processing over 50 million gallons of blood. Deconstructing time into discrete hours and days transforms abstract years into tangible moments.
+            </p>
+          </article>
+
+          <!-- Stream Entry 5: Technical FAQ -->
+          <article id="chronology-faq" class="scroll-mt-24 pt-8 border-t border-[var(--border)]">
+            <span class="text-xs font-mono font-bold tracking-widest uppercase text-[var(--brand)] block mb-1">Inquiries</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight mb-6">
+              Chronological Mechanics &amp; Calculation FAQ
+            </h3>
+
+            <div class="tool-faq-accordion">
+              <details class="tool-faq-item">
+                <summary>
+                  <span>How does the calculator handle birthdays on February 29 (Leap Day)?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  In non-leap years, individuals born on February 29th legally celebrate either on February 28 or March 1 depending on statutory jurisdiction. In the United Kingdom and common law systems, a leapling's legal birthday in common years is March 1, whereas several civil jurisdictions recognize February 28. Our calculator evaluates elapsed time down to the exact day count, showing the true chronological offset.
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Why do different online age calculators sometimes disagree by one day?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  Discrepancies arise from time zone normalization and end-date inclusiveness. Some tools treat both the birth date and target date as inclusive (adding 1 day), while standard international chronometry calculates elapsed time between coordinates. Furthermore, naive tools divide days by 30.416 or 365.25 rather than looking up true Gregorian month lengths. Toolarsh uses exact calendar date progression.
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Is my date of birth sent to any server or recorded in any database?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  No. All calculations execute entirely on the client side inside your web browser via JavaScript. No network requests are transmitted, no telemetry logs your inputs, and nothing is retained once you refresh or close the tab.
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Does the age calculator account for leap years?</span>
+                  <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </summary>
+                <div class="faq-answer">
+                  Yes. The calculation is based on calendar dates, so leap years are automatically handled. If you were born on February 29, the calculator counts your annual birthday as February 28 in non-leap years, which is the internationally accepted convention.
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Can I use this to find out how old I'll be on a future date?</span>
+                  <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </summary>
+                <div class="faq-answer">
+                  Yes. Simply set the Target Date field to any date in the future and enter your birth date. The calculator will tell you your exact age on that day — useful for planning retirement, checking eligibility requirements, or celebrating a milestone birthday.
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Is my birth date data stored or shared anywhere?</span>
+                  <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </summary>
+                <div class="faq-answer">
+                  No. All calculations happen locally in your browser. Your date of birth is never transmitted to any server, stored in a database, or shared with third parties.
+                </div>
+              </details>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
   </div>
+</div>
 </ToolLayout>
 
-<style>
-  .age-wrap { display: flex; flex-direction: column; gap: 24px; }
-  .age-form { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
-  .age-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
-  .age-field label { font-size: 14px; font-weight: 600; color: var(--txt); }
-  .age-input {
-    padding: 12px 14px;
-    font-size: 15px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    outline: none;
-    transition: border-color .2s;
-    cursor: pointer;
-  }
-  .age-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
-  .age-result { animation: fadeIn .4s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-  .age-result-main { text-align: center; padding: 24px; background: linear-gradient(135deg, #EFF6FF, #F5F3FF); border-radius: var(--radius-lg); margin-bottom: 16px; }
-  .age-big { display: flex; align-items: baseline; justify-content: center; gap: 10px; }
-  .age-num { font-size: 4rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
-  .age-unit { font-size: 1.4rem; font-weight: 600; color: #475569; }
-  .age-result-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-  .age-stat { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; }
-  .age-stat-num { font-size: 22px; font-weight: 800; color: var(--brand); font-family: 'Outfit', sans-serif; margin-bottom: 4px; }
-  .age-stat-label { font-size: 12px; color: var(--txt-muted); font-weight: 600; text-transform: uppercase; }
-
-  @media (max-width: 500px) { .age-result-grid { grid-template-columns: 1fr 1fr; } }
-</style>
 
 <script>
   // Set defaults

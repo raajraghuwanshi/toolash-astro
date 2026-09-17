@@ -23,17 +23,21 @@ const catIcons: Record<string, string> = {
   <Navbar />
   <SearchModal />
 
+  <!-- Full-Screen Ambient Background: Static Gradient + Animated Gradient Motion -->
+  <div class="fullscreen-bg" aria-hidden="true">
+    <div class="bg-gradient-static"></div>
+    <div class="bg-gradient-anim">
+      <div class="anim-orb orb-1"></div>
+      <div class="anim-orb orb-2"></div>
+      <div class="anim-orb orb-3"></div>
+      <div class="anim-orb orb-4"></div>
+    </div>
+  </div>
+
   <main>
 
     <!-- ══════════════════════════ HERO ══════════════════════════ -->
     <section class="hero" aria-label="Hero">
-      <!-- Ambient glows (Raycast-style) -->
-      <div class="hero-glow hero-glow-1" aria-hidden="true"></div>
-      <div class="hero-glow hero-glow-2" aria-hidden="true"></div>
-      <div class="hero-glow hero-glow-3" aria-hidden="true"></div>
-      <!-- Grid bg (Linear-style) -->
-      <div class="hero-grid" aria-hidden="true"></div>
-
       <div class="container hero-inner">
         <!-- Top badge -->
         <div class="hero-badge" data-animate="fade-up">
@@ -128,6 +132,7 @@ const catIcons: Record<string, string> = {
         <section
           class={`cat-section ${i % 2 === 1 ? 'cat-section-alt' : ''}`}
           id={cat}
+          style={`--cat-color: ${m.color}; --cat-bg: ${m.bg};`}
           aria-labelledby={`cs-h-${cat}`}
           data-animate="fade-up"
         >
@@ -204,7 +209,9 @@ const catIcons: Record<string, string> = {
                   <div class="faq-icon" aria-hidden="true"><i class="fas fa-plus"></i></div>
                 </button>
                 <div class="faq-answer" id={`faq-ans-${i}`} role="region" aria-labelledby={`faq-btn-${i}`}>
-                  <p>{faq.a}</p>
+                  <div class="faq-answer-inner">
+                    <p>{faq.a}</p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -219,39 +226,183 @@ const catIcons: Record<string, string> = {
 </BaseLayout>
 
 <style>
+  main {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── FULLSCREEN AMBIENT BACKGROUND ──────────────────── */
+  .fullscreen-bg {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  /* 1. Static Gradient Base Layer */
+  .bg-gradient-static {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 85% 55% at 50% -5%, rgba(16, 185, 129, 0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 65% 45% at 90% 25%, rgba(245, 158, 11, 0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 10% 75%, rgba(13, 148, 136, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 85% 85%, rgba(16, 185, 129, 0.06) 0%, transparent 55%);
+    opacity: 0.9;
+  }
+
+  html[data-theme="dark"] .bg-gradient-static {
+    background:
+      radial-gradient(ellipse 85% 55% at 50% -5%, rgba(16, 185, 129, 0.16) 0%, transparent 65%),
+      radial-gradient(ellipse 65% 45% at 90% 25%, rgba(245, 158, 11, 0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 10% 75%, rgba(13, 148, 136, 0.11) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 85% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 55%);
+    opacity: 1;
+  }
+
+  /* 2. Animated Gradient Layer (Liquid Ambient Orbs) */
+  .bg-gradient-anim {
+    position: absolute;
+    inset: 0;
+    filter: blur(100px);
+    opacity: 0.85;
+  }
+
+  html[data-theme="dark"] .bg-gradient-anim {
+    opacity: 0.92;
+    filter: blur(110px);
+  }
+
+  .anim-orb {
+    position: absolute;
+    border-radius: 50%;
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  /* Orb 1: Brand Emerald - Sweeps across upper center and left */
+  .orb-1 {
+    width: 680px;
+    height: 580px;
+    background: radial-gradient(circle, var(--brand-glow) 0%, rgba(16, 185, 129, 0.32) 40%, transparent 70%);
+    top: -120px;
+    left: 20%;
+    animation: floatOrb1 12s ease-in-out infinite alternate;
+  }
+
+  /* Orb 2: Warm Amber - Sweeps across mid/right to lower right */
+  .orb-2 {
+    width: 600px;
+    height: 520px;
+    background: radial-gradient(circle, var(--amber-soft) 0%, rgba(245, 158, 11, 0.25) 40%, transparent 70%);
+    top: 30%;
+    right: -100px;
+    animation: floatOrb2 15s ease-in-out infinite alternate;
+  }
+
+  /* Orb 3: Deep Teal / Jade - Sweeps from bottom-left towards center */
+  .orb-3 {
+    width: 580px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(13, 148, 136, 0.28) 0%, rgba(5, 150, 105, 0.18) 45%, transparent 70%);
+    bottom: -80px;
+    left: -80px;
+    animation: floatOrb3 13s ease-in-out infinite alternate;
+  }
+
+  /* Orb 4: Radiant Jade Accent - Sweeps diagonally through center */
+  .orb-4 {
+    width: 520px;
+    height: 460px;
+    background: radial-gradient(circle, rgba(52, 211, 153, 0.26) 0%, rgba(16, 185, 129, 0.14) 40%, transparent 70%);
+    bottom: 15%;
+    right: 25%;
+    animation: floatOrb4 16s ease-in-out infinite alternate;
+  }
+
+  @keyframes floatOrb1 {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+    25% {
+      transform: translate3d(14vw, 12vh, 0) scale(1.12) rotate(15deg);
+    }
+    50% {
+      transform: translate3d(24vw, -6vh, 0) scale(1.22) rotate(-10deg);
+    }
+    75% {
+      transform: translate3d(6vw, 22vh, 0) scale(0.95) rotate(20deg);
+    }
+    100% {
+      transform: translate3d(-14vw, 32vh, 0) scale(1.05) rotate(0deg);
+    }
+  }
+
+  @keyframes floatOrb2 {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+    25% {
+      transform: translate3d(-18vw, 15vh, 0) scale(1.15) rotate(-15deg);
+    }
+    50% {
+      transform: translate3d(-30vw, -10vh, 0) scale(1.05) rotate(25deg);
+    }
+    75% {
+      transform: translate3d(-16vw, -24vh, 0) scale(1.2) rotate(-10deg);
+    }
+    100% {
+      transform: translate3d(-10vw, 20vh, 0) scale(0.92) rotate(0deg);
+    }
+  }
+
+  @keyframes floatOrb3 {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+    25% {
+      transform: translate3d(20vw, -18vh, 0) scale(1.18) rotate(20deg);
+    }
+    50% {
+      transform: translate3d(34vw, -8vh, 0) scale(0.9) rotate(-15deg);
+    }
+    75% {
+      transform: translate3d(18vw, 14vh, 0) scale(1.25) rotate(10deg);
+    }
+    100% {
+      transform: translate3d(40vw, 18vh, 0) scale(1.02) rotate(0deg);
+    }
+  }
+
+  @keyframes floatOrb4 {
+    0% {
+      transform: translate3d(0, 0, 0) scale(0.95) rotate(0deg);
+    }
+    30% {
+      transform: translate3d(-20vw, -22vh, 0) scale(1.2) rotate(-25deg);
+    }
+    60% {
+      transform: translate3d(-35vw, 10vh, 0) scale(1.08) rotate(15deg);
+    }
+    100% {
+      transform: translate3d(15vw, -14vh, 0) scale(1.15) rotate(0deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anim-orb {
+      animation: none !important;
+    }
+  }
+
   /* ── HERO ───────────────────────────────────────────── */
   .hero {
-    position: relative; overflow: hidden;
+    position: relative;
     padding: 96px 0 84px;
     border-bottom: 1px solid var(--border);
-  }
-  .hero-glow {
-    position: absolute; border-radius: 50%;
-    pointer-events: none; filter: blur(90px);
-  }
-  .hero-glow-1 {
-    width: 700px; height: 500px;
-    background: radial-gradient(ellipse, var(--brand-glow) 0%, transparent 70%);
-    top: -200px; left: 50%; transform: translateX(-50%);
-  }
-  .hero-glow-2 {
-    width: 450px; height: 320px;
-    background: radial-gradient(ellipse, var(--amber-soft) 0%, transparent 70%);
-    top: 0; right: 8%;
-  }
-  .hero-glow-3 {
-    width: 350px; height: 240px;
-    background: radial-gradient(ellipse, rgba(13, 148, 136, 0.08) 0%, transparent 70%);
-    bottom: 0; left: 12%;
-  }
-  .hero-grid {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 80%);
-    pointer-events: none;
   }
   .hero-inner {
     position: relative; z-index: 1;
@@ -360,7 +511,7 @@ const catIcons: Record<string, string> = {
 
   /* ── CAT SECTIONS ─────────────────────────────────── */
   .cat-section { padding: 68px 0; border-top: 1px solid var(--border); }
-  .cat-section-alt { background: var(--surface); }
+  .cat-section-alt { background: transparent; }
   .cat-hd {
     display: flex; align-items: flex-start; gap: 16px;
     margin-bottom: 28px;
@@ -375,7 +526,7 @@ const catIcons: Record<string, string> = {
   .cat-desc { font-size: 13.5px; color: var(--txt-muted); }
   .cat-all-link {
     margin-left: auto; flex-shrink: 0;
-    font-size: 12.5px; font-weight: 600; color: var(--brand);
+    font-size: 12.5px; font-weight: 600; color: var(--cat-color, var(--brand));
     font-family: 'JetBrains Mono', monospace;
     display: flex; align-items: center; gap: 6px;
     transition: gap .15s ease; padding-top: 2px;
@@ -386,9 +537,7 @@ const catIcons: Record<string, string> = {
   .features-section {
     padding: 88px 0;
     border-top: 1px solid var(--border);
-    background: var(--surface);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--webkit-glass-blur);
+    background: transparent;
   }
   .feat-top { margin-bottom: 48px; }
   .feat-grid {
@@ -415,14 +564,139 @@ const catIcons: Record<string, string> = {
   .feat-card h3 { font-size: 15px; font-weight: 600; color: var(--txt); margin-bottom: 8px; }
   .feat-card p { font-size: 13px; color: var(--txt-muted); line-height: 1.65; }
 
-  /* ── FAQ ──────────────────────────────────────────── */
-  .faq-section { padding: 80px 0; border-top: 1px solid var(--border); }
-  .faq-inner { display: grid; grid-template-columns: 280px 1fr; gap: 80px; align-items: start; }
-  .faq-left { position: sticky; top: 84px; }
-  .faq-left .section-label { margin-bottom: 10px; }
-  .faq-sub { font-size: 13.5px; color: var(--txt-dim); margin-top: 14px; }
-  .faq-sub a { color: var(--brand); text-decoration: none; font-weight: 500; }
-  .faq-sub a:hover { text-decoration: underline; }
+  /* ── FAQ (Glassmorphic) ──────────────────────────── */
+  .faq-section {
+    padding: 88px 0;
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+  .faq-inner {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .faq-left {
+    position: sticky;
+    top: 96px;
+  }
+  .faq-left .section-label {
+    margin-bottom: 12px;
+  }
+  .faq-sub {
+    font-size: 14px;
+    color: var(--txt-dim);
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+  .faq-sub a {
+    color: var(--brand);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: gap .15s ease, color .15s ease;
+  }
+  .faq-sub a:hover {
+    color: var(--brand-hover);
+    gap: 8px;
+  }
+
+  /* FAQ Accordion List (Glassmorphic Cards) */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .faq-item {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--webkit-glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm), var(--glass-inner-glow);
+    transition: border-color .22s ease, background .22s ease, transform .22s ease, box-shadow .22s ease;
+  }
+  .faq-item:hover {
+    border-color: var(--border-hi);
+    background: var(--glass-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--glass-shadow), var(--glass-inner-glow);
+  }
+  .faq-item.open {
+    border-color: var(--brand);
+    background: var(--surface-2);
+    box-shadow: 0 8px 30px rgba(5, 150, 105, 0.12), 0 0 0 1px var(--brand-glow), var(--glass-inner-glow);
+  }
+  .faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--txt);
+    cursor: pointer;
+    text-align: left;
+    transition: color .2s ease;
+  }
+  .faq-question:hover,
+  .faq-item.open .faq-question {
+    color: var(--brand);
+  }
+  .faq-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    border: 1px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--txt-muted);
+    flex-shrink: 0;
+    transition: transform .3s cubic-bezier(0.16, 1, 0.3, 1), background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .faq-item:hover .faq-icon {
+    color: var(--txt);
+    border-color: var(--border-hi);
+  }
+  .faq-item.open .faq-icon {
+    transform: rotate(45deg);
+    background: var(--brand);
+    color: #ffffff;
+    border-color: var(--brand);
+    box-shadow: 0 2px 10px rgba(5, 150, 105, 0.35);
+  }
+  .faq-answer {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .faq-item.open .faq-answer {
+    grid-template-rows: 1fr;
+  }
+  .faq-answer-inner {
+    overflow: hidden;
+  }
+  .faq-answer-inner p {
+    padding: 0 24px 20px;
+    font-size: 14px;
+    color: var(--txt-muted);
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin: 0;
+  }
 
   /* ── RESPONSIVE ───────────────────────────────────── */
   @media (max-width: 1024px) {

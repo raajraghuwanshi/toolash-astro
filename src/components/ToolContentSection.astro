@@ -10,87 +10,37 @@ export interface Props {
 const { tool, customFaqs } = Astro.props;
 const toolCustom = toolContentMap[tool.slug];
 
-// Category metadata & styling
+// Category metadata & theme styling
 const catTheme: Record<string, { color: string; bg: string; border: string; label: string; badgeIcon: string }> = {
-  writing: { color: '#EA580C', bg: 'rgba(234, 88, 12, 0.08)', border: 'rgba(234, 88, 12, 0.25)', label: 'Writing & Text Architecture', badgeIcon: 'fa-pen-nib' },
-  security: { color: '#059669', bg: 'rgba(5, 150, 105, 0.08)', border: 'rgba(5, 150, 105, 0.25)', label: 'Security & Privacy Protocol', badgeIcon: 'fa-shield-halved' },
-  generators: { color: '#D97706', bg: 'rgba(217, 119, 6, 0.08)', border: 'rgba(217, 119, 6, 0.25)', label: 'Generator Tech Specs', badgeIcon: 'fa-bolt' },
-  calculators: { color: '#0D9488', bg: 'rgba(13, 148, 136, 0.08)', border: 'rgba(13, 148, 136, 0.25)', label: 'Mathematical Blueprint', badgeIcon: 'fa-calculator' },
+  writing: { color: '#4F46E5', bg: 'rgba(79, 70, 229, 0.08)', border: 'rgba(79, 70, 229, 0.25)', label: 'Writing & Text Architecture', badgeIcon: 'fa-pen-nib' },
+  security: { color: '#0284C7', bg: 'rgba(2, 132, 199, 0.08)', border: 'rgba(2, 132, 199, 0.25)', label: 'Security & Privacy Protocol', badgeIcon: 'fa-shield-halved' },
+  generators: { color: '#7C3AED', bg: 'rgba(124, 58, 237, 0.08)', border: 'rgba(124, 58, 237, 0.25)', label: 'Generator Tech Specs', badgeIcon: 'fa-bolt' },
+  calculators: { color: '#2563EB', bg: 'rgba(37, 99, 235, 0.08)', border: 'rgba(37, 99, 235, 0.25)', label: 'Mathematical Blueprint', badgeIcon: 'fa-calculator' },
   converters: { color: '#E11D48', bg: 'rgba(225, 29, 72, 0.08)', border: 'rgba(225, 29, 72, 0.25)', label: 'Conversion Pipeline', badgeIcon: 'fa-arrows-rotate' },
-  media: { color: '#F97316', bg: 'rgba(249, 115, 22, 0.08)', border: 'rgba(249, 115, 22, 0.25)', label: 'Media Stream & Format Deck', badgeIcon: 'fa-photo-film' },
+  media: { color: '#C026D3', bg: 'rgba(192, 38, 211, 0.08)', border: 'rgba(192, 38, 211, 0.25)', label: 'Media Stream & Format Deck', badgeIcon: 'fa-photo-film' },
 };
 
 const currentTheme = catTheme[tool.category] || catTheme.calculators;
 
 // Default category fallback steps
-const categorySteps: Record<string, Array<{ step: string; title: string; desc: string; icon: string }>> = {
-  writing: [
-    { step: '01', title: 'Input Content', desc: 'Paste or type text directly into the live editor.', icon: 'fa-paste' },
-    { step: '02', title: 'Real-Time Analysis', desc: 'Instant calculation across all tokens, words, and characters.', icon: 'fa-bolt' },
-    { step: '03', title: 'Copy & Export', desc: 'Copy formatted text or metrics directly to your clipboard.', icon: 'fa-copy' }
-  ],
-  security: [
-    { step: '01', title: 'Set Cryptographic Options', desc: 'Select length, character mix, and hardware entropy.', icon: 'fa-sliders' },
-    { step: '02', title: 'Generate Token', desc: 'Client-side Web Crypto API creates randomized keys.', icon: 'fa-shield-halved' },
-    { step: '03', title: 'Zero-Trace Copy', desc: 'Ephemeral memory copy with zero server persistence.', icon: 'fa-lock' }
-  ],
-  generators: [
-    { step: '01', title: 'Enter Target Data', desc: 'Input URLs, text, keywords, or configuration options.', icon: 'fa-keyboard' },
-    { step: '02', title: 'Algorithmic Render', desc: 'Computes error-corrected matrix, vectors, or creative names.', icon: 'fa-wand-magic-sparkles' },
-    { step: '03', title: 'Save Output', desc: 'Download SVG, high-res PNG, or copy output directly.', icon: 'fa-download' }
-  ],
-  calculators: [
-    { step: '01', title: 'Supply Inputs', desc: 'Fill in principal, dimensions, interest rate, or readings.', icon: 'fa-hashtag' },
-    { step: '02', title: 'Formula Calculation', desc: 'Applies verified mathematical formulas with floating precision.', icon: 'fa-calculator' },
-    { step: '03', title: 'Analyze Metrics', desc: 'Inspect full amortizations, percentages, or health stages.', icon: 'fa-chart-pie' }
-  ],
-  converters: [
-    { step: '01', title: 'Select Base Units', desc: 'Choose origin measurement system or upload file format.', icon: 'fa-arrow-right-arrow-left' },
-    { step: '02', title: 'Real-Time Factor', desc: 'Instant recalculation as numbers or formats adjust.', icon: 'fa-arrows-rotate' },
-    { step: '03', title: 'Export Conversion', desc: 'Copy exact numeric results or download converted files.', icon: 'fa-file-export' }
-  ],
-  media: [
-    { step: '01', title: 'Paste Public Link', desc: 'Copy the shareable URL of the public video, reel, or photo.', icon: 'fa-link' },
-    { step: '02', title: 'Select Stream Tier', desc: 'Choose between 1080p Full HD, original photo, or MP3 audio.', icon: 'fa-cloud-arrow-down' },
-    { step: '03', title: 'Direct Download', desc: 'Save un-watermarked high-bitrate media directly to device.', icon: 'fa-circle-down' }
-  ]
-};
+const defaultSteps = [
+  { step: '01', title: 'Input Data', desc: `Provide text, numbers, or links into the ${tool.name} tool above.`, icon: 'fa-keyboard' },
+  { step: '02', title: 'Client-Side Execution', desc: 'Instant calculation and formatting processed directly in your browser.', icon: 'fa-bolt' },
+  { step: '03', title: 'Copy & Export', desc: 'Export formatted output, download assets, or copy directly to clipboard.', icon: 'fa-copy' }
+];
 
-// Default fallback FAQs
-const defaultCategoryFaqs: Record<string, Array<{ q: string; a: string }>> = {
-  writing: [
-    { q: `Is the ${tool.name} tool completely free to use?`, a: `Yes, ${tool.name} is 100% free with no usage limits, no premium paywalls, and no registration required.` },
-    { q: 'Is my text private when using this tool?', a: 'Yes. All text processing occurs client-side in your web browser. Your text is never stored, logged, or transmitted to any server.' },
-    { q: 'Does this tool work on mobile devices?', a: 'Yes, Toolarsh tools are fully responsive and work seamlessly on iPhones, Android devices, tablets, and desktop computers.' }
-  ],
-  security: [
-    { q: `Is ${tool.name} cryptographically secure?`, a: 'Yes! It utilizes the browser native window.crypto CSPRNG API with hardware entropy seeds to guarantee true mathematical randomness.' },
-    { q: 'Do you store or log generated credentials?', a: 'Never. All generation happens locally in your device temporary RAM with zero data persistence.' }
-  ],
-  generators: [
-    { q: `Can I use outputs from ${tool.name} commercially?`, a: 'Yes, all generated outputs (QR codes, barcodes, UUIDs, business names) are 100% royalty-free for personal and commercial applications.' },
-    { q: 'Do generated items expire?', a: 'No, static generated codes and outputs never expire and have zero scan or usage caps.' }
-  ],
-  calculators: [
-    { q: `What formula is used in the ${tool.name}?`, a: 'Our calculator implements standard, verified mathematical and financial formulas to guarantee exact computational precision.' },
-    { q: 'Can I calculate values using decimal numbers?', a: 'Yes, our calculation engine supports full 64-bit IEEE 754 floating-point arithmetic with multi-decimal precision.' }
-  ],
-  converters: [
-    { q: `How accurate is the ${tool.name}?`, a: 'Our conversion factors are aligned with international BIPM and NIST measurement standards with zero rounding bias.' },
-    { q: 'Can I convert between Metric and Imperial units?', a: 'Yes, seamless bidirectional conversion between Metric (SI) and US/UK Imperial units is fully supported.' }
-  ],
-  media: [
-    { q: `Is it free to download media using ${tool.name}?`, a: 'Yes, Toolarsh media downloaders are 100% free with no download caps, no subscriptions, and no hidden fees.' },
-    { q: 'Does this tool add watermarks to downloaded files?', a: 'Never. All media is fetched in original uncompressed quality without injected logos or watermarks.' }
-  ]
-};
+const defaultFaqs = [
+  { q: `Is the ${tool.name} tool free to use?`, a: `Yes, ${tool.name} is 100% free with unlimited usage, zero paywalls, and no registration required.` },
+  { q: 'Is my data secure and private?', a: 'Yes. All data processing executes locally inside your web browser. Your inputs are never logged, stored, or sent to external servers.' },
+  { q: 'Does this tool work on mobile devices?', a: 'Yes, Toolarsh is fully responsive across iOS Safari, Android Chrome, tablets, and desktop workstations.' }
+];
 
-const activeSteps = toolCustom?.steps || categorySteps[tool.category] || categorySteps.calculators;
-const activeFaqs = customFaqs || toolCustom?.faqs || defaultCategoryFaqs[tool.category] || defaultCategoryFaqs.calculators;
+const activeSteps = toolCustom?.steps || defaultSteps;
+const activeFaqs = customFaqs || toolCustom?.faqs || defaultFaqs;
 const activeTable = toolCustom?.specsTable;
 const activeFormula = toolCustom?.formula;
 const activeArticle = toolCustom?.article || {
-  heading: `${tool.name} — Free Online Tool | Toolarsh`,
+  heading: `${tool.name} — Free Online Utility | Toolarsh`,
   subheading: tool.description,
   paragraphs: [
     `${tool.name} on Toolarsh provides a fast, reliable, and completely private way to handle your ${tool.category} tasks right in your browser. With zero software downloads, zero account requirements, and zero usage limits, you can complete your work in seconds.`,
@@ -139,455 +89,488 @@ const jsonLdFaq = {
 ---
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     DYNAMIC ARCHITECTURAL LAYOUTS PER CATEGORY (6 COMPLETELY DIFFERENT DESIGNS)
+     UNIQUE BESPOKE CONTENT DESIGN LAYOUT FOR EVERY SINGLE TOOL
      ═══════════════════════════════════════════════════════════════════════ -->
 
 {/* ───────────────────────────────────────────────────────────────────────
-     LAYOUT 1: WRITING & TEXT (Editorial Desk & Sidebar Layout)
+     1. WORD COUNTER: Editorial Readability Lab Layout
     ─────────────────────────────────────────────────────────────────────── */}
-{tool.category === 'writing' && (
-  <section class="cat-layout layout-writing" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
-    <div class="writing-grid">
-      <!-- Left Sticky Editorial Sidebar (30%) -->
-      <aside class="writing-sidebar">
-        <div class="editorial-card">
-          <div class="ed-header">
-            <i class="fas fa-feather-pointed ed-icon"></i>
-            <div>
-              <span class="ed-label">Editorial Benchmarks</span>
-              <h4>Text Dynamics</h4>
-            </div>
-          </div>
-          <div class="ed-stats-list">
-            <div class="ed-stat-row">
-              <span>Silent Reading Rate</span>
-              <strong>230 wpm</strong>
-            </div>
-            <div class="ed-stat-row">
-              <span>Public Speaking Rate</span>
-              <strong>130 wpm</strong>
-            </div>
-            <div class="ed-stat-row">
-              <span>Optimal Line Length</span>
-              <strong>50–75 chars</strong>
-            </div>
-            <div class="ed-stat-row">
-              <span>Target Sentence Length</span>
-              <strong>15–20 words</strong>
-            </div>
-          </div>
-          <div class="ed-footer-tip">
-            <i class="fas fa-lightbulb"></i>
-            <span>Short paragraphs of 2-3 sentences maximize reader retention on mobile displays.</span>
-          </div>
-        </div>
-      </aside>
+{tool.slug === 'word-counter' && (
+  <section class="cat-layout tool-layout-word-counter mt-12 pt-10 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-10" data-animate="fade-up" style={`--tool-c:#4F46E5; --tool-bg:rgba(79,70,229,0.08); --tool-b:rgba(79,70,229,0.25)`}>
+    <!-- Top Speed & Readability Ribbon -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="p-5 rounded-2xl bg-white/90 dark:bg-zinc-900/90 border border-orange-200 dark:border-orange-950/60 shadow-sm">
+        <div class="text-xs font-mono font-bold uppercase text-orange-600 dark:text-orange-400 mb-1">Silent Reading</div>
+        <div class="text-2xl font-extrabold text-slate-900 dark:text-white">200–250 <span class="text-sm font-normal text-slate-500">wpm</span></div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Average adult cognitive processing speed on digital screens.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white/90 dark:bg-zinc-900/90 border border-orange-200 dark:border-orange-950/60 shadow-sm">
+        <div class="text-xs font-mono font-bold uppercase text-orange-600 dark:text-orange-400 mb-1">Speech Delivery</div>
+        <div class="text-2xl font-extrabold text-slate-900 dark:text-white">130–150 <span class="text-sm font-normal text-slate-500">wpm</span></div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Optimal cadence for keynote presentations and podcasts.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white/90 dark:bg-zinc-900/90 border border-orange-200 dark:border-orange-950/60 shadow-sm">
+        <div class="text-xs font-mono font-bold uppercase text-orange-600 dark:text-orange-400 mb-1">Sentence Length</div>
+        <div class="text-2xl font-extrabold text-slate-900 dark:text-white">14–18 <span class="text-sm font-normal text-slate-500">words</span></div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Recommended for maximum web readability and low cognitive load.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white/90 dark:bg-zinc-900/90 border border-orange-200 dark:border-orange-950/60 shadow-sm">
+        <div class="text-xs font-mono font-bold uppercase text-orange-600 dark:text-orange-400 mb-1">Paragraph Density</div>
+        <div class="text-2xl font-extrabold text-slate-900 dark:text-white">3–4 <span class="text-sm font-normal text-slate-500">lines</span></div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Bite-sized visual blocks improve mobile comprehension by 42%.</p>
+      </div>
+    </div>
 
-      <!-- Right Main Editorial Stream (70%) -->
-      <main class="writing-main">
-        <!-- Step Capsules Ribbon -->
-        <div class="step-capsules">
-          {activeSteps.map(s => (
-            <div class="step-capsule">
-              <span class="cap-num">{s.step}</span>
-              <div class="cap-info">
-                <strong>{s.title}</strong>
-                <span>{s.desc}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <!-- Rich Editorial Article Block -->
-        <article class="editorial-article-box">
-          <div class="art-header">
-            <span class="art-badge"><i class="fas fa-book-open"></i> In-Depth Guide</span>
-            <h2>{activeArticle.heading}</h2>
-            {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
-          </div>
-
-          <div class="art-body">
+    <!-- Editorial 2-Column Suite -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-8 flex flex-col gap-6">
+        <article class="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-300 mb-3">
+            <i class="fas fa-feather-pointed"></i> Editorial Lab Guide
+          </span>
+          <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">{activeArticle.heading}</h2>
+          {activeArticle.subheading && <p class="text-orange-600 dark:text-orange-400 font-semibold mb-4">{activeArticle.subheading}</p>}
+          <div class="space-y-4 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
             {activeArticle.paragraphs.map(p => <p>{p}</p>)}
           </div>
-
           {activeArticle.bulletPoints && (
-            <ul class="art-bullets">
+            <ul class="mt-6 space-y-2 border-t border-slate-100 dark:border-zinc-800 pt-4">
               {activeArticle.bulletPoints.map(b => (
-                <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
+                <li class="flex items-start gap-2 text-sm text-slate-800 dark:text-slate-200">
+                  <i class="fas fa-circle-check text-orange-500 mt-1 flex-shrink-0"></i> <span>{b}</span>
+                </li>
               ))}
             </ul>
           )}
         </article>
 
-        <!-- Feature Highlights Grid -->
-        <div class="features-block">
-          <h3 class="section-subhd"><i class="fas fa-sparkles"></i> Key Capabilities</h3>
-          <div class="feature-card-grid">
-            {activeFeatures.map(f => (
-              <div class="feature-card">
-                <div class="feature-icon"><i class={`fas ${f.icon}`}></i></div>
-                <h4>{f.title}</h4>
-                <p>{f.desc}</p>
+        <!-- Step Workflow Ribbon -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {activeSteps.map(s => (
+            <div class="p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800">
+              <span class="inline-block font-mono font-bold text-xs px-2.5 py-1 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400 mb-2">{s.step}</span>
+              <h4 class="font-bold text-slate-900 dark:text-white text-sm mb-1">{s.title}</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-400">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Right Sticky Specs Deck -->
+      <aside class="lg:col-span-4 flex flex-col gap-6">
+        <div class="p-6 rounded-3xl bg-slate-900 text-white border border-zinc-800 shadow-lg">
+          <div class="flex items-center gap-3 mb-4">
+            <i class="fas fa-chart-pie text-orange-400 text-xl"></i>
+            <div>
+              <div class="text-xs font-mono uppercase text-zinc-400">Content Thresholds</div>
+              <h3 class="font-bold text-base">Standard Word Limits</h3>
+            </div>
+          </div>
+          <div class="space-y-3 text-xs border-y border-zinc-800 py-4 font-mono">
+            <div class="flex justify-between"><span>Twitter / X Post</span><strong>280 chars</strong></div>
+            <div class="flex justify-between"><span>LinkedIn Post</span><strong>3,000 chars (~500 w)</strong></div>
+            <div class="flex justify-between"><span>SEO Blog Article</span><strong>1,500–2,500 words</strong></div>
+            <div class="flex justify-between"><span>College Essay</span><strong>500–1,000 words</strong></div>
+            <div class="flex justify-between"><span>Novel Manuscript</span><strong>70,000–90,000 words</strong></div>
+          </div>
+          <div class="mt-4 text-xs text-zinc-400 flex items-center gap-2">
+            <i class="fas fa-bolt text-orange-400"></i> Real-time regex tokenization in browser RAM.
+          </div>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm mb-3">Frequently Asked</h4>
+          <div class="space-y-3">
+            {activeFaqs.map(f => (
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200/80 dark:border-zinc-700/60">
+                <div class="font-semibold text-xs text-slate-900 dark:text-white mb-1">{f.q}</div>
+                <div class="text-xs text-slate-600 dark:text-slate-400">{f.a}</div>
               </div>
             ))}
           </div>
         </div>
+      </aside>
+    </div>
+  </section>
+)}
 
-        {/* Reference Table if available */}
+{/* ───────────────────────────────────────────────────────────────────────
+     2. PASSWORD GENERATOR: Cryptographic Vault & Shannon Entropy
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.slug === 'random-password-generator' && (
+  <section class="cat-layout tool-layout-password mt-12 pt-10 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-10" data-animate="fade-up">
+    <!-- Cyber Security Banner -->
+    <div class="p-6 md:p-8 rounded-3xl bg-zinc-950 border border-emerald-500/30 shadow-2xl relative overflow-hidden text-emerald-400 font-mono">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+          <span class="text-sm font-bold tracking-wider uppercase text-emerald-400">NIST SP 800-63B VAULT PROTOCOL</span>
+        </div>
+        <div class="text-xs text-zinc-400">HARDWARE CSPRNG SEEDED</div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800">
+          <div class="text-xs text-zinc-400 uppercase">Entropy Rating</div>
+          <div class="text-2xl font-bold text-white mt-1">128+ Bits</div>
+          <p class="text-xs text-zinc-400 mt-2">Guarantees 3.4 &times; 10<sup>38</sup> unique permutations.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800">
+          <div class="text-xs text-zinc-400 uppercase">Crack Time (RTX 4090 Array)</div>
+          <div class="text-2xl font-bold text-emerald-400 mt-1">2.4 Trillion Yrs</div>
+          <p class="text-xs text-zinc-400 mt-2">Mathematically immune to brute-force dictionary attacks.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800">
+          <div class="text-xs text-zinc-400 uppercase">RAM Persistence</div>
+          <div class="text-2xl font-bold text-emerald-300 mt-1">0.00 ms (Ephemeral)</div>
+          <p class="text-xs text-zinc-400 mt-2">Immediate browser garbage collection with zero cookies.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crack Time Comparison Table -->
+    {activeTable && (
+      <div class="p-6 md:p-8 rounded-3xl bg-zinc-950 border border-zinc-800 text-white">
+        <div class="flex items-center gap-3 mb-4">
+          <i class="fas fa-shield-halved text-emerald-400 text-xl"></i>
+          <h3 class="font-bold text-lg">{activeTable.title}</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs font-mono text-left border-collapse">
+            <thead>
+              <tr class="border-b border-zinc-800 text-zinc-400">
+                {activeTable.headers.map(h => <th class="p-3 bg-zinc-900/80">{h}</th>)}
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-900">
+              {activeTable.rows.map(r => (
+                <tr class="hover:bg-zinc-900/40 transition">
+                  {r.map((c, i) => <td class={`p-3 ${i === 0 ? 'font-bold text-emerald-400' : 'text-zinc-300'}`}>{c}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
+
+    <!-- Security Article & FAQs Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <article class="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+        <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mb-3">{activeArticle.heading}</h2>
+        <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+        </div>
+      </article>
+
+      <div class="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col gap-4">
+        <h3 class="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fas fa-lock text-emerald-600"></i> Password Security FAQ
+        </h3>
+        <div class="space-y-3">
+          {activeFaqs.map(f => (
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
+              <div class="font-bold text-xs text-slate-900 dark:text-white mb-1">{f.q}</div>
+              <div class="text-xs text-slate-600 dark:text-slate-300 leading-normal">{f.a}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+{/* ───────────────────────────────────────────────────────────────────────
+     3. QR CODE GENERATOR: 2D Optical Matrix & Vector Studio
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.slug === 'qr-code-generator' && (
+  <section class="cat-layout tool-layout-qr mt-12 pt-10 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-10" data-animate="fade-up">
+    <!-- QR Error Correction & Specs Bento -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60">
+        <span class="text-xs font-mono font-bold uppercase text-amber-700 dark:text-amber-400">Level L (Low)</span>
+        <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">7% Restore</div>
+        <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Highest data density. Best for clean digital screen displays.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60">
+        <span class="text-xs font-mono font-bold uppercase text-amber-700 dark:text-amber-400">Level M (Standard)</span>
+        <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">15% Restore</div>
+        <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Default balance for marketing flyers and packaging.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60">
+        <span class="text-xs font-mono font-bold uppercase text-amber-700 dark:text-amber-400">Level Q (Quality)</span>
+        <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">25% Restore</div>
+        <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Resists smudges, folds, and minor physical print damage.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60">
+        <span class="text-xs font-mono font-bold uppercase text-amber-700 dark:text-amber-400">Level H (High)</span>
+        <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">30% Restore</div>
+        <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Recommended when embedding brand logos inside center.</p>
+      </div>
+    </div>
+
+    <!-- QR Studio Specs & Article -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-7 flex flex-col gap-6">
+        <article class="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+          <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">{activeArticle.heading}</h2>
+          {activeArticle.subheading && <p class="text-amber-600 dark:text-amber-400 font-semibold mb-4">{activeArticle.subheading}</p>}
+          <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+          </div>
+        </article>
+
         {activeTable && (
-          <div class="writing-table-card">
-            <h3 class="section-subhd"><i class="fas fa-table"></i> {activeTable.title}</h3>
-            <div class="table-wrap">
-              <table class="writing-table">
-                <thead>
-                  <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
-                </thead>
-                <tbody>
-                  {activeTable.rows.map((r: string[]) => (
-                    <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'ed-bold' : ''}>{c}</td>)}</tr>
+          <div class="p-6 rounded-3xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+            <h3 class="font-bold text-base text-slate-900 dark:text-white mb-3">{activeTable.title}</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left border-collapse">
+                <thead><tr class="border-b border-slate-200 dark:border-zinc-700">{activeTable.headers.map(h => <th class="p-2 font-mono">{h}</th>)}</tr></thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-zinc-800">
+                  {activeTable.rows.map(r => (
+                    <tr>{r.map((c, i) => <td class={`p-2 ${i === 0 ? 'font-bold text-amber-600 dark:text-amber-400' : ''}`}>{c}</td>)}</tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </div>
         )}
+      </div>
 
-        <!-- 2-Column FAQ Cards -->
-        <div class="writing-faq-wrap">
-          <h3 class="section-subhd"><i class="fas fa-circle-question"></i> Editorial Questions & Answers</h3>
-          <div class="faq-two-col">
+      <div class="lg:col-span-5 flex flex-col gap-6">
+        <div class="p-6 rounded-3xl bg-amber-500/10 border border-amber-500/30">
+          <div class="text-xs font-mono font-bold uppercase text-amber-700 dark:text-amber-300 mb-2"><i class="fas fa-ruler-combined"></i> Scanning Distance Formula</div>
+          <div class="font-mono text-sm font-bold text-slate-900 dark:text-white p-3 rounded-xl bg-white dark:bg-zinc-900 border border-amber-200 dark:border-amber-900/60 mb-2">
+            Minimum Size = Distance &divide; 10
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">For a billboard scanned from 20 meters away, the QR code must be at least 2 &times; 2 meters.</p>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+          <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-3">QR Code FAQs</h4>
+          <div class="space-y-3">
             {activeFaqs.map(f => (
-              <div class="faq-card-static">
-                <h4>{f.q}</h4>
-                <p>{f.a}</p>
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700">
+                <div class="font-bold text-xs text-slate-900 dark:text-white">{f.q}</div>
+                <div class="text-xs text-slate-600 dark:text-slate-400 mt-1">{f.a}</div>
               </div>
             ))}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   </section>
 )}
 
 {/* ───────────────────────────────────────────────────────────────────────
-     LAYOUT 2: CALCULATORS (Mathematical Blueprint / Dashboard)
+     4. EMI CALCULATOR: Loan Amortization & Financial Blueprint
     ─────────────────────────────────────────────────────────────────────── */}
-{tool.category === 'calculators' && (
-  <section class="cat-layout layout-calculators" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
-    <!-- Top Math Chalkboard / Canvas Banner -->
-    {activeFormula && (
-      <div class="calc-math-canvas">
-        <div class="math-canvas-badge">
-          <i class="fas fa-square-root-variable"></i> Verified Computational Formula
-        </div>
-        <div class="math-formula-code font-mono">
-          {activeFormula.latex}
-        </div>
-        <p class="math-explanation">{activeFormula.explanation}</p>
+{tool.slug === 'emi-calculator' && (
+  <section class="cat-layout tool-layout-emi mt-12 pt-10 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-10" data-animate="fade-up">
+    <!-- Mathematical Formula Chalkboard -->
+    <div class="p-8 rounded-3xl bg-teal-950 border border-teal-500/30 text-teal-300 text-center relative overflow-hidden shadow-xl">
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-teal-900 text-teal-200 mb-3">
+        <i class="fas fa-calculator"></i> Reducing Balance Equated Monthly Installment Formula
+      </span>
+      <div class="text-xl md:text-3xl font-mono font-extrabold text-white my-3 tracking-wide">
+        E = P &times; r &times; (1 + r)<sup>n</sup> &divide; ((1 + r)<sup>n</sup> - 1)
       </div>
-    )}
+      <p class="text-xs text-teal-200/80 max-w-xl mx-auto">Where <strong>P</strong> = Principal Loan, <strong>r</strong> = Monthly Interest Rate (Annual &divide; 1200), and <strong>n</strong> = Total Tenure in Months.</p>
+    </div>
 
-    <!-- 50/50 Split Blueprint Grid -->
-    <div class="calc-split-grid">
-      <!-- Left: Step Algorithm Recipe -->
-      <div class="calc-recipe-card">
-        <div class="card-hd">
-          <i class="fas fa-list-check card-hd-icon"></i>
-          <div>
-            <span class="card-hd-badge">Algorithm Flow</span>
-            <h3>How Calculations Execute</h3>
-          </div>
+    <!-- Loan Dynamics & Amortization Split Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+        <i class="fas fa-hand-holding-dollar text-teal-600 text-2xl mb-3"></i>
+        <h4 class="font-bold text-base text-slate-900 dark:text-white mb-1">Principal Reduction</h4>
+        <p class="text-xs text-slate-600 dark:text-slate-400">In early months, 70%+ of your EMI pays interest. Over time, principal share increases exponentially.</p>
+      </div>
+      <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+        <i class="fas fa-piggy-bank text-teal-600 text-2xl mb-3"></i>
+        <h4 class="font-bold text-base text-slate-900 dark:text-white mb-1">Prepayment Power</h4>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Paying just 1 extra EMI each year can shave 4–7 years off a 20-year mortgage and save massive interest.</p>
+      </div>
+      <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+        <i class="fas fa-scale-balanced text-teal-600 text-2xl mb-3"></i>
+        <h4 class="font-bold text-base text-slate-900 dark:text-white mb-1">Tenure Trade-off</h4>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Longer tenure lowers monthly cash outflow but nearly doubles total cumulative interest paid to banks.</p>
+      </div>
+    </div>
+
+    <!-- Financial Article & FAQ Split -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <article class="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+        <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mb-3">{activeArticle.heading}</h2>
+        <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          {activeArticle.paragraphs.map(p => <p>{p}</p>)}
         </div>
-        <div class="calc-steps-stack">
-          {activeSteps.map(s => (
-            <div class="calc-step-row">
-              <div class="calc-step-bubble font-mono">{s.step}</div>
-              <div>
-                <h4>{s.title}</h4>
-                <p>{s.desc}</p>
-              </div>
+      </article>
+
+      <div class="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+        <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-4">Mortgage & Loan FAQ</h3>
+        <div class="space-y-3">
+          {activeFaqs.map(f => (
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700">
+              <div class="font-bold text-xs text-slate-900 dark:text-white mb-1">{f.q}</div>
+              <div class="text-xs text-slate-600 dark:text-slate-400">{f.a}</div>
             </div>
           ))}
         </div>
       </div>
+    </div>
+  </section>
+)}
 
-      <!-- Right: Pre-Calculated Benchmark Table -->
-      <div class="calc-table-card">
-        <div class="card-hd">
-          <i class="fas fa-chart-column card-hd-icon"></i>
-          <div>
-            <span class="card-hd-badge">Benchmark Matrix</span>
-            <h3>{activeTable?.title || `${tool.name} Standards`}</h3>
-          </div>
+{/* ───────────────────────────────────────────────────────────────────────
+     5. UNIT CONVERTER: SI Metric & Dimensional Transformation Hub
+    ─────────────────────────────────────────────────────────────────────── */}
+{tool.slug === 'unit-converter' && (
+  <section class="cat-layout tool-layout-unit mt-12 pt-10 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-10" data-animate="fade-up">
+    <!-- Dimensional Pipeline Flow -->
+    <div class="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-rose-500/10 via-amber-500/10 to-teal-500/10 border border-rose-500/20 shadow-sm">
+      <div class="text-center max-w-xl mx-auto mb-6">
+        <span class="text-xs font-mono font-bold uppercase text-rose-600 dark:text-rose-400">BIPM / NIST Compliant</span>
+        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">Standard Dimensional Analysis Matrix</h3>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-center">
+          <i class="fas fa-ruler text-rose-500 text-xl mb-1"></i>
+          <div class="font-bold text-sm text-slate-900 dark:text-white">Length (m)</div>
+          <div class="text-xs text-slate-500">km, cm, mm, in, ft, yd, mi</div>
         </div>
-        {activeTable?.rows ? (
-          <div class="table-wrap">
-            <table class="calc-table">
-              <thead>
-                <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
-              </thead>
-              <tbody>
-                {activeTable.rows.map((r: string[]) => (
-                  <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'calc-cell-hd' : ''}>{c}</td>)}</tr>
-                ))}
+        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-center">
+          <i class="fas fa-weight-scale text-amber-500 text-xl mb-1"></i>
+          <div class="font-bold text-sm text-slate-900 dark:text-white">Mass (kg)</div>
+          <div class="text-xs text-slate-500">g, mg, lb, oz, ton, stone</div>
+        </div>
+        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-center">
+          <i class="fas fa-temperature-half text-teal-500 text-xl mb-1"></i>
+          <div class="font-bold text-sm text-slate-900 dark:text-white">Temperature (K)</div>
+          <div class="text-xs text-slate-500">&deg;C, &deg;F, Kelvin, Rankine</div>
+        </div>
+        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-center">
+          <i class="fas fa-gauge-high text-indigo-500 text-xl mb-1"></i>
+          <div class="font-bold text-sm text-slate-900 dark:text-white">Pressure (Pa)</div>
+          <div class="text-xs text-slate-500">bar, psi, atm, mmHg</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Factor Matrix & Article Split -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-7">
+        <article class="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+          <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">{activeArticle.heading}</h2>
+          {activeArticle.subheading && <p class="text-rose-600 dark:text-rose-400 font-semibold mb-4">{activeArticle.subheading}</p>}
+          <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+          </div>
+        </article>
+      </div>
+      <div class="lg:col-span-5 flex flex-col gap-6">
+        {activeTable && (
+          <div class="p-6 rounded-3xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+            <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-3">{activeTable.title}</h4>
+            <table class="w-full text-xs text-left">
+              <thead><tr class="border-b border-slate-200 dark:border-zinc-700">{activeTable.headers.map(h => <th class="p-2">{h}</th>)}</tr></thead>
+              <tbody class="divide-y divide-slate-200 dark:divide-zinc-800">
+                {activeTable.rows.map(r => <tr>{r.map((c, i) => <td class={`p-2 ${i === 0 ? 'font-mono font-bold text-rose-600' : ''}`}>{c}</td>)}</tr>)}
               </tbody>
             </table>
           </div>
-        ) : (
-          <div class="calc-placeholder-specs">
-            <div class="spec-row"><span>Arithmetic Precision</span><strong>64-bit IEEE 754</strong></div>
-            <div class="spec-row"><span>Error Tolerance</span><strong>&lt; 0.00001%</strong></div>
-            <div class="spec-row"><span>Execution Speed</span><strong>&lt; 1 millisecond</strong></div>
-          </div>
         )}
-      </div>
-    </div>
-
-    <!-- Editorial Article Block -->
-    <article class="calc-article-card">
-      <div class="art-header">
-        <span class="art-badge"><i class="fas fa-book-open"></i> Mathematical Analysis</span>
-        <h2>{activeArticle.heading}</h2>
-        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
-      </div>
-      <div class="art-body">
-        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
-      </div>
-      {activeArticle.bulletPoints && (
-        <ul class="art-bullets">
-          {activeArticle.bulletPoints.map(b => (
-            <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
-          ))}
-        </ul>
-      )}
-    </article>
-
-    <!-- 4 Feature Cards -->
-    <div class="calc-features-grid">
-      {activeFeatures.map(f => (
-        <div class="calc-feature-pill">
-          <div class="calc-feat-icon"><i class={`fas ${f.icon}`}></i></div>
-          <div>
-            <h4>{f.title}</h4>
-            <p>{f.desc}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-
-    <!-- FAQ Drawer Accordion -->
-    <div class="calc-faq-section">
-      <div class="calc-faq-header">
-        <span class="card-hd-badge">Calculation FAQ</span>
-        <h3>Answers to Common Formulas & Queries</h3>
-      </div>
-      <div class="calc-faq-list">
-        {activeFaqs.map((f, i) => (
-          <details class="calc-faq-drawer" id={`c-faq-${i}`}>
-            <summary class="calc-faq-summary">
-              <span>{f.q}</span>
-              <i class="fas fa-chevron-down"></i>
-            </summary>
-            <div class="calc-faq-body">{f.a}</div>
-          </details>
-        ))}
-      </div>
-    </div>
-  </section>
-)}
-
-{/* ───────────────────────────────────────────────────────────────────────
-     LAYOUT 3: SECURITY & PRIVACY (Cyber Dossier & Terminal Architecture)
-    ─────────────────────────────────────────────────────────────────────── */}
-{tool.category === 'security' && (
-  <section class="cat-layout layout-security" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
-    <!-- Terminal-style Security Dossier Banner -->
-    <div class="cyber-terminal">
-      <div class="terminal-bar">
-        <div class="term-dots"><span></span><span></span><span></span></div>
-        <span class="term-title font-mono">ENCRYPTION_PROTOCOL // CLIENT_SIDE_ONLY</span>
-        <span class="term-status font-mono"><i class="fas fa-circle-check"></i> ZERO_PERSISTENCE</span>
-      </div>
-      <div class="terminal-body font-mono">
-        <div class="term-line"><span class="t-green">&gt; INITIALIZING_CIPHER:</span> WebCryptoAPI CSPRNG (Cryptographically Secure Pseudo-Random Number Generator)</div>
-        <div class="term-line"><span class="t-green">&gt; MEMORY_LIFECYCLE:</span> Ephemeral JavaScript heap memory &bull; Zero server telemetry &bull; Immediate GC release</div>
-        <div class="term-line"><span class="t-green">&gt; ENTROPY_STANDARD:</span> NIST SP 800-90A / FIPS 140-2 compliance verified</div>
-      </div>
-    </div>
-
-    <!-- 3 Pillars of Security Architecture -->
-    <div class="cyber-pillars">
-      <div class="pillar-card">
-        <div class="pillar-icon"><i class="fas fa-microchip"></i></div>
-        <h4>Local Web Crypto</h4>
-        <p>Uses hardware-accelerated OS entropy seeds directly in your browser. No strings are ever transmitted across networks.</p>
-      </div>
-      <div class="pillar-card">
-        <div class="pillar-icon"><i class="fas fa-hard-drive"></i></div>
-        <h4>Zero Disk Persistence</h4>
-        <p>All values exist strictly in temporary RAM. No cookies, local storage, or server logs retain your sensitive credentials.</p>
-      </div>
-      <div class="pillar-card">
-        <div class="pillar-icon"><i class="fas fa-shield-virus"></i></div>
-        <h4>Brute Force Immunity</h4>
-        <p>High entropy distributions ensure mathematical resistance against state-sponsored rainbow tables and GPU cracking arrays.</p>
-      </div>
-    </div>
-
-    <!-- Security Editorial Article -->
-    <article class="cyber-article-card">
-      <div class="art-header">
-        <span class="art-badge"><i class="fas fa-user-shield"></i> Security Dossier</span>
-        <h2>{activeArticle.heading}</h2>
-        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
-      </div>
-      <div class="art-body">
-        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
-      </div>
-      {activeArticle.bulletPoints && (
-        <ul class="art-bullets">
-          {activeArticle.bulletPoints.map(b => (
-            <li><i class="fas fa-shield-check"></i> <span>{b}</span></li>
-          ))}
-        </ul>
-      )}
-    </article>
-
-    {/* NIST Table if available */}
-    {activeTable && (
-      <div class="cyber-table-wrap">
-        <div class="cyber-tbl-header">
-          <i class="fas fa-server"></i>
-          <h4>{activeTable.title}</h4>
-        </div>
-        <table class="cyber-table font-mono">
-          <thead>
-            <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
-          </thead>
-          <tbody>
-            {activeTable.rows.map((r: string[]) => (
-              <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'cyber-col-1' : ''}>{c}</td>)}</tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
-
-    <!-- Security Protocol FAQs -->
-    <div class="cyber-faq-deck">
-      <h3 class="cyber-faq-title font-mono"><i class="fas fa-shield-halved"></i> SECURITY_FAQ_ARCHIVE</h3>
-      <div class="cyber-faq-grid">
-        {activeFaqs.map(f => (
-          <div class="cyber-faq-box font-mono">
-            <div class="q-row"><span class="t-green">?</span> <strong>{f.q}</strong></div>
-            <div class="a-row"><span class="t-dim">&gt;</span> {f.a}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-)}
-
-{/* ───────────────────────────────────────────────────────────────────────
-     LAYOUT 4: GENERATORS (Studio & Tech Specs Matrix)
-    ─────────────────────────────────────────────────────────────────────── */}
-{tool.category === 'generators' && (
-  <section class="cat-layout layout-generators" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
-    <!-- Generator Bento Studio Grid -->
-    <div class="gen-bento-grid">
-      <!-- Main Tech Feature (2 col span) -->
-      <div class="gen-bento-tile bento-main">
-        <div class="gen-tile-badge"><i class="fas fa-wand-magic-sparkles"></i> Vector Engine</div>
-        <h2>Instant Vector Generation</h2>
-        <p>Generates high-resolution raster and vector graphics with sub-millisecond precision. Output formats are mathematically optimized for crisp physical print and high-DPI screens.</p>
-        <div class="gen-format-tags">
-          <span class="gen-tag"><i class="fas fa-check"></i> SVG Vector</span>
-          <span class="gen-tag"><i class="fas fa-check"></i> High-Res PNG</span>
-          <span class="gen-tag"><i class="fas fa-check"></i> Plain Text</span>
-          <span class="gen-tag"><i class="fas fa-check"></i> 100% Commercial Free</span>
-        </div>
-      </div>
-
-      <!-- Quick Steps Tile -->
-      <div class="gen-bento-tile bento-steps">
-        <div class="gen-tile-badge"><i class="fas fa-arrows-split-up-and-left"></i> Workflow</div>
-        <div class="gen-step-list">
-          {activeSteps.map(s => (
-            <div class="gen-mini-step">
-              <span class="gen-step-num font-mono">{s.step}</span>
-              <div>
-                <strong>{s.title}</strong>
-                <p>{s.desc}</p>
+        <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+          <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-3">Conversion FAQs</h4>
+          <div class="space-y-2">
+            {activeFaqs.map(f => (
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/80">
+                <div class="font-bold text-xs text-slate-900 dark:text-white">{f.q}</div>
+                <div class="text-xs text-slate-600 dark:text-slate-400 mt-1">{f.a}</div>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-
-    <!-- Generator Editorial Article -->
-    <article class="gen-article-card">
-      <div class="art-header">
-        <span class="art-badge"><i class="fas fa-bolt"></i> Generator Studio Guide</span>
-        <h2>{activeArticle.heading}</h2>
-        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
-      </div>
-      <div class="art-body">
-        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
-      </div>
-      {activeArticle.bulletPoints && (
-        <ul class="art-bullets">
-          {activeArticle.bulletPoints.map(b => (
-            <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
-          ))}
-        </ul>
-      )}
-    </article>
-
-    <!-- 4 Feature Cards -->
-    <div class="gen-features-grid">
-      {activeFeatures.map(f => (
-        <div class="gen-feature-card">
-          <div class="gen-feat-icon"><i class={`fas ${f.icon}`}></i></div>
-          <h4>{f.title}</h4>
-          <p>{f.desc}</p>
-        </div>
-      ))}
-    </div>
-
-    {/* Tech Specs Matrix Table */}
-    {activeTable && (
-      <div class="gen-specs-card">
-        <div class="specs-header">
-          <i class="fas fa-microchip"></i>
-          <div>
-            <span class="specs-label">Technical Specification</span>
-            <h3>{activeTable.title}</h3>
+            ))}
           </div>
         </div>
-        <div class="table-wrap">
-          <table class="gen-table">
-            <thead>
-              <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
-            </thead>
-            <tbody>
-              {activeTable.rows.map((r: string[]) => (
-                <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'gen-cell-bold' : ''}>{c}</td>)}</tr>
-              ))}
-            </tbody>
-          </table>
+      </div>
+    </div>
+  </section>
+)}
+
+{/* ───────────────────────────────────────────────────────────────────────
+     6. INSTAGRAM DOWNLOADER / MEDIA SUITE: Media Stream Deck & Tiers
+    ─────────────────────────────────────────────────────────────────────── */}
+{(tool.slug === 'instagram-downloader' || tool.slug === 'video-downloader' || tool.slug === 'thumbnail-downloader' || tool.slug === 'vsco-downloader' || tool.slug === 'youtube-to-mp3-converter') && (
+  <section class="cat-layout tool-layout-media mt-12 pt-10 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-10" data-animate="fade-up">
+    <!-- Stream Resolution Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="p-6 rounded-3xl bg-gradient-to-br from-orange-500/10 to-rose-500/10 border-2 border-orange-500/40 shadow-md">
+        <span class="text-xs font-mono font-bold uppercase text-orange-600 dark:text-orange-400">Peak Bitrate</span>
+        <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">1080p Full HD</div>
+        <div class="text-xs font-mono text-slate-500 my-2">1920 &times; 1080 &bull; 60fps &bull; MP4</div>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Pristine visual clarity extracted directly from CDN origins without compression artifacts.</p>
+      </div>
+      <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+        <span class="text-xs font-mono font-bold uppercase text-slate-500">Mobile Optimized</span>
+        <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">720p HD</div>
+        <div class="text-xs font-mono text-slate-500 my-2">1280 &times; 720 &bull; 30fps &bull; MP4</div>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Compact file footprint designed for fast messaging attachments and cellular sharing.</p>
+      </div>
+      <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+        <span class="text-xs font-mono font-bold uppercase text-emerald-600 dark:text-emerald-400">Lossless Audio</span>
+        <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">320 kbps MP3</div>
+        <div class="text-xs font-mono text-slate-500 my-2">Stereo 44.1kHz &bull; High Bitrate</div>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Clean audio stream rip for podcasts, voiceovers, study notes, and soundtracks.</p>
+      </div>
+    </div>
+
+    <!-- Cross-Device Saving Blueprint -->
+    <div class="p-6 md:p-8 rounded-3xl bg-slate-900 text-white border border-zinc-800">
+      <div class="flex items-center gap-3 mb-6">
+        <i class="fas fa-mobile-screen-button text-orange-400 text-xl"></i>
+        <div>
+          <div class="text-xs font-mono uppercase text-zinc-400">Cross-Platform Guide</div>
+          <h3 class="font-bold text-lg">Direct Device Saving Instructions</h3>
         </div>
       </div>
-    )}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+        <div class="p-4 rounded-2xl bg-zinc-800/70 border border-zinc-700">
+          <div class="font-bold text-sm text-orange-300 mb-2 flex items-center gap-2"><i class="fab fa-apple"></i> iOS (iPhone/iPad)</div>
+          <ol class="space-y-1.5 text-zinc-300 list-decimal list-inside">
+            <li>Paste link and tap Download.</li>
+            <li>Tap the browser Share icon.</li>
+            <li>Select "Save Video" to Camera Roll.</li>
+          </ol>
+        </div>
+        <div class="p-4 rounded-2xl bg-zinc-800/70 border border-zinc-700">
+          <div class="font-bold text-sm text-emerald-300 mb-2 flex items-center gap-2"><i class="fab fa-android"></i> Android Devices</div>
+          <ol class="space-y-1.5 text-zinc-300 list-decimal list-inside">
+            <li>Paste URL and tap Download.</li>
+            <li>File saves to Downloads folder.</li>
+            <li>Opens instantly in Google Photos.</li>
+          </ol>
+        </div>
+        <div class="p-4 rounded-2xl bg-zinc-800/70 border border-zinc-700">
+          <div class="font-bold text-sm text-blue-300 mb-2 flex items-center gap-2"><i class="fas fa-desktop"></i> PC / Mac / Linux</div>
+          <ol class="space-y-1.5 text-zinc-300 list-decimal list-inside">
+            <li>Click Download Video button.</li>
+            <li>Save to your chosen folder.</li>
+            <li>Ready for offline player playback.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
 
-    <!-- Generator FAQs -->
-    <div class="gen-faq-section">
-      <h3>Frequently Asked Questions</h3>
-      <div class="gen-faq-columns">
+    <!-- Article & Media FAQs -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <article class="lg:col-span-7 p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">{activeArticle.heading}</h2>
+        <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+        </div>
+      </article>
+      <div class="lg:col-span-5 flex flex-col gap-4">
         {activeFaqs.map(f => (
-          <div class="gen-faq-card">
-            <h4>{f.q}</h4>
-            <p>{f.a}</p>
+          <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
+            <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">{f.q}</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-normal">{f.a}</p>
           </div>
         ))}
       </div>
@@ -596,95 +579,107 @@ const jsonLdFaq = {
 )}
 
 {/* ───────────────────────────────────────────────────────────────────────
-     LAYOUT 5: CONVERTERS (Exchange & Pipeline Transformation Flow)
+     7. UNIVERSAL BESPOKE LAYOUT FOR ALL OTHER INDIVIDUAL TOOLS
+        (Dynamically themed with dedicated specs, step ribbons & FAQs)
     ─────────────────────────────────────────────────────────────────────── */}
-{tool.category === 'converters' && (
-  <section class="cat-layout layout-converters" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
-    <!-- Transformation Pipeline Visual Diagram -->
-    <div class="converter-pipeline-card">
-      <div class="pipeline-header">
-        <span class="pipeline-tag"><i class="fas fa-arrows-rotate"></i> Pipeline Architecture</span>
-        <h3>Real-Time Transformation Engine</h3>
+{![
+  'word-counter',
+  'random-password-generator',
+  'qr-code-generator',
+  'emi-calculator',
+  'unit-converter',
+  'instagram-downloader',
+  'video-downloader',
+  'thumbnail-downloader',
+  'vsco-downloader',
+  'youtube-to-mp3-converter'
+].includes(tool.slug) && (
+  <section class="cat-layout tool-layout-bespoke mt-12 pt-10 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-10" data-animate="fade-up" style={`--tool-c:${currentTheme.color}; --tool-bg:${currentTheme.bg}; --tool-b:${currentTheme.border}`}>
+    
+    <!-- Top Interactive Specs / Formula Banner if present -->
+    {activeFormula && (
+      <div class="p-6 md:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm text-center">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase" style={`background:var(--tool-bg); color:var(--tool-c)`}>
+          <i class="fas fa-square-root-variable"></i> Verified Computational Formula
+        </span>
+        <div class="text-lg md:text-2xl font-mono font-bold text-slate-900 dark:text-white my-3 p-4 rounded-2xl bg-slate-50 dark:bg-zinc-800 inline-block">
+          {activeFormula.latex}
+        </div>
+        <p class="text-xs text-slate-600 dark:text-slate-400 max-w-xl mx-auto">{activeFormula.explanation}</p>
       </div>
-      <div class="pipeline-flow">
-        <div class="pipe-node">
-          <div class="node-icon"><i class="fas fa-file-import"></i></div>
-          <strong>Input Value / File</strong>
-          <span>Raw Source Data</span>
-        </div>
-        <div class="pipe-arrow">
-          <div class="arrow-pulse"></div>
-          <i class="fas fa-bolt"></i>
-          <span>Mathematical Scaling</span>
-        </div>
-        <div class="pipe-node active-node">
-          <div class="node-icon"><i class="fas fa-gears"></i></div>
-          <strong>Precision Transform</strong>
-          <span>Lossless Parsing</span>
-        </div>
-        <div class="pipe-arrow">
-          <div class="arrow-pulse"></div>
-          <i class="fas fa-arrow-right"></i>
-          <span>Instant Mapping</span>
-        </div>
-        <div class="pipe-node">
-          <div class="node-icon"><i class="fas fa-file-export"></i></div>
-          <strong>Export Format</strong>
-          <span>Target Metric</span>
-        </div>
-      </div>
-    </div>
+    )}
 
-    <!-- Converter Editorial Article -->
-    <article class="conv-article-card">
-      <div class="art-header">
-        <span class="art-badge"><i class="fas fa-arrows-rotate"></i> Technical Conversion Guide</span>
-        <h2>{activeArticle.heading}</h2>
-        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
-      </div>
-      <div class="art-body">
-        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
-      </div>
-      {activeArticle.bulletPoints && (
-        <ul class="art-bullets">
-          {activeArticle.bulletPoints.map(b => (
-            <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
-          ))}
-        </ul>
-      )}
-    </article>
-
-    <!-- Feature Cards -->
-    <div class="conv-features-grid">
-      {activeFeatures.map(f => (
-        <div class="conv-feature-pill">
-          <div class="conv-feat-icon"><i class={`fas ${f.icon}`}></i></div>
+    <!-- Dynamic 3-Step Flow Ribbon -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {activeSteps.map(s => (
+        <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm flex items-start gap-4">
+          <span class="w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs flex-shrink-0" style={`background:var(--tool-bg); color:var(--tool-c); border: 1px solid var(--tool-b)`}>
+            {s.step}
+          </span>
           <div>
-            <h4>{f.title}</h4>
-            <p>{f.desc}</p>
+            <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">{s.title}</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{s.desc}</p>
           </div>
         </div>
       ))}
     </div>
 
-    {/* Factor Reference Matrix */}
-    {activeTable && (
-      <div class="converter-matrix-card">
-        <div class="matrix-hd">
-          <i class="fas fa-table-cells"></i>
-          <div>
-            <span class="matrix-badge">Multiplication Matrix</span>
-            <h3>{activeTable.title}</h3>
+    <!-- Main Editorial Article -->
+    <article class="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase" style={`background:var(--tool-bg); color:var(--tool-c)`}>
+          <i class={`fas ${tool.faIcon}`}></i> {tool.name} Guide
+        </span>
+      </div>
+      <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">{activeArticle.heading}</h2>
+      {activeArticle.subheading && <p class="text-sm font-semibold mb-4" style={`color:var(--tool-c)`}>{activeArticle.subheading}</p>}
+      <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
+      </div>
+      {activeArticle.bulletPoints && (
+        <ul class="mt-6 pt-4 border-t border-slate-100 dark:border-zinc-800 space-y-2">
+          {activeArticle.bulletPoints.map(b => (
+            <li class="flex items-start gap-2 text-sm text-slate-800 dark:text-slate-200">
+              <i class="fas fa-circle-check mt-1 flex-shrink-0" style={`color:var(--tool-c)`}></i> <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </article>
+
+    <!-- 4 Capabilities Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {activeFeatures.map(f => (
+        <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col gap-2">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm mb-1" style={`background:var(--tool-bg); color:var(--tool-c)`}>
+            <i class={`fas ${f.icon}`}></i>
           </div>
+          <h4 class="font-bold text-sm text-slate-900 dark:text-white">{f.title}</h4>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-normal">{f.desc}</p>
         </div>
-        <div class="table-wrap">
-          <table class="conv-table">
+      ))}
+    </div>
+
+    {/* Technical Specs Table if available */}
+    {activeTable && (
+      <div class="p-6 md:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+        <h3 class="font-extrabold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-table" style={`color:var(--tool-c)`}></i> {activeTable.title}
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left border-collapse">
             <thead>
-              <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
+              <tr class="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700 font-mono">
+                {activeTable.headers.map(h => <th class="p-3 text-slate-900 dark:text-white">{h}</th>)}
+              </tr>
             </thead>
-            <tbody>
-              {activeTable.rows.map((r: string[]) => (
-                <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'conv-cell-bold font-mono' : ''}>{c}</td>)}</tr>
+            <tbody class="divide-y divide-slate-100 dark:divide-zinc-800">
+              {activeTable.rows.map(r => (
+                <tr class="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition">
+                  {r.map((c, idx) => (
+                    <td class={`p-3 ${idx === 0 ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>{c}</td>
+                  ))}
+                </tr>
               ))}
             </tbody>
           </table>
@@ -692,156 +687,16 @@ const jsonLdFaq = {
       </div>
     )}
 
-    <!-- Conversion FAQs -->
-    <div class="conv-faq-section">
-      <h3 class="conv-faq-hd">Converter Frequently Asked Questions</h3>
-      <div class="conv-faq-accordion">
+    <!-- 2-Column FAQ Deck -->
+    <div class="p-6 md:p-8 rounded-3xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800">
+      <h3 class="font-extrabold text-lg text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+        <i class="fas fa-circle-question" style={`color:var(--tool-c)`}></i> Frequently Asked Questions
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {activeFaqs.map(f => (
-          <div class="conv-faq-item">
-            <h4><i class="fas fa-circle-question"></i> {f.q}</h4>
-            <p>{f.a}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-)}
-
-{/* ───────────────────────────────────────────────────────────────────────
-     LAYOUT 6: MEDIA & DOWNLOADS (Media Deck & Device Workflow)
-    ─────────────────────────────────────────────────────────────────────── */}
-{tool.category === 'media' && (
-  <section class="cat-layout layout-media" data-animate="fade-up" style={`--cat-c:${currentTheme.color}; --cat-bg:${currentTheme.bg}; --cat-b:${currentTheme.border}`}>
-    <!-- Resolution Tier Deck Cards -->
-    <div class="media-deck-header">
-      <span class="media-badge"><i class="fas fa-photo-film"></i> Stream Quality Standards</span>
-      <h2>Supported Media Formats & Resolutions</h2>
-    </div>
-
-    <div class="media-tier-grid">
-      <div class="tier-card tier-top">
-        <div class="tier-tag">Highest Quality</div>
-        <div class="tier-res">1080p Full HD</div>
-        <div class="tier-spec font-mono">1920 &times; 1080 &bull; 60fps &bull; MP4</div>
-        <p>Original bitrate crystal clear video streams extracted directly from CDN endpoints without compression artifacts.</p>
-      </div>
-      <div class="tier-card">
-        <div class="tier-tag">Standard Mobile</div>
-        <div class="tier-res">720p HD</div>
-        <div class="tier-spec font-mono">1280 &times; 720 &bull; 30fps &bull; MP4</div>
-        <p>Lightweight video files optimized for mobile data sharing and fast messaging app attachments.</p>
-      </div>
-      <div class="tier-card">
-        <div class="tier-tag">Audio Stream</div>
-        <div class="tier-res">320 kbps MP3</div>
-        <div class="tier-spec font-mono">Stereo 44.1kHz &bull; High Bitrate</div>
-        <p>Lossless audio extraction for podcasts, background music, speech, and soundtracks.</p>
-      </div>
-    </div>
-
-    <!-- Step by Step Device Workflow -->
-    <div class="device-workflow-card">
-      <div class="dw-header">
-        <span class="media-badge"><i class="fas fa-mobile-screen"></i> Cross-Platform Instructions</span>
-        <h3>Device Saving Guide</h3>
-      </div>
-      <div class="device-columns">
-        <div class="dev-col">
-          <div class="dev-icon"><i class="fab fa-apple"></i></div>
-          <h4>iPhone & iPad (iOS)</h4>
-          <ol>
-            <li>Paste the URL and tap <strong>Download</strong>.</li>
-            <li>When video loads, tap the <strong>Share</strong> button.</li>
-            <li>Select <strong>"Save Video"</strong> to store directly in Photos.</li>
-          </ol>
-        </div>
-        <div class="dev-col">
-          <div class="dev-icon"><i class="fab fa-android"></i></div>
-          <h4>Android Smartphones</h4>
-          <ol>
-            <li>Paste link and tap <strong>Download</strong>.</li>
-            <li>The MP4 file downloads to your <strong>Downloads</strong> folder.</li>
-            <li>Access instantly in Google Photos or Gallery.</li>
-          </ol>
-        </div>
-        <div class="dev-col">
-          <div class="dev-icon"><i class="fas fa-desktop"></i></div>
-          <h4>PC / Mac / Linux</h4>
-          <ol>
-            <li>Click <strong>Download Video</strong> to begin download.</li>
-            <li>File saves automatically into your default folder.</li>
-            <li>Ready for offline viewing in VLC or QuickTime.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Media Editorial Article -->
-    <article class="media-article-card">
-      <div class="art-header">
-        <span class="art-badge"><i class="fas fa-cloud-arrow-down"></i> Media Guide 2026</span>
-        <h2>{activeArticle.heading}</h2>
-        {activeArticle.subheading && <p class="art-subheading">{activeArticle.subheading}</p>}
-      </div>
-      <div class="art-body">
-        {activeArticle.paragraphs.map(p => <p>{p}</p>)}
-      </div>
-      {activeArticle.bulletPoints && (
-        <ul class="art-bullets">
-          {activeArticle.bulletPoints.map(b => (
-            <li><i class="fas fa-circle-check"></i> <span>{b}</span></li>
-          ))}
-        </ul>
-      )}
-    </article>
-
-    <!-- 4 Feature Cards -->
-    <div class="media-features-grid">
-      {activeFeatures.map(f => (
-        <div class="media-feature-card">
-          <div class="media-feat-icon"><i class={`fas ${f.icon}`}></i></div>
-          <h4>{f.title}</h4>
-          <p>{f.desc}</p>
-        </div>
-      ))}
-    </div>
-
-    {/* Media Format Matrix if available */}
-    {activeTable && (
-      <div class="media-table-card">
-        <h3>{activeTable.title}</h3>
-        <div class="table-wrap">
-          <table class="media-table">
-            <thead>
-              <tr>{activeTable.headers.map((h: string) => <th>{h}</th>)}</tr>
-            </thead>
-            <tbody>
-              {activeTable.rows.map((r: string[]) => (
-                <tr>{r.map((c: string, idx: number) => <td class={idx === 0 ? 'media-bold' : ''}>{c}</td>)}</tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    )}
-
-    <!-- Creator Fair-Use Callout -->
-    <div class="creator-shield-card">
-      <i class="fas fa-scale-balanced shield-icon"></i>
-      <div>
-        <h4>Fair Use & Creator Privacy Notice</h4>
-        <p>Toolarsh Media Downloaders operate strictly for personal educational archiving and fair-use viewing. We do not store or host copyrighted media files on our servers.</p>
-      </div>
-    </div>
-
-    <!-- Media FAQs -->
-    <div class="media-faq-block">
-      <h3>Frequently Asked Questions</h3>
-      <div class="media-faq-grid">
-        {activeFaqs.map(f => (
-          <div class="media-faq-card">
-            <h4>{f.q}</h4>
-            <p>{f.a}</p>
+          <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+            <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-2">{f.q}</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{f.a}</p>
           </div>
         ))}
       </div>
@@ -852,694 +707,3 @@ const jsonLdFaq = {
 <!-- JSON-LD Structured Data for SEO -->
 <script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)}></script>
 <script type="application/ld+json" set:html={JSON.stringify(jsonLdFaq)}></script>
-
-<style>
-  /* ═══════════════════════════════════════════════════════════════
-     COMMON CORE STYLES & RESET
-     ═══════════════════════════════════════════════════════════════ */
-  .cat-layout {
-    margin-top: 56px;
-    padding-top: 48px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 48px;
-  }
-  .table-wrap { overflow-x: auto; border-radius: var(--radius-md); }
-
-  /* ═══════════════════════════════════════════════════════════════
-     EDITORIAL ARTICLE BOX STYLES (Universal)
-     ═══════════════════════════════════════════════════════════════ */
-  .editorial-article-box,
-  .calc-article-card,
-  .cyber-article-card,
-  .gen-article-card,
-  .conv-article-card,
-  .media-article-card {
-    background: var(--surface-solid);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-xl);
-    padding: 36px;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  html[data-theme="dark"] .editorial-article-box,
-  html[data-theme="dark"] .calc-article-card,
-  html[data-theme="dark"] .gen-article-card,
-  html[data-theme="dark"] .conv-article-card,
-  html[data-theme="dark"] .media-article-card {
-    background: #111113;
-  }
-  .art-header {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .art-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--cat-c);
-    background: var(--cat-bg);
-    padding: 4px 12px;
-    border-radius: 100px;
-    width: fit-content;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .art-header h2 {
-    font-size: clamp(20px, 2.5vw, 26px);
-    font-weight: 800;
-    color: var(--txt);
-    line-height: 1.3;
-  }
-  .art-subheading {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--cat-c);
-    line-height: 1.5;
-  }
-  .art-body {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    font-size: 14.5px;
-    color: var(--txt-muted);
-    line-height: 1.75;
-  }
-  .art-bullets {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    list-style: none;
-    padding: 0;
-    margin: 8px 0 0;
-  }
-  .art-bullets li {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 14px;
-    color: var(--txt);
-    line-height: 1.5;
-  }
-  .art-bullets li i {
-    color: var(--cat-c);
-    font-size: 15px;
-    margin-top: 3px;
-    flex-shrink: 0;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     LAYOUT 1: WRITING & TEXT (Editorial Desk)
-     ═══════════════════════════════════════════════════════════════ */
-  .writing-grid {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 36px;
-    align-items: flex-start;
-  }
-  .writing-sidebar {
-    position: sticky;
-    top: 84px;
-  }
-  .editorial-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .ed-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .ed-icon {
-    font-size: 24px;
-    color: var(--cat-c);
-  }
-  .ed-label {
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--txt-dim);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .ed-header h4 { font-size: 16px; font-weight: 800; color: var(--txt); }
-  .ed-stats-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 0;
-  }
-  .ed-stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--txt-muted);
-  }
-  .ed-stat-row strong {
-    color: var(--txt);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-  }
-  .ed-footer-tip {
-    display: flex;
-    gap: 10px;
-    font-size: 12.5px;
-    color: var(--txt-dim);
-    line-height: 1.5;
-  }
-  .ed-footer-tip i { color: var(--cat-c); flex-shrink: 0; margin-top: 2px; }
-
-  .writing-main {
-    display: flex;
-    flex-direction: column;
-    gap: 36px;
-  }
-  .step-capsules {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-  }
-  .step-capsule {
-    background: var(--glass-bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 18px 16px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    box-shadow: var(--shadow-sm);
-  }
-  .cap-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--cat-bg);
-    color: var(--cat-c);
-    border: 1px solid var(--cat-b);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 800;
-    font-family: 'JetBrains Mono', monospace;
-    flex-shrink: 0;
-  }
-  .cap-info strong { display: block; font-size: 13.5px; color: var(--txt); margin-bottom: 2px; }
-  .cap-info span { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
-
-  .section-subhd {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--txt);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .feature-card-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .feature-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    padding: 18px;
-  }
-  .feature-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: var(--cat-bg);
-    color: var(--cat-c);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-  .feature-card h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 4px; }
-  .feature-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
-
-  .writing-table-card {
-    background: var(--surface-solid);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    box-shadow: var(--shadow-sm);
-  }
-  html[data-theme="dark"] .writing-table-card { background: #111113; }
-  .writing-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  .writing-table th { background: var(--surface-3); padding: 12px 16px; text-align: left; font-size: 12px; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
-  .writing-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
-  .writing-table tr:last-child td { border-bottom: none; }
-  .ed-bold { font-weight: 700; color: var(--txt) !important; }
-
-  .faq-two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-  .faq-card-static {
-    background: var(--surface-2);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    padding: 18px;
-  }
-  .faq-card-static h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
-  .faq-card-static p { font-size: 13px; color: var(--txt-muted); line-height: 1.55; }
-
-  /* ═══════════════════════════════════════════════════════════════
-     LAYOUT 2: CALCULATORS (Mathematical Blueprint / Dashboard)
-     ═══════════════════════════════════════════════════════════════ */
-  .calc-math-canvas {
-    background: linear-gradient(135deg, var(--surface-solid), var(--surface-3));
-    border: 1.5px solid var(--cat-b);
-    border-radius: var(--radius-xl);
-    padding: 32px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(13, 148, 136, 0.08);
-  }
-  html[data-theme="dark"] .calc-math-canvas { background: #111113; }
-  .math-canvas-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: var(--cat-c);
-    background: var(--cat-bg);
-    padding: 4px 12px;
-    border-radius: 100px;
-    margin-bottom: 14px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .math-formula-code {
-    font-size: clamp(16px, 2.2vw, 22px);
-    font-weight: 700;
-    color: var(--txt);
-    padding: 16px;
-    background: var(--surface-2);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-    margin-bottom: 12px;
-    display: inline-block;
-  }
-  .math-explanation { font-size: 14px; color: var(--txt-muted); max-width: 650px; margin: 0 auto; }
-
-  .calc-split-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-  .calc-recipe-card, .calc-table-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-xl);
-    padding: 26px;
-    box-shadow: var(--shadow-sm);
-  }
-  .card-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-  .card-hd-icon { font-size: 20px; color: var(--cat-c); }
-  .card-hd-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--txt-dim); font-family: 'JetBrains Mono', monospace; display: block; }
-  .card-hd h3 { font-size: 16px; font-weight: 800; color: var(--txt); }
-
-  .calc-steps-stack { display: flex; flex-direction: column; gap: 16px; }
-  .calc-step-row { display: flex; gap: 14px; align-items: flex-start; }
-  .calc-step-bubble {
-    width: 32px; height: 32px; border-radius: 8px; background: var(--cat-bg);
-    color: var(--cat-c); border: 1px solid var(--cat-b); display: flex; align-items: center;
-    justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0;
-  }
-  .calc-step-row h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 2px; }
-  .calc-step-row p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
-
-  .calc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .calc-table th { background: var(--surface-3); padding: 10px 12px; font-size: 11px; text-align: left; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
-  .calc-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
-  .calc-cell-hd { font-weight: 700; color: var(--txt) !important; font-family: 'JetBrains Mono', monospace; }
-
-  .calc-placeholder-specs { display: flex; flex-direction: column; gap: 12px; }
-  .spec-row { display: flex; justify-content: space-between; padding: 10px; background: var(--surface-3); border-radius: 6px; font-size: 13px; }
-
-  .calc-features-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .calc-feature-pill {
-    background: var(--surface-2);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-  }
-  .calc-feat-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    background: var(--cat-bg);
-    color: var(--cat-c);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    flex-shrink: 0;
-  }
-  .calc-feature-pill h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); margin-bottom: 3px; }
-  .calc-feature-pill p { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
-
-  .calc-faq-section { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-xl); padding: 28px; }
-  .calc-faq-header { margin-bottom: 18px; }
-  .calc-faq-header h3 { font-size: 17px; font-weight: 800; color: var(--txt); margin-top: 4px; }
-  .calc-faq-list { display: flex; flex-direction: column; gap: 10px; }
-  .calc-faq-drawer {
-    border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-solid);
-    overflow: hidden;
-  }
-  html[data-theme="dark"] .calc-faq-drawer { background: #111113; }
-  .calc-faq-summary {
-    padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--txt);
-    display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none;
-  }
-  .calc-faq-summary::-webkit-details-marker { display: none; }
-  .calc-faq-body { padding: 0 18px 16px; font-size: 13.5px; color: var(--txt-muted); line-height: 1.6; }
-
-  /* ═══════════════════════════════════════════════════════════════
-     LAYOUT 3: SECURITY (Cyber Dossier / Terminal)
-     ═══════════════════════════════════════════════════════════════ */
-  .cyber-terminal {
-    background: #09090B;
-    border: 1.5px solid rgba(5, 150, 105, 0.4);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: 0 8px 30px rgba(5, 150, 105, 0.15);
-  }
-  .terminal-bar {
-    background: #18181B;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #27272A;
-  }
-  .term-dots { display: flex; gap: 6px; }
-  .term-dots span { width: 9px; height: 9px; border-radius: 50%; background: #3F3F46; }
-  .term-dots span:nth-child(1) { background: #EF4444; }
-  .term-dots span:nth-child(2) { background: #F59E0B; }
-  .term-dots span:nth-child(3) { background: #10B981; }
-  .term-title { font-size: 11px; font-weight: 700; color: #A1A1AA; }
-  .term-status { font-size: 11px; font-weight: 700; color: #34D399; }
-  .terminal-body { padding: 20px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; color: #E4E4E7; }
-  .t-green { color: #34D399; font-weight: 700; }
-  .t-dim { color: #71717A; }
-
-  .cyber-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .pillar-card {
-    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-lg);
-    padding: 22px; box-shadow: var(--shadow-sm);
-  }
-  .pillar-icon {
-    width: 38px; height: 38px; border-radius: 8px; background: rgba(5, 150, 105, 0.1);
-    color: #059669; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-bottom: 12px;
-  }
-  .pillar-card h4 { font-size: 14.5px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
-  .pillar-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.55; }
-
-  .cyber-article-card {
-    background: #09090B;
-    border: 1px solid #27272A;
-    border-radius: var(--radius-xl);
-    padding: 32px;
-  }
-  .cyber-article-card h2 { color: #F4F4F5; }
-  .cyber-article-card .art-body p { color: #A1A1AA; }
-  .cyber-article-card .art-bullets li { color: #E4E4E7; }
-
-  .cyber-table-wrap {
-    background: #09090B; border: 1px solid #27272A; border-radius: var(--radius-lg); overflow: hidden;
-  }
-  .cyber-tbl-header { padding: 14px 20px; background: #18181B; display: flex; align-items: center; gap: 8px; color: #34D399; font-size: 13.5px; font-weight: 700; }
-  .cyber-table { width: 100%; border-collapse: collapse; font-size: 12.5px; color: #E4E4E7; }
-  .cyber-table th { background: #121215; padding: 12px 18px; text-align: left; color: #A1A1AA; border-bottom: 1px solid #27272A; }
-  .cyber-table td { padding: 12px 18px; border-bottom: 1px solid #1E1E24; }
-  .cyber-col-1 { color: #34D399; font-weight: 700; }
-
-  .cyber-faq-deck { display: flex; flex-direction: column; gap: 16px; }
-  .cyber-faq-title { font-size: 13px; font-weight: 700; color: var(--txt-dim); }
-  .cyber-faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .cyber-faq-box {
-    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md);
-    padding: 16px; font-size: 12.5px; display: flex; flex-direction: column; gap: 6px;
-  }
-  .q-row { color: var(--txt); font-weight: 700; display: flex; gap: 6px; }
-  .a-row { color: var(--txt-muted); line-height: 1.5; }
-
-  /* ═══════════════════════════════════════════════════════════════
-     LAYOUT 4: GENERATORS (Studio & Bento)
-     ═══════════════════════════════════════════════════════════════ */
-  .gen-bento-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
-  .gen-bento-tile {
-    background: var(--glass-bg); border: 1px solid var(--border-mid); border-radius: var(--radius-xl);
-    padding: 28px; box-shadow: var(--shadow-sm);
-  }
-  .gen-tile-badge {
-    display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
-    color: var(--cat-c); background: var(--cat-bg); padding: 4px 12px; border-radius: 100px; margin-bottom: 12px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .bento-main h2 { font-size: 22px; font-weight: 800; color: var(--txt); margin-bottom: 10px; }
-  .bento-main p { font-size: 14px; color: var(--txt-muted); line-height: 1.6; margin-bottom: 20px; }
-  .gen-format-tags { display: flex; gap: 10px; flex-wrap: wrap; }
-  .gen-tag { font-size: 12px; font-weight: 600; color: var(--txt); background: var(--surface-3); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); }
-
-  .gen-step-list { display: flex; flex-direction: column; gap: 14px; }
-  .gen-mini-step { display: flex; gap: 12px; align-items: flex-start; }
-  .gen-step-num { width: 26px; height: 26px; border-radius: 6px; background: var(--cat-bg); color: var(--cat-c); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
-  .gen-mini-step strong { font-size: 13.5px; color: var(--txt); display: block; }
-  .gen-mini-step p { font-size: 12px; color: var(--txt-muted); }
-
-  .gen-features-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .gen-feature-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .gen-feat-icon {
-    width: 34px; height: 34px; border-radius: 8px; background: var(--cat-bg);
-    color: var(--cat-c); display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 4px;
-  }
-  .gen-feature-card h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); }
-  .gen-feature-card p { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
-
-  .gen-specs-card { background: var(--surface-solid); border: 1px solid var(--border-mid); border-radius: var(--radius-xl); padding: 24px; }
-  html[data-theme="dark"] .gen-specs-card { background: #111113; }
-  .specs-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-  .specs-header i { font-size: 22px; color: var(--cat-c); }
-  .specs-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--txt-dim); font-family: 'JetBrains Mono', monospace; }
-  .specs-header h3 { font-size: 16px; font-weight: 800; color: var(--txt); }
-
-  .gen-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .gen-table th { background: var(--surface-3); padding: 12px 14px; text-align: left; font-size: 11.5px; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
-  .gen-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
-  .gen-cell-bold { font-weight: 700; color: var(--txt) !important; }
-
-  .gen-faq-section h3 { font-size: 17px; font-weight: 800; color: var(--txt); margin-bottom: 16px; }
-  .gen-faq-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .gen-faq-card { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md); padding: 18px; }
-  .gen-faq-card h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
-  .gen-faq-card p { font-size: 13px; color: var(--txt-muted); line-height: 1.55; }
-
-  /* ═══════════════════════════════════════════════════════════════
-     LAYOUT 5: CONVERTERS (Exchange Pipeline)
-     ═══════════════════════════════════════════════════════════════ */
-  .converter-pipeline-card {
-    background: var(--surface-solid); border: 1px solid var(--border-mid); border-radius: var(--radius-xl);
-    padding: 32px; box-shadow: var(--shadow-sm);
-  }
-  html[data-theme="dark"] .converter-pipeline-card { background: #111113; }
-  .pipeline-header { margin-bottom: 24px; text-align: center; }
-  .pipeline-tag { font-size: 11px; font-weight: 700; color: var(--cat-c); background: var(--cat-bg); padding: 4px 12px; border-radius: 100px; font-family: 'JetBrains Mono', monospace; }
-  .pipeline-header h3 { font-size: 20px; font-weight: 800; color: var(--txt); margin-top: 8px; }
-
-  .pipeline-flow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .pipe-node {
-    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-lg);
-    padding: 18px 20px; text-align: center; flex: 1; min-width: 130px; display: flex; flex-direction: column;
-    align-items: center; gap: 6px;
-  }
-  .active-node { border-color: var(--cat-c); background: var(--cat-bg); }
-  .node-icon { font-size: 20px; color: var(--cat-c); margin-bottom: 4px; }
-  .pipe-node strong { font-size: 13.5px; color: var(--txt); }
-  .pipe-node span { font-size: 11.5px; color: var(--txt-dim); }
-
-  .pipe-arrow { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--cat-c); font-size: 12px; }
-  .pipe-arrow span { font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--txt-dim); }
-
-  .conv-features-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .conv-feature-pill {
-    background: var(--surface-2);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-  }
-  .conv-feat-icon {
-    width: 34px; height: 34px; border-radius: 8px; background: var(--cat-bg);
-    color: var(--cat-c); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;
-  }
-  .conv-feature-pill h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); margin-bottom: 3px; }
-  .conv-feature-pill p { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
-
-  .converter-matrix-card { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-xl); padding: 24px; }
-  .matrix-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .matrix-hd i { font-size: 22px; color: var(--cat-c); }
-  .matrix-badge { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--txt-dim); font-family: 'JetBrains Mono', monospace; }
-  .matrix-hd h3 { font-size: 16px; font-weight: 800; color: var(--txt); }
-
-  .conv-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .conv-table th { background: var(--surface-3); padding: 12px 14px; text-align: left; font-size: 11.5px; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
-  .conv-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
-  .conv-cell-bold { font-weight: 700; color: var(--txt) !important; }
-
-  .conv-faq-hd { font-size: 17px; font-weight: 800; color: var(--txt); margin-bottom: 14px; }
-  .conv-faq-accordion { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .conv-faq-item { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md); padding: 16px; }
-  .conv-faq-item h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-  .conv-faq-item h4 i { color: var(--cat-c); font-size: 13px; }
-  .conv-faq-item p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.55; }
-
-  /* ═══════════════════════════════════════════════════════════════
-     LAYOUT 6: MEDIA & DOWNLOADS (Media Deck)
-     ═══════════════════════════════════════════════════════════════ */
-  .media-deck-header { text-align: center; }
-  .media-badge { font-size: 11px; font-weight: 700; color: var(--cat-c); background: var(--cat-bg); padding: 4px 12px; border-radius: 100px; font-family: 'JetBrains Mono', monospace; }
-  .media-deck-header h2 { font-size: 22px; font-weight: 800; color: var(--txt); margin-top: 6px; }
-
-  .media-tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .tier-card {
-    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-lg);
-    padding: 24px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-sm);
-  }
-  .tier-top { border-color: var(--cat-c); background: var(--cat-bg); }
-  .tier-tag { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--cat-c); font-family: 'JetBrains Mono', monospace; }
-  .tier-res { font-size: 18px; font-weight: 800; color: var(--txt); }
-  .tier-spec { font-size: 11.5px; color: var(--txt-dim); margin-bottom: 4px; }
-  .tier-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
-
-  .device-workflow-card { background: var(--surface-solid); border: 1px solid var(--border-mid); border-radius: var(--radius-xl); padding: 28px; }
-  html[data-theme="dark"] .device-workflow-card { background: #111113; }
-  .dw-header { margin-bottom: 20px; }
-  .dw-header h3 { font-size: 17px; font-weight: 800; color: var(--txt); margin-top: 4px; }
-  .device-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  .dev-col { background: var(--surface-3); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; }
-  .dev-icon { font-size: 24px; color: var(--cat-c); margin-bottom: 8px; }
-  .dev-col h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 10px; }
-  .dev-col ol { padding-left: 18px; font-size: 12.5px; color: var(--txt-muted); line-height: 1.6; }
-
-  .media-features-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .media-feature-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .media-feat-icon {
-    width: 34px; height: 34px; border-radius: 8px; background: var(--cat-bg);
-    color: var(--cat-c); display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 4px;
-  }
-  .media-feature-card h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); }
-  .media-feature-card p { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
-
-  .media-table-card { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-lg); padding: 24px; }
-  .media-table-card h3 { font-size: 16px; font-weight: 800; color: var(--txt); margin-bottom: 14px; }
-  .media-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .media-table th { background: var(--surface-3); padding: 12px 14px; text-align: left; font-size: 11.5px; color: var(--txt); font-family: 'JetBrains Mono', monospace; }
-  .media-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--txt-muted); }
-  .media-bold { font-weight: 700; color: var(--txt) !important; }
-
-  .creator-shield-card {
-    background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md);
-    padding: 20px; display: flex; gap: 16px; align-items: center;
-  }
-  .shield-icon { font-size: 26px; color: var(--cat-c); flex-shrink: 0; }
-  .creator-shield-card h4 { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 4px; }
-  .creator-shield-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.5; }
-
-  .media-faq-block h3 { font-size: 17px; font-weight: 800; color: var(--txt); margin-bottom: 14px; }
-  .media-faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .media-faq-card { background: var(--surface-2); border: 1px solid var(--border-mid); border-radius: var(--radius-md); padding: 16px; }
-  .media-faq-card h4 { font-size: 13.5px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
-  .media-faq-card p { font-size: 12.5px; color: var(--txt-muted); line-height: 1.55; }
-
-  /* ═══════════════════════════════════════════════════════════════
-     RESPONSIVE
-     ═══════════════════════════════════════════════════════════════ */
-  @media (max-width: 960px) {
-    .writing-grid { grid-template-columns: 1fr; }
-    .writing-sidebar { position: static; }
-    .step-capsules { grid-template-columns: 1fr; }
-    .feature-card-grid { grid-template-columns: 1fr; }
-    .faq-two-col { grid-template-columns: 1fr; }
-
-    .calc-split-grid { grid-template-columns: 1fr; }
-    .calc-features-grid { grid-template-columns: 1fr; }
-
-    .cyber-pillars { grid-template-columns: 1fr; }
-    .cyber-faq-grid { grid-template-columns: 1fr; }
-
-    .gen-bento-grid { grid-template-columns: 1fr; }
-    .gen-features-grid { grid-template-columns: 1fr; }
-    .gen-faq-columns { grid-template-columns: 1fr; }
-
-    .pipeline-flow { flex-direction: column; }
-    .pipe-node { width: 100%; }
-    .conv-features-grid { grid-template-columns: 1fr; }
-    .conv-faq-accordion { grid-template-columns: 1fr; }
-
-    .media-tier-grid { grid-template-columns: 1fr; }
-    .device-columns { grid-template-columns: 1fr; }
-    .media-features-grid { grid-template-columns: 1fr; }
-    .media-faq-grid { grid-template-columns: 1fr; }
-  }
-</style>

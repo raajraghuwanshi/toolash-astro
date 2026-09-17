@@ -5,101 +5,401 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'hex-to-rgb-converter')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="hex-wrap">
-    <div class="hex-input-section">
-      <div class="hex-preview-row">
-        <div class="color-preview" id="color-preview" style="background:#3B82F6"></div>
-        <div class="hex-inputs">
-          <div class="hex-field">
-            <label>HEX</label>
-            <div class="hex-input-group">
-              <span class="hex-hash">#</span>
-              <input type="text" id="hex-input" class="hex-input" value="3B82F6" maxlength="6" spellcheck="false" />
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Toolarsh Chromatic Color Studio Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-palette text-[var(--brand)]"></i> Digital Color Space & Gamut Studio
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        HEX to RGB <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Color Converter</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Instantly convert hexadecimal web colors into RGB, HSL, CSS custom properties, and Tailwind code with live bidirectional channel editing.
+      </p>
+    </div>
+
+    <!-- Main Dual Studio Console -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+      <!-- Left Column: Color Controls & Live Swatch (6 cols) -->
+      <div class="lg:col-span-6 tool-card-surface space-y-6">
+        <div class="flex items-center justify-between border-b border-[var(--border)] pb-4">
+          <h3 class="text-sm font-bold text-[var(--txt)] uppercase tracking-wider flex items-center gap-2">
+            <i class="fas fa-sliders text-[var(--brand)]"></i> Color Controls & Channels
+          </h3>
+          <span class="tool-badge-pill text-[11px]">Live Sync</span>
+        </div>
+
+        <!-- Big Dynamic Swatch Frame -->
+        <div class="flex items-center gap-6 p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)]">
+          <div id="color-preview" class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-2 border-white/20 shadow-2xl flex-shrink-0 transition-all duration-300" style="background-color: #10B981; box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);"></div>
+          <div class="space-y-2 flex-1">
+            <label for="color-picker" class="text-xs font-mono font-bold text-[var(--txt-muted)] uppercase tracking-wider block">Visual Picker</label>
+            <div class="flex items-center gap-3">
+              <input type="color" id="color-picker" value="#10b981" class="w-12 h-10 rounded-xl cursor-pointer bg-transparent border-0 p-0" />
+              <span class="text-xs font-mono text-[var(--txt-dim)]">Click to open native spectrum</span>
             </div>
           </div>
-          <div class="hex-field">
-            <label>R</label>
-            <input type="number" id="rgb-r" class="hex-input" min="0" max="255" value="59" />
+        </div>
+
+        <!-- HEX Input -->
+        <div class="space-y-2">
+          <label for="hex-input" class="text-xs font-mono font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+            Hexadecimal String
+          </label>
+          <div class="flex items-center tool-control-input p-2.5">
+            <span class="text-lg font-mono font-bold text-[var(--brand)] pl-3 pr-1">#</span>
+            <input type="text" id="hex-input" value="10B981" maxlength="6" spellcheck="false" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-xl font-black uppercase tracking-widest outline-none px-1" />
+            <span class="text-xs font-mono text-[var(--txt-dim)] pr-3">24-BIT</span>
           </div>
-          <div class="hex-field">
-            <label>G</label>
-            <input type="number" id="rgb-g" class="hex-input" min="0" max="255" value="130" />
+        </div>
+
+        <!-- RGB Numeric Channel Inputs -->
+        <div class="space-y-2">
+          <span class="text-xs font-mono font-bold text-[var(--txt-muted)] uppercase tracking-wider block">Individual RGB Channels (0 – 255):</span>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] focus-within:border-red-400 transition-colors">
+              <span class="text-[10px] font-mono font-bold text-red-500 uppercase block mb-1">Red (R)</span>
+              <input type="number" id="rgb-r" min="0" max="255" value="16" class="w-full bg-transparent text-[var(--txt)] font-mono text-lg font-bold outline-none" />
+            </div>
+            <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] focus-within:border-[var(--brand)] transition-colors">
+              <span class="text-[10px] font-mono font-bold text-[var(--brand)] uppercase block mb-1">Green (G)</span>
+              <input type="number" id="rgb-g" min="0" max="255" value="185" class="w-full bg-transparent text-[var(--txt)] font-mono text-lg font-bold outline-none" />
+            </div>
+            <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] focus-within:border-blue-400 transition-colors">
+              <span class="text-[10px] font-mono font-bold text-blue-500 uppercase block mb-1">Blue (B)</span>
+              <input type="number" id="rgb-b" min="0" max="255" value="129" class="w-full bg-transparent text-[var(--txt)] font-mono text-lg font-bold outline-none" />
+            </div>
           </div>
-          <div class="hex-field">
-            <label>B</label>
-            <input type="number" id="rgb-b" class="hex-input" min="0" max="255" value="246" />
+        </div>
+      </div>
+
+      <!-- Right Column: Converted Outputs Matrix (6 cols) -->
+      <div class="lg:col-span-6 space-y-6">
+        <div class="tool-card-surface space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-4">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Export Formats</span>
+            <span class="text-xs font-mono text-[var(--txt-dim)]">1-Click Copy</span>
           </div>
-          <div class="hex-field">
-            <label>Color Picker</label>
-            <input type="color" id="color-picker" value="#3B82F6" class="color-picker-input" />
+
+          <!-- HEX Row -->
+          <div class="p-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] flex items-center justify-between group hover:border-[var(--border-strong)] transition-all">
+            <div>
+              <span class="text-[10px] font-mono font-bold text-[var(--txt-muted)] uppercase block mb-0.5">HEX Format</span>
+              <code id="out-hex" class="text-base font-mono font-bold text-[var(--txt)]">#10B981</code>
+            </div>
+            <button class="copy-btn px-3.5 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-1)] hover:border-[var(--border-strong)] text-[var(--txt)] font-mono text-xs transition-all cursor-pointer" data-target="out-hex">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+
+          <!-- RGB Row -->
+          <div class="p-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] flex items-center justify-between group hover:border-[var(--border-strong)] transition-all">
+            <div>
+              <span class="text-[10px] font-mono font-bold text-[var(--txt-muted)] uppercase block mb-0.5">RGB Functional Notation</span>
+              <code id="out-rgb" class="text-base font-mono font-bold text-[var(--txt)]">rgb(16, 185, 129)</code>
+            </div>
+            <button class="copy-btn px-3.5 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-1)] hover:border-[var(--border-strong)] text-[var(--txt)] font-mono text-xs transition-all cursor-pointer" data-target="out-rgb">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+
+          <!-- HSL Row -->
+          <div class="p-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] flex items-center justify-between group hover:border-[var(--border-strong)] transition-all">
+            <div>
+              <span class="text-[10px] font-mono font-bold text-[var(--txt-muted)] uppercase block mb-0.5">HSL Cylindrical</span>
+              <code id="out-hsl" class="text-base font-mono font-bold text-[var(--txt)]">hsl(160, 84%, 39%)</code>
+            </div>
+            <button class="copy-btn px-3.5 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-1)] hover:border-[var(--border-strong)] text-[var(--txt)] font-mono text-xs transition-all cursor-pointer" data-target="out-hsl">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+
+          <!-- CSS Variable Row -->
+          <div class="p-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] flex items-center justify-between group hover:border-[var(--border-strong)] transition-all">
+            <div>
+              <span class="text-[10px] font-mono font-bold text-[var(--txt-muted)] uppercase block mb-0.5">CSS Custom Property</span>
+              <code id="out-css" class="text-base font-mono font-bold text-[var(--txt)]">--color-primary: #10B981;</code>
+            </div>
+            <button class="copy-btn px-3.5 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-1)] hover:border-[var(--border-strong)] text-[var(--txt)] font-mono text-xs transition-all cursor-pointer" data-target="out-css">
+              <i class="fas fa-copy"></i> Copy
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="hex-outputs" id="hex-outputs">
-      <div class="hex-output-row">
-        <span class="hex-output-label">HEX</span>
-        <code id="out-hex">#3B82F6</code>
-        <button class="copy-btn" data-target="out-hex"><i class="fas fa-copy"></i></button>
+    <!-- Digital Color Science: Sidebar + Stream Archetype -->
+    <div class="tool-content-wrap">
+      <section class="tool-content-card">
+        <!-- Section Lead Header -->
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">Photonic Science &amp; Bitwise Mathematics</span>
+          <h2>The Architecture of Digital Color: From Hexadecimal Nibbles to Photonic Light</h2>
+          <p>
+            A hexadecimal color code is not arbitrary shorthand—it is a direct 24-bit binary memory map addressing the red, green, and blue sub-pixel transistors of an emissive display panel. Below is the full technical breakdown of radix conversion, human retinal sensitivity, and modern wide-gamut color spaces.
+          </p>
+        </div>
+
+      <!-- Main Sidebar + Stream Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+        <!-- Sticky Sidebar (4 cols) -->
+        <aside class="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+
+          <!-- 24-Bit Gamut Telemetry Card -->
+          <div class="border border-[var(--border)] rounded-2xl p-6 bg-[var(--surface-2)]/50 space-y-4">
+            <span class="text-xs font-mono uppercase tracking-widest text-[var(--brand)] font-bold block">
+              Gamut Telemetry
+            </span>
+            <div class="space-y-3 font-mono text-xs">
+              <div class="flex justify-between pb-2 border-b border-[var(--border)]/60">
+                <span class="text-[var(--txt-muted)]">Color Depth:</span>
+                <span class="text-[var(--txt)] font-bold">24-Bit Truecolor</span>
+              </div>
+              <div class="flex justify-between pb-2 border-b border-[var(--border)]/60">
+                <span class="text-[var(--txt-muted)]">Bits Per Channel:</span>
+                <span class="text-[var(--txt)] font-bold">8 Bits (1 Byte)</span>
+              </div>
+              <div class="flex justify-between pb-2 border-b border-[var(--border)]/60">
+                <span class="text-[var(--txt-muted)]">Discrete Quantizations:</span>
+                <span class="text-emerald-400 font-bold">16,777,216 Colors</span>
+              </div>
+              <div class="flex justify-between pb-2 border-b border-[var(--border)]/60">
+                <span class="text-[var(--txt-muted)]">Standard Gamut:</span>
+                <span class="text-[var(--txt)] font-bold">sRGB / Rec. 709</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[var(--txt-muted)]">Alpha Channel:</span>
+                <span class="text-[var(--txt)] font-bold">+8 Bits (32-Bit RGBA)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hex Nibble Decompression Index -->
+          <div class="border border-[var(--border)] rounded-2xl p-6 bg-[var(--surface-2)]/30 space-y-4">
+            <span class="text-xs font-mono uppercase tracking-widest text-[var(--txt-muted)] font-bold block">
+              3-Digit Shorthand Rules
+            </span>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+              When using 3-digit shorthand (<code>#RGB</code>), the CSS parser does not pad zeros—it clones each hexadecimal nibble into a paired byte:
+            </p>
+            <div class="space-y-2 font-mono text-xs">
+              <div class="p-2 rounded-lg bg-[var(--surface-3)]/60 border border-[var(--border)]/60 flex justify-between">
+                <span class="text-rose-400">#F0C</span>
+                <span class="text-[var(--txt-muted)]">&rarr;</span>
+                <span class="text-[var(--txt)] font-bold">#FF00CC</span>
+              </div>
+              <div class="p-2 rounded-lg bg-[var(--surface-3)]/60 border border-[var(--border)]/60 flex justify-between">
+                <span class="text-emerald-400">#38A</span>
+                <span class="text-[var(--txt-muted)]">&rarr;</span>
+                <span class="text-[var(--txt)] font-bold">#3388AA</span>
+              </div>
+              <div class="p-2 rounded-lg bg-[var(--surface-3)]/60 border border-[var(--border)]/60 flex justify-between">
+                <span class="text-amber-400">#000</span>
+                <span class="text-[var(--txt-muted)]">&rarr;</span>
+                <span class="text-[var(--txt)] font-bold">#000000</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modern CSS Notation Reference -->
+          <div class="border border-[var(--border)] rounded-2xl p-6 bg-[var(--surface-2)]/30 space-y-3">
+            <span class="text-xs font-mono uppercase tracking-widest text-[var(--txt-muted)] font-bold block">
+              CSS Syntax Standards
+            </span>
+            <div class="space-y-2 font-mono text-[11px]">
+              <div>
+                <span class="text-[var(--txt-muted)] block">CSS Level 3 (Legacy commas):</span>
+                <code class="text-[var(--txt)]">rgba(16, 185, 129, 0.8)</code>
+              </div>
+              <div class="pt-2 border-t border-[var(--border)]/40">
+                <span class="text-[var(--brand)] block">CSS Level 4 (Modern space):</span>
+                <code class="text-[var(--txt)]">rgb(16 185 129 / 80%)</code>
+              </div>
+              <div class="pt-2 border-t border-[var(--border)]/40">
+                <span class="text-[var(--txt-muted)] block">8-Digit Hex With Alpha:</span>
+                <code class="text-[var(--txt)]">#10B981CC (80% opacity)</code>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- Continuous Stream (8 cols) -->
+        <main class="lg:col-span-8 space-y-12 lg:border-l lg:border-[var(--border)] lg:pl-10">
+
+          <!-- Stream Item 1: Base-16 Radix Mathematics -->
+          <article class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs px-2.5 py-0.5 rounded bg-[var(--brand)]/10 text-[var(--brand)] font-bold">01</span>
+              <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)]">
+                The Base-16 Radix: Why Web Colors Use Hexadecimal
+              </h3>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Computers do not natively operate in decimal (base 10) or text—they operate on binary voltage registers. In 24-bit Truecolor architectures, each primary color channel receives exactly 8 bits (one byte) of memory. An 8-bit byte can represent integer values from <code>00000000</code> (0 in decimal) to <code>11111111</code> (255 in decimal), yielding exactly 256 discrete illumination steps.
+            </p>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Writing an 8-bit channel in binary (e.g. <code>10101111</code>) is verbose, while decimal values (<code>175</code>) have variable string lengths (1 to 3 digits). Hexadecimal solves this elegantly: 16 is 2<sup>4</sup>, meaning exactly one hexadecimal digit represents 4 bits (a nibble). Therefore, two hexadecimal characters represent exactly one 8-bit byte:
+            </p>
+
+            <!-- Radix Conversion Breakdown Box -->
+            <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)]/40 space-y-3 font-mono text-xs">
+              <div class="text-[var(--txt)] font-bold pb-2 border-b border-[var(--border)]/60">
+                Formula: Value = (Digit₁ &times; 16¹) + (Digit₂ &times; 16⁰)
+              </div>
+              <div class="space-y-2 text-[var(--txt-muted)]">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span>Red Channel: <code>10</code></span>
+                  <span class="text-[var(--txt)]">(1 &times; 16) + (0 &times; 1) = <strong class="text-red-400">16</strong></span>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span>Green Channel: <code>B9</code></span>
+                  <span class="text-[var(--txt)]">(11 &times; 16) + (9 &times; 1) = <strong class="text-emerald-400">185</strong></span>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span>Blue Channel: <code>81</code></span>
+                  <span class="text-[var(--txt)]">(8 &times; 16) + (1 &times; 1) = <strong class="text-blue-400">129</strong></span>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-[var(--border)]/60 text-[11px] text-[var(--brand)]">
+                Bitwise Equivalent: <code>(color >> 16) &amp; 0xFF</code>, <code>(color >> 8) &amp; 0xFF</code>, <code>color &amp; 0xFF</code>
+              </div>
+            </div>
+          </article>
+
+          <!-- Stream Item 2: Additive RGB vs Subtractive Pigment -->
+          <article class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs px-2.5 py-0.5 rounded bg-[var(--brand)]/10 text-[var(--brand)] font-bold">02</span>
+              <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)]">
+                Photonic Light Physics: Additive vs. Subtractive Spectra
+              </h3>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Physical paint and printed inks follow subtractive color mixing (CMYK). Pigments absorb specific wavelengths of ambient light and reflect only the unabsorbed remainder. If you mix physical red, green, and blue paints together, the combined pigments absorb almost all visible light, yielding a muddy black or dark brown.
+            </p>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Digital displays operate on <strong>additive color synthesis</strong>. OLED pixels, MicroLEDs, and LCD backlight matrices generate photons directly. In the human eye, the fovea centralis contains three types of cone photoreceptors sensitive to Long (red ~560nm), Medium (green ~530nm), and Short (blue ~420nm) electromagnetic wavelengths:
+            </p>
+            <ul class="space-y-2 text-xs sm:text-sm text-[var(--txt-muted)] list-disc pl-5">
+              <li><strong class="text-[var(--txt)]">Total Absence (0, 0, 0):</strong> Sub-pixel transistors stay off, emitting zero photons. The viewer perceives pure dark or OLED true black.</li>
+              <li><strong class="text-[var(--txt)]">Secondary Combinations:</strong> Red + Green light stimulates both L and M cones simultaneously, which the human visual cortex interprets as pure Yellow (<code>rgb(255, 255, 0)</code>). Red + Blue creates Magenta, and Green + Blue creates Cyan.</li>
+              <li><strong class="text-[var(--txt)]">Max Luminescence (255, 255, 255):</strong> All three sub-pixel diodes emit maximum rated lumens, maximally exciting all three cone sets to generate clean white light.</li>
+            </ul>
+          </article>
+
+          <!-- Stream Item 3: Perceptual Luminance and sRGB Gamma Encoding -->
+          <article class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs px-2.5 py-0.5 rounded bg-[var(--brand)]/10 text-[var(--brand)] font-bold">03</span>
+              <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)]">
+                Human Luminous Efficiency: The Green Sensitivity Asymmetry
+              </h3>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              While digital RGB channels are treated symmetrically (each given 8 bits from 0 to 255), the human optical system is radically non-linear. Evolution shaped human vision to prioritize daylight foliage contrast, making the human eye approximately 10 times more sensitive to green photons than to blue photons.
+            </p>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Under international television and web display standards (ITU-R Recommendation BT.709), relative perceived luminance (Y) is calculated using strict luma weighting coefficients:
+            </p>
+
+            <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)]/40 font-mono text-xs space-y-2">
+              <div class="text-[var(--txt)] font-bold">
+                Y<sub>luminance</sub> = 0.2126 &times; R + 0.7152 &times; G + 0.0722 &times; B
+              </div>
+              <p class="text-[var(--txt-muted)] text-[11px] leading-relaxed font-sans mt-2">
+                Notice that Green accounts for <strong>71.5%</strong> of human perceived brightness, while Blue accounts for barely <strong>7.2%</strong>. This is why pure blue (<code>#0000FF</code>) appears deeply dark against black backgrounds despite being at maximum digital channel intensity (255), while pure green (<code>#00FF00</code>) appears blindingly vibrant.
+              </p>
+            </div>
+          </article>
+
+          <!-- Stream Item 4: Modern CSS Level 4 Color Gamuts -->
+          <article class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs px-2.5 py-0.5 rounded bg-[var(--brand)]/10 text-[var(--brand)] font-bold">04</span>
+              <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)]">
+                Beyond Standard sRGB: Display P3 &amp; CSS Color Module 4
+              </h3>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              The standard 24-bit sRGB gamut (standardized in 1996 by HP and Microsoft) covers only approximately 35% of all colors visible to human biology. Modern Apple Retina displays, OLED panels, and high-end smartphones can physically display the <strong>Display P3</strong> color space, which offers ~25% wider chromatic volume, especially in saturated reds, vivid emeralds, and warm ambers.
+            </p>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Because traditional 6-digit hex codes are hard-locked to the sRGB gamut, modern browsers now support direct CSS Color Module Level 4 syntax:
+            </p>
+            <div class="p-4 rounded-xl bg-[var(--surface-3)]/60 border border-[var(--border)] font-mono text-xs space-y-1.5">
+              <div class="text-[var(--txt-muted)]">/* Display P3 wide gamut definition */</div>
+              <div class="text-emerald-400">color: color(display-p3 0.12 0.78 0.54);</div>
+              <div class="text-[var(--txt-muted)] pt-2">/* Perceptually uniform lightness in Oklch */</div>
+              <div class="text-[var(--brand)]">background-color: oklch(0.68 0.19 158);</div>
+            </div>
+          </article>
+
+          <!-- Stream Item 5: Hairline Divider Accordion FAQ -->
+          <section class="border-t border-[var(--border)] pt-8">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] mb-6">
+              Frequently Asked Color Conversion Questions
+            </h3>
+
+            <div class="tool-faq-accordion">
+              <details class="tool-faq-item">
+                <summary>
+                  <span>How do I convert HEX to RGB in vanilla JavaScript?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer space-y-2">
+                  <p>You can use bitwise shifting or regex chunking. Using native <code>parseInt</code> with radix 16:</p>
+                  <pre class="p-3 rounded-xl bg-[var(--surface-3)] border border-[var(--border)] font-mono text-xs text-[var(--txt)] overflow-x-auto">const hex = '10B981';
+const r = parseInt(hex.substring(0, 2), 16); // 16
+const g = parseInt(hex.substring(2, 4), 16); // 185
+const b = parseInt(hex.substring(4, 6), 16); // 129
+const rgb = `rgb(&#36;&#123;r&#125;, &#36;&#123;g&#125;, &#36;&#123;b&#125;)`;</pre>
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>What is the difference between 3-digit and 6-digit hex codes?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  A 6-digit hex code specifies each byte individually (e.g., <code>#10B981</code>). A 3-digit code is an abbreviated shorthand where each single hexadecimal digit is duplicated into a pair (e.g., <code>#FA3</code> expands to <code>#FFAA33</code>). A 3-digit hex can only represent 4,096 distinct colors (16<sup>3</sup>), whereas 6-digit hex represents the full 16,777,216 Truecolor palette (256<sup>3</sup>).
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>How does 8-digit hexadecimal alpha transparency work in CSS?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  In CSS Color Module Level 4, an optional fourth byte can be appended: <code>#RRGGBBAA</code>. The trailing two hex digits represent the alpha transparency channel from <code>00</code> (0% opacity, completely invisible) to <code>FF</code> (100% opacity, fully solid). For instance, 50% opacity in hex is <code>7F</code> or <code>80</code> (128 / 255 &asymp; 50.2%), so <code>#10B98180</code> produces semi-transparent emerald.
+                </div>
+              </details>
+
+              <details class="tool-faq-item">
+                <summary>
+                  <span>Why do designers prefer HSL or Oklch over RGB for UI palettes?</span>
+                  <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <div class="faq-answer">
+                  RGB is a hardware-oriented model that forces you to balance three light channels simultaneously to adjust brightness or saturation. HSL isolates Hue (the color shade, 0&deg;&ndash;360&deg;), Saturation, and Lightness, allowing developers to create harmonious hover states simply by changing lightness (e.g., <code>hsl(160, 84%, 45%)</code>). Modern color spaces like Oklch go a step further by ensuring uniform perceptual brightness across all hue angles.
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </main>
+
       </div>
-      <div class="hex-output-row">
-        <span class="hex-output-label">RGB</span>
-        <code id="out-rgb">rgb(59, 130, 246)</code>
-        <button class="copy-btn" data-target="out-rgb"><i class="fas fa-copy"></i></button>
-      </div>
-      <div class="hex-output-row">
-        <span class="hex-output-label">HSL</span>
-        <code id="out-hsl">hsl(217, 91%, 60%)</code>
-        <button class="copy-btn" data-target="out-hsl"><i class="fas fa-copy"></i></button>
-      </div>
-      <div class="hex-output-row">
-        <span class="hex-output-label">CSS Variable</span>
-        <code id="out-css">--color: #3B82F6;</code>
-        <button class="copy-btn" data-target="out-css"><i class="fas fa-copy"></i></button>
-      </div>
-      <div class="hex-output-row">
-        <span class="hex-output-label">Tailwind (closest)</span>
-        <code id="out-tw">blue-500</code>
-        <button class="copy-btn" data-target="out-tw"><i class="fas fa-copy"></i></button>
-      </div>
+
+      </section>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .hex-wrap { display: flex; flex-direction: column; gap: 24px; }
-  .hex-preview-row { display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
-  .color-preview { width: 120px; height: 120px; border-radius: var(--radius-lg); border: 1.5px solid var(--border); box-shadow: var(--shadow-md); flex-shrink: 0; transition: background .2s; }
-  .hex-inputs { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; flex: 1; }
-  .hex-field { display: flex; flex-direction: column; gap: 6px; }
-  .hex-field label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .05em; }
-  .hex-input-group { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-soft); }
-  .hex-hash { padding: 0 8px; font-size: 14px; font-weight: 700; color: var(--txt-muted); }
-  .hex-input {
-    padding: 10px 12px;
-    font-size: 14px;
-    font-family: 'Courier New', monospace;
-    font-weight: 600;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    width: 80px;
-    transition: border-color .15s;
-  }
-  .hex-input-group .hex-input { border: none; background: transparent; width: 70px; padding-left: 0; }
-  .hex-input:focus { border-color: var(--brand); }
-  .color-picker-input { width: 50px; height: 42px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; padding: 2px; background: var(--bg-soft); }
-  .hex-outputs { display: flex; flex-direction: column; gap: 10px; }
-  .hex-output-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); }
-  .hex-output-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; width: 100px; flex-shrink: 0; }
-  .hex-output-row code { flex: 1; font-family: 'Courier New', monospace; font-size: 14px; color: var(--txt); }
-  .copy-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; color: var(--txt-muted); cursor: pointer; font-size: 13px; transition: all .15s; }
-  .copy-btn:hover { border-color: var(--brand); color: var(--brand); }
-</style>
 
 <script>
   function hexToRgb(hex: string): [number,number,number] | null {
@@ -107,6 +407,7 @@ const tool = tools.find(t => t.slug === 'hex-to-rgb-converter')!;
     if (!result) return null;
     return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
   }
+
   function rgbToHsl(r: number, g: number, b: number): [number,number,number] {
     r /= 255; g /= 255; b /= 255;
     const max = Math.max(r,g,b), min = Math.min(r,g,b);
@@ -122,7 +423,10 @@ const tool = tools.find(t => t.slug === 'hex-to-rgb-converter')!;
     }
     return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
   }
-  function componentToHex(c: number): string { return c.toString(16).padStart(2,'0').toUpperCase(); }
+
+  function componentToHex(c: number): string {
+    return c.toString(16).padStart(2,'0').toUpperCase();
+  }
 
   function updateFromHex(hex: string) {
     const rgb = hexToRgb(hex);
@@ -130,17 +434,28 @@ const tool = tools.find(t => t.slug === 'hex-to-rgb-converter')!;
     const [r,g,b] = rgb;
     const [h,s,l] = rgbToHsl(r,g,b);
     const hexUp = hex.toUpperCase().replace('#','');
+
     (document.getElementById('hex-input') as HTMLInputElement).value = hexUp;
     (document.getElementById('rgb-r') as HTMLInputElement).value = String(r);
     (document.getElementById('rgb-g') as HTMLInputElement).value = String(g);
     (document.getElementById('rgb-b') as HTMLInputElement).value = String(b);
-    (document.getElementById('color-picker') as HTMLInputElement).value = '#' + hex.replace('#','').toLowerCase();
-    (document.getElementById('color-preview') as HTMLElement).style.background = '#' + hexUp;
-    document.getElementById('out-hex')!.textContent = '#' + hexUp;
-    document.getElementById('out-rgb')!.textContent = `rgb(${r}, ${g}, ${b})`;
-    document.getElementById('out-hsl')!.textContent = `hsl(${h}, ${s}%, ${l}%)`;
-    document.getElementById('out-css')!.textContent = `--color: #${hexUp};`;
-    document.getElementById('out-tw')!.textContent = `/* ${h}° / Custom */`;
+    (document.getElementById('color-picker') as HTMLInputElement).value = '#' + hexUp.toLowerCase();
+
+    const preview = document.getElementById('color-preview');
+    if (preview) {
+      preview.style.backgroundColor = '#' + hexUp;
+      preview.style.boxShadow = `0 0 35px rgba(${r}, ${g}, ${b}, 0.45)`;
+    }
+
+    const outHex = document.getElementById('out-hex');
+    const outRgb = document.getElementById('out-rgb');
+    const outHsl = document.getElementById('out-hsl');
+    const outCss = document.getElementById('out-css');
+
+    if (outHex) outHex.textContent = '#' + hexUp;
+    if (outRgb) outRgb.textContent = `rgb(${r}, ${g}, ${b})`;
+    if (outHsl) outHsl.textContent = `hsl(${h}, ${s}%, ${l}%)`;
+    if (outCss) outCss.textContent = `--color-primary: #${hexUp};`;
   }
 
   document.getElementById('hex-input')?.addEventListener('input', (e) => {
@@ -154,9 +469,9 @@ const tool = tools.find(t => t.slug === 'hex-to-rgb-converter')!;
 
   ['rgb-r','rgb-g','rgb-b'].forEach(id => {
     document.getElementById(id)?.addEventListener('input', () => {
-      const r = parseInt((document.getElementById('rgb-r') as HTMLInputElement).value) || 0;
-      const g = parseInt((document.getElementById('rgb-g') as HTMLInputElement).value) || 0;
-      const b = parseInt((document.getElementById('rgb-b') as HTMLInputElement).value) || 0;
+      const r = Math.min(255, Math.max(0, parseInt((document.getElementById('rgb-r') as HTMLInputElement).value) || 0));
+      const g = Math.min(255, Math.max(0, parseInt((document.getElementById('rgb-g') as HTMLInputElement).value) || 0));
+      const b = Math.min(255, Math.max(0, parseInt((document.getElementById('rgb-b') as HTMLInputElement).value) || 0));
       updateFromHex(componentToHex(r) + componentToHex(g) + componentToHex(b));
     });
   });
@@ -166,8 +481,11 @@ const tool = tools.find(t => t.slug === 'hex-to-rgb-converter')!;
       const target = (btn as HTMLElement).dataset.target!;
       const text = document.getElementById(target)!.textContent!;
       await navigator.clipboard.writeText(text);
-      btn.innerHTML = '<i class="fas fa-check"></i>';
-      setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1500);
+      btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i> Copied!';
+      setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy', 1500);
     });
   });
+
+  // Initial update
+  updateFromHex('10B981');
 </script>

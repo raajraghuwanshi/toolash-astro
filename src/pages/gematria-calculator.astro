@@ -5,77 +5,300 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'gematria-calculator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="gem-wrap">
-    <div class="gem-input-row">
-      <input type="text" id="gem-input" class="gem-input" placeholder="Enter a word, name or phrase…" maxlength="200" />
-      <button class="btn btn-primary" id="gem-calc">
-        <i class="fas fa-star-of-david"></i> Calculate
-      </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Sacred Alphanumeric Decryption Engine Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-star-of-david text-[var(--amber)]"></i> Sacred Alphanumeric Decryption Engine
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Gematria <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--amber)] bg-clip-text text-transparent">Cipher Sanctuary</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Decode words, names, and phrases across 9 sacred esoteric traditions simultaneously, including English Ordinal, Pythagorean, Chaldean, and Jewish Reduction ciphers.
+      </p>
     </div>
 
-    <div id="gem-result" class="gem-result" style="display:none">
-      <div class="gem-results-grid" id="gem-results-grid"></div>
+    <!-- Main Mystical Search Console -->
+    <div class="tool-card-surface relative overflow-hidden mb-10">
+      <div class="max-w-3xl mx-auto space-y-4 text-center">
+        <label for="gem-input" class="text-xs font-mono font-bold text-[var(--txt-muted)] uppercase tracking-widest block">
+          Enter Any Word, Sacred Name, or Phrase
+        </label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="flex-1 relative">
+            <input type="text" id="gem-input" value="Antigravity" maxlength="200" placeholder="Type words like 'Truth', 'Light', 'Peace'..." class="tool-control-input py-3.5 pl-12 pr-4 text-base font-medium" />
+            <i class="fas fa-feather-pointed absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand)] text-base"></i>
+          </div>
+          <button id="gem-calc" class="px-8 py-3.5 rounded-xl bg-[var(--brand)] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[var(--brand)]/25 hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <i class="fas fa-wand-magic-sparkles"></i> Reveal Values
+          </button>
+        </div>
+      </div>
 
-      <div class="gem-breakdown" id="gem-breakdown">
-        <div class="gem-breakdown-title">Letter Breakdown (English Ordinal)</div>
-        <div class="gem-letters" id="gem-letters"></div>
+      <!-- Realtime Results Container -->
+      <div id="gem-result" class="mt-8 pt-8 border-t border-[var(--border)] space-y-8">
+        <!-- 9 Ciphers Grid -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Simultaneous Cipher Matrices</span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">9 Active Ciphers</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3.5" id="gem-results-grid">
+            <!-- Populated via script -->
+          </div>
+        </div>
+
+        <!-- Individual Letter Glyphs Breakdown -->
+        <div class="p-5 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3 border-b border-[var(--border)] pb-3">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">Letter-by-Letter Gematria Values (A=1 ... Z=26)</span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">English Ordinal Sequence</span>
+          </div>
+          <div class="flex flex-wrap gap-2.5 items-center justify-center p-2" id="gem-letters">
+            <!-- Populated via script -->
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="gem-info">
-      <div class="gem-info-title">About Gematria</div>
-      <p>Gematria is an alphanumeric code of assigning a numerical value to letters. Different ciphers assign different values. This tool calculates multiple common ciphers simultaneously.</p>
+    <!-- How to Use -->
+    <div class="tool-content-wrap">
+
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+          </span>
+          <h2>How to Use the Gematria Calculator</h2>
+          <p>Calculate the numerological value of any word or phrase across 9 cipher traditions simultaneously.</p>
+        </div>
+        <ol class="mt-6 space-y-4">
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Type your word or phrase</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Enter any word, name, or phrase in the input field. The tool accepts single words like "Peace" or full phrases like "In the beginning." Results update in real time as you type.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Click Reveal Values</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Hit the button (or just keep typing — results refresh automatically). The 9-cipher grid populates with your word's value in each system.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Read the cipher grid</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Each card shows the value for one cipher system: English Ordinal, Full Reduction, Reverse Ordinal, Reverse Reduction, Septenary, Chaldean, Pythagorean, English Extended, and Jewish Ordinal.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">4</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Review the letter breakdown</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Below the grid, every letter in your input is shown with its individual English Ordinal value, making it easy to verify the calculation or study specific letters.</span>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+    <!-- Alphanumeric Mathematics & Esoteric Cipher History (Stat-Hero Archetype) -->
+    <div style="margin-top:0">
+      <section class="tool-content-card">
+        <!-- Section Header -->
+        <div class="tool-content-header">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-[var(--txt)] tracking-tight">
+            Alphanumeric Architecture: Quantitative Metrics of Ancient Ciphers
+          </h2>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Before modern positional zero arithmetic, civilizations calculated commerce, astronomy, and sacred theology directly within their alphabets. Gematria represents the mathematical intersection of linguistic symbols and computational checksums.
+          </p>
+        </div>
+
+        <!-- Stat-Hero Grid: 4 Monumental Historical Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-6 border-y border-[var(--border)]">
+          <!-- Stat 1 -->
+          <div class="space-y-2">
+            <div class="text-4xl sm:text-5xl font-black font-mono text-[var(--brand)] tracking-tight">
+              3,200 BCE
+            </div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">
+              Pre-Zero Alphanumerics
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Prior to Fibonacci&apos;s 1202 CE publication of <em>Liber Abaci</em> introducing Hindu-Arabic numerals to Europe, western commerce operated exclusively on letter-based numbering matrices.
+            </p>
+          </div>
+
+          <!-- Stat 2 -->
+          <div class="space-y-2">
+            <div class="text-4xl sm:text-5xl font-black font-mono text-amber-500 dark:text-amber-400 tracking-tight">
+              72
+            </div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">
+              Shem HaMephorash Triads
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Derived from Exodus 14:19–21, where three consecutive verses contain exactly 72 Hebrew letters each, forming 72 unique three-letter divine permutations in kabbalistic gematria.
+            </p>
+          </div>
+
+          <!-- Stat 3 -->
+          <div class="space-y-2">
+            <div class="text-4xl sm:text-5xl font-black font-mono text-emerald-500 dark:text-emerald-400 tracking-tight">
+              26
+            </div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">
+              The Tetragrammaton Constant
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              The numerical sum of YHWH (&lrm;יהוה: Yod=10, He=5, Vav=6, He=5 = 26). Biblical scribes used this 26 constant as a manuscript integrity checksum across Toraitic texts.
+            </p>
+          </div>
+
+          <!-- Stat 4 -->
+          <div class="space-y-2">
+            <div class="text-4xl sm:text-5xl font-black font-mono text-teal-500 dark:text-teal-400 tracking-tight">
+              Modulo 9
+            </div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--txt)]">
+              Digital Root Invariance
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Pythagorean reduction maps words to single digits 1–9 using repeated digit summation, matching modern &ldquo;casting out nines&rdquo; checksum algorithms in computer science.
+            </p>
+          </div>
+        </div>
+
+        <!-- Classical Cipher System Comparative Matrix -->
+        <div class="space-y-4 pt-8">
+          <div class="max-w-3xl space-y-2">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Historical Cipher Systems &amp; Mathematical Mechanics
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Comparing the primary alphanumeric calculation traditions across antiquity and modern hermeneutics.
+            </p>
+          </div>
+
+          <div class="tool-specs-table-wrap">
+            <table class="tool-specs-table">
+              <thead>
+                <tr>
+                  <th>Cipher Tradition</th>
+                  <th>Domain &amp; Era</th>
+                  <th>Numerical Range</th>
+                  <th>Mathematical Mapping Function</th>
+                  <th>Historical Primary Purpose</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--border)] font-sans text-[var(--txt-muted)]">
+                <tr>
+                  <td class="font-bold text-[var(--txt)]">Hebrew Standard (Gadol)</td>
+                  <td class="font-mono text-xs">Levant, 1000 BCE</td>
+                  <td class="font-mono text-xs text-[var(--brand)] font-bold">1 to 400</td>
+                  <td class="text-xs">Units 1–9, Tens 10–90, Hundreds 100–400 across 22 consonantal glyphs.</td>
+                  <td class="text-xs leading-relaxed">Torah exegesis, esoteric Kabbalistic literature, legal dating contracts.</td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-[var(--txt)]">Greek Isopsephy</td>
+                  <td class="font-mono text-xs">Ionia, 600 BCE</td>
+                  <td class="font-mono text-xs text-[var(--brand)] font-bold">1 to 900</td>
+                  <td class="text-xs">Milesian system adding archaic Digamma (6), Koppa (90), and Sampi (900).</td>
+                  <td class="text-xs leading-relaxed">Pompeii wall graffiti, Delphi oracular verse, early Christian symbolism.</td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-[var(--txt)]">Chaldean System</td>
+                  <td class="font-mono text-xs">Babylonia, 800 BCE</td>
+                  <td class="font-mono text-xs text-[var(--brand)] font-bold">1 to 8 (9 Excluded)</td>
+                  <td class="text-xs">Phonetic vibrational frequency; 9 is withheld as a divine sacred integer.</td>
+                  <td class="text-xs leading-relaxed">Ancient astrological divination, astronomical planetary calculations.</td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-[var(--txt)]">English Ordinal</td>
+                  <td class="font-mono text-xs">Modern, 1600s+</td>
+                  <td class="font-mono text-xs text-[var(--brand)] font-bold">1 to 26</td>
+                  <td class="text-xs">Strict linear sequential enumeration from A=1 through Z=26.</td>
+                  <td class="text-xs leading-relaxed">Rosicrucian manuscripts, Baconian Shakespeare ciphers, linguistic puzzles.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Gematria &amp; Alphanumeric Ciphers Frequently Asked Questions
+          </h3>
+          <p class="text-sm text-[var(--txt-muted)] mt-1">
+            Linguistic distinctions, manuscript authentication, and computational parity.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>How did ancient scribes distinguish numbers from normal words?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Because the exact same letters represented both words and numbers, scribes employed punctuation diacritics. In Greek manuscripts, an acute accent or upper tick called a <em>keraia</em> (&prime;) was placed after the letters, or a horizontal overline was drawn above the sequence (e.g., &macr;&alpha;&macr;&beta;&macr; for 12). In Hebrew, a single quote (<em>geresh</em>) or double quote (<em>gershayim</em>) was inserted before the final letter to signify numerical intent.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Is there any connection between gematria and modern cryptography?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Yes. Gematria represents humanity&apos;s earliest non-cryptographic hash function. Modern hashing algorithms (such as MD5 or SHA-256) ingest variable-length strings of text and compute a fixed-size numeric or hexadecimal checksum. Early biblical scribes used letter-sum gematria precisely as a transmission checksum: if a transcribed parchment column did not match the exact numeric total of the exemplar scroll, the parchment was discarded.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is the difference between Full Reduction and Single-Digit Roots?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              In Full Reduction (Pythagorean), each individual letter is first reduced to its single-digit root before being summed into the total (e.g., Z=26 becomes 2+6=8). In standard ordinal reduction, the entire word is summed as regular integers first, and then the final total is repeatedly reduced to a single digit (e.g., sum=148 becomes 1+4+8=13 &rarr; 1+3=4). Both methods produce identical modular residue in modulo 9 arithmetic.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Which cipher system is most commonly used for name analysis?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              For English name numerology, the Pythagorean (Full Reduction) and Chaldean systems are most widely used by modern practitioners. Pythagorean assigns sequential values 1–9 to the alphabet in order; Chaldean assigns values based on phonetic vibration frequencies and excludes the number 9 as sacred. Both produce different results for the same name, which is why this tool shows all 9 simultaneously.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Does the calculator work with numbers, spaces, and punctuation?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Only alphabetic characters (A–Z) are included in the calculation. Numbers, spaces, and punctuation are ignored. Each letter in your input is shown individually in the letter breakdown row below the cipher grid.
+            </div>
+          </details>
+        </div>
+      </section>
+    </div>
+    </div>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .gem-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .gem-input-row { display: flex; gap: 10px; }
-  .gem-input {
-    flex: 1;
-    padding: 13px 16px;
-    font-size: 16px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    outline: none;
-    transition: border-color .2s;
-  }
-  .gem-input:focus { border-color: var(--brand); }
-
-  .gem-result { display: flex; flex-direction: column; gap: 20px; animation: fadeIn .3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
-
-  .gem-results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .gem-cipher {
-    padding: 16px;
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    text-align: center;
-    transition: border-color .15s;
-  }
-  .gem-cipher:hover { border-color: var(--brand); }
-  .gem-cipher-name { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
-  .gem-cipher-val { font-size: 2rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
-
-  .gem-breakdown { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .gem-breakdown-title { padding: 10px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--txt); }
-  .gem-letters { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px; }
-  .gem-letter-item { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 36px; }
-  .gem-letter-char { font-size: 16px; font-weight: 700; color: var(--txt); }
-  .gem-letter-val { font-size: 11px; font-weight: 700; color: var(--brand); background: var(--brand-light); padding: 1px 6px; border-radius: 100px; }
-
-  .gem-info { padding: 14px 16px; background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: var(--radius-sm); }
-  .gem-info-title { font-size: 13px; font-weight: 700; color: #92400E; margin-bottom: 6px; }
-  .gem-info p { font-size: 13px; color: #78350F; line-height: 1.5; }
-
-  @media (max-width: 500px) { .gem-results-grid { grid-template-columns: 1fr 1fr; } }
-</style>
 
 <script>
   function ordinal(c: string): number {
@@ -111,28 +334,46 @@ const tool = tools.find(t => t.slug === 'gematria-calculator')!;
   ];
 
   function calculate() {
-    const text = (document.getElementById('gem-input') as HTMLInputElement).value;
+    const inputEl = document.getElementById('gem-input') as HTMLInputElement;
+    if (!inputEl) return;
+    const text = inputEl.value;
     if (!text.trim()) return;
 
-    const grid = document.getElementById('gem-results-grid')!;
-    grid.innerHTML = ciphers.map(c => `
-      <div class="gem-cipher">
-        <div class="gem-cipher-name">${c.name}</div>
-        <div class="gem-cipher-val">${c.fn(text)}</div>
-      </div>
-    `).join('');
+    const grid = document.getElementById('gem-results-grid');
+    if (grid) {
+      grid.innerHTML = ciphers.map(c => `
+        <div class="p-4 rounded-xl tool-inner-panel hover:border-[var(--brand)] transition-all text-center group">
+          <div class="text-[10px] font-mono font-bold text-[var(--txt-muted)] group-hover:text-[var(--brand)] uppercase tracking-wider mb-1">${c.name}</div>
+          <div class="text-3xl font-black font-mono text-[var(--txt)] group-hover:text-[var(--brand)] transition-colors">${c.fn(text)}</div>
+        </div>
+      `).join('');
+    }
 
-    const letters = document.getElementById('gem-letters')!;
-    letters.innerHTML = [...text].map(c => {
-      const v = ordinal(c);
-      if (v === 0 && c === ' ') return `<div class="gem-letter-item"><div class="gem-letter-char" style="opacity:.3">·</div></div>`;
-      if (v === 0) return '';
-      return `<div class="gem-letter-item"><div class="gem-letter-char">${c.toUpperCase()}</div><div class="gem-letter-val">${v}</div></div>`;
-    }).join('');
+    const letters = document.getElementById('gem-letters');
+    if (letters) {
+      letters.innerHTML = [...text].map(c => {
+        const v = ordinal(c);
+        if (v === 0 && c === ' ') {
+          return `<div class="flex flex-col items-center gap-1 min-w-[28px] opacity-25 font-mono text-xs text-[var(--txt)]">␣</div>`;
+        }
+        if (v === 0) return '';
+        return `
+          <div class="flex flex-col items-center gap-1 min-w-[34px] p-2 rounded-xl bg-[var(--surface-3)] border border-[var(--border)]">
+            <span class="text-base font-black text-[var(--txt)] font-mono">${c.toUpperCase()}</span>
+            <span class="text-[10px] font-bold font-mono text-[var(--brand)] px-1.5 py-0.5 rounded bg-[var(--brand)]/10 border border-[var(--brand)]/20">${v}</span>
+          </div>
+        `;
+      }).join('');
+    }
 
-    document.getElementById('gem-result')!.style.display = '';
+    const res = document.getElementById('gem-result');
+    if (res) res.style.display = '';
   }
 
   document.getElementById('gem-calc')?.addEventListener('click', calculate);
   document.getElementById('gem-input')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
+  document.getElementById('gem-input')?.addEventListener('input', calculate);
+
+  // Run on mount
+  calculate();
 </script>

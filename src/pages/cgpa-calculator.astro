@@ -5,136 +5,336 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'cgpa-calculator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="cgpa-wrap">
-    <div class="cgpa-semesters" id="cgpa-semesters">
-      <!-- Semesters added dynamically -->
-    </div>
-
-    <div class="cgpa-controls">
-      <button class="btn btn-ghost" id="cgpa-add-sem">
-        <i class="fas fa-plus"></i> Add Semester
-      </button>
-      <button class="btn btn-primary" id="cgpa-calc" style="flex:1; max-width:200px;">
-        <i class="fas fa-graduation-cap"></i> Calculate CGPA
-      </button>
-      <button class="btn btn-ghost" id="cgpa-reset">
-        <i class="fas fa-refresh"></i> Reset
-      </button>
-    </div>
-
-    <div id="cgpa-result" class="cgpa-result" style="display:none">
-      <div class="cgpa-result-main">
-        <div class="cgpa-big-num" id="cgpa-val">0.00</div>
-        <div class="cgpa-big-label">CGPA</div>
-        <div class="cgpa-grade" id="cgpa-grade">—</div>
-      </div>
-      <div class="cgpa-stats-row">
-        <div class="cgpa-stat">
-          <div class="cgpa-stat-num" id="cgpa-total-credits">0</div>
-          <div class="cgpa-stat-label">Total Credits</div>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- University Academic Transcript Hero -->
+    <div class="tool-hero-box">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="tool-badge-pill mb-3">
+            <i class="fas fa-graduation-cap text-[var(--amber)]"></i> Academic CBCS Engine
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--txt)] tracking-tight">
+            Cumulative GPA <span class="shimmer-text">Transcript Ledger</span>
+          </h1>
+          <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
+            Track semester-by-semester credit hours, weighted grade points, and academic honors for both 10.0 CBCS and 4.0 international collegiate scales.
+          </p>
         </div>
-        <div class="cgpa-stat">
-          <div class="cgpa-stat-num" id="cgpa-total-points">0.00</div>
-          <div class="cgpa-stat-label">Quality Points</div>
-        </div>
-        <div class="cgpa-stat">
-          <div class="cgpa-stat-num" id="cgpa-sems">0</div>
-          <div class="cgpa-stat-label">Semesters</div>
+
+        <!-- Live Academic Standing Badge -->
+        <div class="tool-card-surface flex items-center gap-4 py-3 px-5">
+          <div class="text-center px-4 border-r border-[var(--border)]">
+            <span class="text-[10.5px] font-mono text-[var(--txt-dim)] uppercase block tracking-wider font-semibold">Overall CGPA</span>
+            <span id="cgpa-val" class="text-3xl sm:text-4xl font-extrabold text-[var(--amber)] font-mono">0.00</span>
+          </div>
+          <div class="pr-2">
+            <span class="text-[10.5px] font-mono text-[var(--txt-dim)] uppercase tracking-wider block mb-0.5 font-semibold">Classification</span>
+            <span id="cgpa-grade" class="text-xs font-bold text-[var(--brand)] font-mono">Pending Calculation</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Grade reference -->
-    <div class="cgpa-ref">
-      <div class="cgpa-ref-title">Grade Point Reference (10-Point Scale)</div>
-      <div class="cgpa-ref-grid">
-        <div class="cgpa-ref-item"><span class="cgpa-ref-grade" style="color:#22C55E">O</span> Outstanding = 10</div>
-        <div class="cgpa-ref-item"><span class="cgpa-ref-grade" style="color:#22C55E">A+</span> Excellent = 9</div>
-        <div class="cgpa-ref-item"><span class="cgpa-ref-grade" style="color:#84CC16">A</span> Very Good = 8</div>
-        <div class="cgpa-ref-item"><span class="cgpa-ref-grade" style="color:#EAB308">B+</span> Good = 7</div>
-        <div class="cgpa-ref-item"><span class="cgpa-ref-grade" style="color:#F59E0B">B</span> Above Avg = 6</div>
-        <div class="cgpa-ref-item"><span class="cgpa-ref-grade" style="color:#EF4444">C</span> Average = 5</div>
-        <div class="cgpa-ref-item"><span class="cgpa-ref-grade" style="color:#EF4444">F</span> Fail = 0</div>
+    <!-- Main Dynamic Ledger Interface -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+      <!-- Left Column: Semesters & Course Rows (8 cols) -->
+      <div class="lg:col-span-8 space-y-6">
+        <!-- Semesters Container -->
+        <div id="cgpa-semesters" class="space-y-6">
+          <!-- Populated dynamically via script -->
+        </div>
+
+        <!-- Action Buttons Deck -->
+        <div class="tool-inner-panel flex flex-wrap items-center justify-between gap-4">
+          <button id="cgpa-add-sem" class="btn btn-secondary text-xs">
+            <i class="fas fa-plus text-[var(--brand)]"></i> Add Semester
+          </button>
+
+          <div class="flex items-center gap-3">
+            <button id="cgpa-reset" class="btn btn-secondary text-xs text-[var(--txt-dim)] hover:text-red-500">
+              <i class="fas fa-rotate-left"></i> Reset
+            </button>
+            <button id="cgpa-calc" class="btn btn-primary text-xs uppercase tracking-wider font-mono">
+              <i class="fas fa-calculator"></i> Calculate Final CGPA
+            </button>
+          </div>
+        </div>
       </div>
+
+      <!-- Right Column: Standing Summary & Grading Reference (4 cols) -->
+      <div class="lg:col-span-4 space-y-6">
+        <!-- Live Academic Standing Card -->
+        <div id="cgpa-result" class="tool-card-surface space-y-5">
+          <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)] flex items-center gap-2">
+            <i class="fas fa-award"></i> Transcript Telemetry
+          </h3>
+
+          <div class="grid grid-cols-3 gap-2.5 text-center">
+            <div class="tool-inner-panel p-3">
+              <span class="text-[10px] font-mono text-[var(--txt-dim)] uppercase block mb-1">Credits</span>
+              <span id="cgpa-total-credits" class="text-lg font-bold text-[var(--txt)] font-mono">0</span>
+            </div>
+            <div class="tool-inner-panel p-3">
+              <span class="text-[10px] font-mono text-[var(--txt-dim)] uppercase block mb-1">Quality Pts</span>
+              <span id="cgpa-total-points" class="text-lg font-bold text-[var(--brand)] font-mono">0.00</span>
+            </div>
+            <div class="tool-inner-panel p-3">
+              <span class="text-[10px] font-mono text-[var(--txt-dim)] uppercase block mb-1">Semesters</span>
+              <span id="cgpa-sems" class="text-lg font-bold text-[var(--amber)] font-mono">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10-Point Grade Reference Table -->
+        <div class="tool-card-surface space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+            <span class="text-xs font-mono font-bold text-[var(--txt)] uppercase tracking-wider">UGC 10-Point Scale</span>
+            <span class="text-[11px] font-mono text-[var(--brand)] font-semibold">CBCS Standard</span>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)]">
+              <span class="font-bold text-[var(--brand)]">O (Outstanding)</span>
+              <span class="font-mono text-[var(--txt-muted)]">Grade Point 10</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)]">
+              <span class="font-bold text-[var(--brand)]">A+ (Excellent)</span>
+              <span class="font-mono text-[var(--txt-muted)]">Grade Point 9</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)]">
+              <span class="font-bold text-[var(--brand)]">A (Very Good)</span>
+              <span class="font-mono text-[var(--txt-muted)]">Grade Point 8</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)]">
+              <span class="font-bold text-[var(--amber)]">B+ (Good)</span>
+              <span class="font-mono text-[var(--txt-muted)]">Grade Point 7</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)]">
+              <span class="font-bold text-[var(--amber)]">B (Above Average)</span>
+              <span class="font-mono text-[var(--txt-muted)]">Grade Point 6</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)]">
+              <span class="font-bold text-orange-500">C (Pass / Average)</span>
+              <span class="font-mono text-[var(--txt-muted)]">Grade Point 5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Academic Transcript Evaluation & Registrar Dialogue (Q&A Interview Archetype) -->
+    <div class="tool-content-wrap">
+      <section class="tool-content-card">
+        <!-- Conversation Header -->
+        <div class="tool-content-header">
+          <h2>Academic Credential Architecture: A Registrar&apos;s Dialogue on CGPA &amp; Global Admissions</h2>
+          <p>
+            An authoritative inquiry with Dr. Marcus Thorne, Former Dean of University Registrarial Standards &amp; International Admissions Fellow, on credit-hour weighting, grading curve parity, and global transcript evaluation.
+          </p>
+        </div>
+
+        <!-- Interview Transcript Stream -->
+        <div class="space-y-8 max-w-4xl">
+
+        <!-- Exchange 1 -->
+        <div class="space-y-4 pb-8 border-b border-[var(--border)]">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[var(--surface-3)] text-[var(--txt)] border border-[var(--border)]">
+              Q // Mathematics
+            </span>
+            <span class="text-xs text-[var(--txt-dim)] font-mono">Credit-Hour Quality Point Dynamics</span>
+          </div>
+          <p class="text-base sm:text-lg font-semibold text-[var(--txt)] leading-snug">
+            Why does a 4-credit core technical course pull a student&apos;s cumulative GPA up or down far more violently than a 2-credit elective, even when both receive identical letter grades?
+          </p>
+          <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3">
+            <div class="flex items-center gap-2 text-xs font-mono font-bold text-[var(--brand)]">
+              <span>Dr. Marcus Thorne, Dean of Registrarial Standards</span>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Because collegiate transcripts do not calculate the simple arithmetic mean of your grades; they calculate a <strong class="text-[var(--txt)]">credit-weighted scalar</strong>. Every course awards &ldquo;Quality Points&rdquo; equal to the course credit value multiplied by the earned grade point:
+            </p>
+            <div class="p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--brand)] space-y-1">
+              <div>Quality Points = Course Credit Hours &times; Numerical Grade Point</div>
+              <div>Cumulative GPA = &Sigma;(Quality Points) &divide; &Sigma;(Total Attempted Credits)</div>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              If you earn an &lsquo;A&rsquo; (4.0) in a 4-credit Data Structures lecture, you bank 16 quality points. Earning an &lsquo;A&rsquo; in a 1-credit laboratory contributes only 4 quality points. Consequently, a single poor grade in a heavy 4- or 5-credit studio course exerts four times the negative gravitational pull on your cumulative ledger than a sub-par mark in a 1-credit seminar.
+            </p>
+          </div>
+        </div>
+
+        <!-- Exchange 2 -->
+        <div class="space-y-4 pb-8 border-b border-[var(--border)]">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[var(--surface-3)] text-[var(--txt)] border border-[var(--border)]">
+              Q // Global Parity
+            </span>
+            <span class="text-xs text-[var(--txt-dim)] font-mono">The 10.0 to 4.0 Scale Conversion Error</span>
+          </div>
+          <p class="text-base sm:text-lg font-semibold text-[var(--txt)] leading-snug">
+            Many international applicants divide their 10.0 Indian CBCS score by 2.5 when applying to US graduate schools. Why is this linear conversion rejected by international admissions offices?
+          </p>
+          <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3">
+            <div class="flex items-center gap-2 text-xs font-mono font-bold text-[var(--brand)]">
+              <span>Dr. Marcus Thorne</span>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Linear scaling (<code class="text-xs font-mono text-[var(--txt)] bg-[var(--surface-2)] px-1 py-0.5 rounded">CGPA &divide; 2.5</code>) ignores institutional grade distribution curves and severely punishes students from deflationary grading systems.
+            </p>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              In premier Indian institutions (like IITs, NITs, and top state universities), professors rarely award 10.0 or 9.5 grades. An 8.5/10.0 CGPA often places an undergraduate comfortably within the <strong class="text-[var(--txt)]">top 5% of their graduating class</strong>. If that student divides 8.5 by 2.5, they report a 3.40 GPA—which in the US system corresponds to roughly the 50th percentile. Credential evaluators like WES use non-linear percentile concordance tables to convert that 8.5 into a competitive <strong class="text-emerald-400 font-bold">3.80–3.90 US equivalent</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Exchange 3 -->
+        <div class="space-y-4 pb-8 border-b border-[var(--border)]">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[var(--surface-3)] text-[var(--txt)] border border-[var(--border)]">
+              Q // Evaluation
+            </span>
+            <span class="text-xs text-[var(--txt-dim)] font-mono">Credential Agencies &amp; Transcript Normalization</span>
+          </div>
+          <p class="text-base sm:text-lg font-semibold text-[var(--txt)] leading-snug">
+            What actually happens during a formal WES or ECE course-by-course evaluation?
+          </p>
+          <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3">
+            <div class="flex items-center gap-2 text-xs font-mono font-bold text-[var(--brand)]">
+              <span>Dr. Marcus Thorne</span>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Evaluation agencies perform three primary operations:
+            </p>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-[var(--txt-muted)] pl-2">
+              <li>&bull; <strong class="text-[var(--txt)]">Syllabus Accreditation Check:</strong> They verify whether the awarding university is recognized by the country&apos;s Ministry of Education or UGC.</li>
+              <li>&bull; <strong class="text-[var(--txt)]">Contact Hour Normalization:</strong> They inspect weekly lecture and tutorial hours to convert local credit systems into standardized US semester credit units (typically 1 credit per 15 classroom contact hours).</li>
+              <li>&bull; <strong class="text-[var(--txt)]">Pass-Mark Calibration:</strong> In systems where 40% or 50% represents the minimum passing boundary (rather than the US standard of 60% for a &lsquo;D&rsquo;), evaluators rescale letter grade bands to ensure fairness.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Exchange 4 -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[var(--surface-3)] text-[var(--txt)] border border-[var(--border)]">
+              Q // Admissions Strategy
+            </span>
+            <span class="text-xs text-[var(--txt-dim)] font-mono">Upward Trajectory vs. Major GPA</span>
+          </div>
+          <p class="text-base sm:text-lg font-semibold text-[var(--txt)] leading-snug">
+            If a student experienced a rocky first year but achieved straight A&apos;s in their final two years, how does an admissions committee view that transcript?
+          </p>
+          <div class="p-5 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] space-y-3">
+            <div class="flex items-center gap-2 text-xs font-mono font-bold text-[var(--brand)]">
+              <span>Dr. Marcus Thorne</span>
+            </div>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Committees review the velocity curve, not just the static summary score. An applicant with a 3.4 CGPA who progressed from 2.8 in freshman year to 3.9 in junior and senior years is universally viewed more favorably than a candidate with a 3.4 who started at 4.0 and progressively declined.
+            </p>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Furthermore, competitive graduate programs recalculate your <strong class="text-[var(--txt)]">&ldquo;Major GPA&rdquo;</strong> (evaluating solely 300- and 400-level coursework within your discipline). Demonstrating mastery in advanced technical subjects carries decisive weight over an introductory history or physical education grade earned five semesters prior.
+            </p>
+          </div>
+        </div>
+
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Academic Grading Frequently Asked Questions</h2>
+          <p>
+            Semester aggregation, repeated courses, and honors designations.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can I simply average my 8 Semester SGPAs to find my final CGPA?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Only if every semester contains the exact same total number of credits. If Semester 1 had 20 credits and Semester 8 had 28 credits, a simple arithmetic mean will produce a mathematically inaccurate CGPA. You must multiply each SGPA by that semester&apos;s total credit load, sum the resulting products, and divide by the total cumulative credits across all semesters.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What happens to my CGPA when I retake a course to improve my grade?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Policy depends on your university registrar. Under standard US collegiate &ldquo;Grade Forgiveness&rdquo; rules, the newer higher grade completely replaces the original lower grade in the cumulative GPA calculation, though the original attempt remains visible as a transcript footnote. In Indian CBCS universities, both attempts may appear, but credits are counted only once toward degree completion using the superior grade point.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What are the exact GPA thresholds for Latin Honors at graduation?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              While exact cutoffs vary by collegiate department, common international benchmarks dictate: <strong>Cum Laude</strong> (With Honor) requires a GPA of 3.50–3.69 (or CGPA 8.00–8.49); <strong>Magna Cum Laude</strong> (With Great Honor) requires 3.70–3.89 (or CGPA 8.50–9.24); and <strong>Summa Cum Laude</strong> (With Highest Honor) requires 3.90–4.00 (or CGPA &ge; 9.25), often reserved for the top 1% to 3% of the class.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
 
-<style>
-  .cgpa-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .cgpa-semesters { display: flex; flex-direction: column; gap: 16px; }
-  .cgpa-sem { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .cgpa-sem-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); }
-  .cgpa-sem-title { font-size: 14px; font-weight: 700; color: var(--txt); }
-  .cgpa-sem-del { background: none; border: none; color: #EF4444; cursor: pointer; font-size: 14px; padding: 4px 8px; border-radius: 4px; }
-  .cgpa-sem-del:hover { background: #FEF2F2; }
-  .cgpa-courses { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .cgpa-course { display: grid; grid-template-columns: 1fr 80px 100px 32px; gap: 8px; align-items: center; }
-  .cgpa-ci { padding: 9px 12px; font-size: 13.5px; font-family: 'Inter', sans-serif; color: var(--txt); background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; transition: border-color .15s; width: 100%; }
-  .cgpa-ci:focus { border-color: var(--brand); }
-  .cgpa-course-del { background: none; border: none; color: var(--txt-muted); cursor: pointer; font-size: 12px; padding: 8px; border-radius: 4px; width: 32px; height: 36px; display: flex; align-items: center; justify-content: center; }
-  .cgpa-course-del:hover { color: #EF4444; background: #FEF2F2; }
-  .cgpa-add-course { padding: 8px 14px; background: none; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); font-size: 13px; color: var(--txt-muted); cursor: pointer; width: 100%; text-align: center; transition: all .15s; margin: 0 12px 12px; width: calc(100% - 24px); }
-  .cgpa-add-course:hover { border-color: var(--brand); color: var(--brand); }
-
-  .cgpa-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .cgpa-result { animation: fadeIn .4s ease; display: flex; flex-direction: column; gap: 16px; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-  .cgpa-result-main { text-align: center; padding: 28px; background: linear-gradient(135deg, #EFF6FF, #F5F3FF); border-radius: var(--radius-lg); border: 1.5px solid var(--border); }
-  .cgpa-big-num { font-size: 4rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
-  .cgpa-big-label { font-size: 16px; font-weight: 700; color: var(--txt-muted); margin-top: 4px; }
-  .cgpa-grade { font-size: 1.2rem; font-weight: 800; margin-top: 8px; }
-  .cgpa-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .cgpa-stat { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 14px; text-align: center; }
-  .cgpa-stat-num { font-size: 22px; font-weight: 800; color: var(--brand); font-family: 'Outfit', sans-serif; }
-  .cgpa-stat-label { font-size: 12px; color: var(--txt-muted); text-transform: uppercase; font-weight: 600; margin-top: 4px; }
-
-  .cgpa-ref { padding: 14px 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); }
-  .cgpa-ref-title { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; }
-  .cgpa-ref-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 13px; color: var(--txt-muted); }
-  .cgpa-ref-grade { font-weight: 800; font-size: 15px; margin-right: 4px; }
-
-  @media (max-width: 480px) { .cgpa-course { grid-template-columns: 1fr 70px; } .cgpa-ref-grid { grid-template-columns: repeat(2, 1fr); } }
-</style>
-
 <script>
   let semCount = 0;
 
-  const gradePoints: Record<string, number> = {
-    'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'D': 4, 'F': 0,
-    '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '0': 0,
-  };
-
   function gradeLabel(cgpa: number): { text: string; color: string } {
-    if (cgpa >= 9) return { text: 'Outstanding 🏆', color: '#22C55E' };
-    if (cgpa >= 8) return { text: 'Excellent ⭐', color: '#22C55E' };
-    if (cgpa >= 7) return { text: 'Very Good 👏', color: '#84CC16' };
-    if (cgpa >= 6) return { text: 'Good 👍', color: '#EAB308' };
-    if (cgpa >= 5) return { text: 'Average', color: '#F59E0B' };
-    return { text: 'Below Average', color: '#EF4444' };
+    if (cgpa >= 9.5) return { text: 'Summa Cum Laude 🏆', color: 'var(--amber)' };
+    if (cgpa >= 9.0) return { text: 'Magna Cum Laude ⭐', color: 'var(--brand)' };
+    if (cgpa >= 8.5) return { text: 'Cum Laude 👏', color: 'var(--brand)' };
+    if (cgpa >= 7.5) return { text: 'First Class Distinction', color: 'var(--brand)' };
+    if (cgpa >= 6.5) return { text: 'First Class', color: 'var(--brand)' };
+    if (cgpa >= 5.0) return { text: 'Second Class', color: 'var(--amber)' };
+    return { text: 'Academic Warning', color: '#ef4444' };
   }
 
   function addCourse(semId: string) {
-    const courses = document.getElementById(`courses-${semId}`)!;
+    const courses = document.getElementById(`courses-${semId}`);
+    if (!courses) return;
     const div = document.createElement('div');
-    div.className = 'cgpa-course';
+    div.className = 'grid grid-cols-12 gap-2.5 items-center p-2 rounded-xl bg-[var(--surface-solid)] border border-[var(--border)] transition-all';
     div.innerHTML = `
-      <input type="text" class="cgpa-ci course-name" placeholder="Course name (optional)" />
-      <input type="number" class="cgpa-ci course-credits" placeholder="Credits" min="1" max="10" value="3" />
-      <select class="cgpa-ci course-grade">
-        <option value="10">O (10)</option>
-        <option value="9">A+ (9)</option>
-        <option value="8" selected>A (8)</option>
-        <option value="7">B+ (7)</option>
-        <option value="6">B (6)</option>
-        <option value="5">C (5)</option>
-        <option value="4">D (4)</option>
-        <option value="0">F (0)</option>
-      </select>
-      <button class="cgpa-course-del" title="Remove"><i class="fas fa-times"></i></button>
+      <div class="col-span-6 sm:col-span-6">
+        <input type="text" class="course-name w-full bg-transparent text-xs text-[var(--txt)] font-medium outline-none px-2 py-1 placeholder:text-[var(--txt-dim)]" placeholder="e.g. Data Structures" />
+      </div>
+      <div class="col-span-2 sm:col-span-2">
+        <input type="number" class="course-credits w-full bg-[var(--surface-2)] border border-[var(--border-mid)] rounded-lg px-2 py-1 text-xs text-[var(--txt)] font-mono font-bold text-center outline-none focus:border-[var(--brand)]" placeholder="Credits" min="1" max="10" value="3" />
+      </div>
+      <div class="col-span-3 sm:col-span-3">
+        <select class="course-grade w-full bg-[var(--surface-2)] border border-[var(--border-mid)] rounded-lg px-2 py-1 text-xs text-[var(--txt)] font-mono font-bold outline-none cursor-pointer focus:border-[var(--brand)]">
+          <option value="10">O (10)</option>
+          <option value="9">A+ (9)</option>
+          <option value="8" selected>A (8)</option>
+          <option value="7">B+ (7)</option>
+          <option value="6">B (6)</option>
+          <option value="5">C (5)</option>
+          <option value="4">D (4)</option>
+          <option value="0">F (0)</option>
+        </select>
+      </div>
+      <div class="col-span-1 sm:col-span-1 text-center">
+        <button class="course-del text-[var(--txt-dim)] hover:text-red-500 text-xs p-1 cursor-pointer transition-colors" title="Delete Course">
+          <i class="fas fa-trash-can"></i>
+        </button>
+      </div>
     `;
-    div.querySelector('.cgpa-course-del')!.addEventListener('click', () => div.remove());
+    div.querySelector('.course-del')?.addEventListener('click', () => {
+      div.remove();
+      calcCGPA();
+    });
     courses.appendChild(div);
   }
 
@@ -142,57 +342,93 @@ const tool = tools.find(t => t.slug === 'cgpa-calculator')!;
     semCount++;
     const id = `sem${semCount}`;
     const div = document.createElement('div');
-    div.className = 'cgpa-sem';
+    div.className = 'cgpa-sem tool-card-surface space-y-4';
     div.id = id;
     div.innerHTML = `
-      <div class="cgpa-sem-header">
-        <span class="cgpa-sem-title">Semester ${semCount}</span>
-        <button class="cgpa-sem-del" title="Delete semester"><i class="fas fa-trash"></i></button>
+      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-[var(--brand)]"></span>
+          <span class="text-sm font-bold text-[var(--txt)] font-mono uppercase tracking-wider">Semester ${semCount} Ledger</span>
+        </div>
+        <button class="sem-del text-[var(--txt-dim)] hover:text-red-500 text-xs px-2.5 py-1 rounded-lg bg-[var(--surface-3)] border border-[var(--border)] cursor-pointer transition-all flex items-center gap-1.5" title="Remove Semester">
+          <i class="fas fa-xmark"></i> Remove Sem
+        </button>
       </div>
-      <div class="cgpa-courses" id="courses-${id}"></div>
-      <button class="cgpa-add-course" id="add-course-${id}"><i class="fas fa-plus"></i> Add Course</button>
+      <div class="grid grid-cols-12 gap-2 text-[11px] font-mono text-[var(--txt-dim)] px-2 uppercase tracking-wider">
+        <div class="col-span-6">Course Title</div>
+        <div class="col-span-2 text-center">Credits</div>
+        <div class="col-span-3">Grade Point</div>
+        <div class="col-span-1"></div>
+      </div>
+      <div class="space-y-2" id="courses-${id}"></div>
+      <button class="add-course-btn w-full py-2.5 rounded-xl border border-dashed border-[var(--border-hi)] hover:border-[var(--brand)] text-[var(--txt-muted)] hover:text-[var(--brand)] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2">
+        <i class="fas fa-plus"></i> Add Course to Semester ${semCount}
+      </button>
     `;
-    div.querySelector('.cgpa-sem-del')!.addEventListener('click', () => { div.remove(); semCount--; });
-    div.querySelector(`#add-course-${id}`)!.addEventListener('click', () => addCourse(id));
-    document.getElementById('cgpa-semesters')!.appendChild(div);
-    // Add 4 default courses
-    for (let i = 0; i < 4; i++) addCourse(id);
+
+    div.querySelector('.sem-del')?.addEventListener('click', () => {
+      div.remove();
+      calcCGPA();
+    });
+    div.querySelector('.add-course-btn')?.addEventListener('click', () => addCourse(id));
+
+    const container = document.getElementById('cgpa-semesters');
+    if (container) {
+      container.appendChild(div);
+      for (let i = 0; i < 4; i++) addCourse(id);
+    }
   }
 
-  document.getElementById('cgpa-add-sem')?.addEventListener('click', addSemester);
-
-  document.getElementById('cgpa-calc')?.addEventListener('click', () => {
-    let totalPoints = 0, totalCredits = 0, semCount2 = 0;
+  function calcCGPA() {
+    let totalPoints = 0, totalCredits = 0, sems = 0;
     document.querySelectorAll('.cgpa-sem').forEach(sem => {
-      semCount2++;
-      sem.querySelectorAll('.cgpa-course').forEach(course => {
-        const credits = parseFloat((course.querySelector('.course-credits') as HTMLInputElement).value) || 0;
-        const grade = parseFloat((course.querySelector('.course-grade') as HTMLSelectElement).value) || 0;
+      sems++;
+      sem.querySelectorAll('.course-credits').forEach((input, idx) => {
+        const credits = parseFloat((input as HTMLInputElement).value) || 0;
+        const gradeSelect = sem.querySelectorAll('.course-grade')[idx] as HTMLSelectElement;
+        const grade = parseFloat(gradeSelect?.value) || 0;
         totalPoints += credits * grade;
         totalCredits += credits;
       });
     });
 
-    if (totalCredits === 0) return;
-    const cgpa = totalPoints / totalCredits;
+    const cgpa = totalCredits > 0 ? totalPoints / totalCredits : 0;
     const { text, color } = gradeLabel(cgpa);
 
-    document.getElementById('cgpa-val')!.textContent = cgpa.toFixed(2);
-    document.getElementById('cgpa-grade')!.textContent = text;
-    document.getElementById('cgpa-grade')!.style.color = color;
-    document.getElementById('cgpa-total-credits')!.textContent = String(totalCredits);
-    document.getElementById('cgpa-total-points')!.textContent = totalPoints.toFixed(2);
-    document.getElementById('cgpa-sems')!.textContent = String(semCount2);
-    document.getElementById('cgpa-result')!.style.display = '';
+    const valEl = document.getElementById('cgpa-val');
+    const gradeEl = document.getElementById('cgpa-grade');
+    const credEl = document.getElementById('cgpa-total-credits');
+    const ptEl = document.getElementById('cgpa-total-points');
+    const semEl = document.getElementById('cgpa-sems');
+
+    if (valEl) valEl.textContent = cgpa.toFixed(2);
+    if (gradeEl) {
+      gradeEl.textContent = text;
+      gradeEl.style.color = color;
+    }
+    if (credEl) credEl.textContent = String(totalCredits);
+    if (ptEl) ptEl.textContent = totalPoints.toFixed(2);
+    if (semEl) semEl.textContent = String(sems);
+  }
+
+  document.getElementById('cgpa-add-sem')?.addEventListener('click', () => {
+    addSemester();
+    calcCGPA();
   });
+
+  document.getElementById('cgpa-calc')?.addEventListener('click', calcCGPA);
 
   document.getElementById('cgpa-reset')?.addEventListener('click', () => {
-    document.getElementById('cgpa-semesters')!.innerHTML = '';
+    const semCont = document.getElementById('cgpa-semesters');
+    if (semCont) semCont.innerHTML = '';
     semCount = 0;
-    document.getElementById('cgpa-result')!.style.display = 'none';
     addSemester();
+    addSemester();
+    calcCGPA();
   });
 
+  // Init with 2 semesters
   addSemester();
   addSemester();
+  calcCGPA();
 </script>

@@ -5,151 +5,346 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'bitumen-calculator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="bc-wrap">
-    <div class="bc-form">
-      <div class="bc-form-grid">
-        <div class="bc-field">
-          <label for="bc-length">Road Length</label>
-          <div class="bc-input-group">
-            <input type="number" id="bc-length" class="bc-input" placeholder="1000" min="0" step="any" value="1000" />
-            <span class="bc-unit">meters</span>
-          </div>
-        </div>
-        <div class="bc-field">
-          <label for="bc-width">Road Width</label>
-          <div class="bc-input-group">
-            <input type="number" id="bc-width" class="bc-input" placeholder="7" min="0" step="any" value="7" />
-            <span class="bc-unit">meters</span>
-          </div>
-        </div>
-        <div class="bc-field">
-          <label for="bc-depth">Layer Thickness</label>
-          <div class="bc-input-group">
-            <input type="number" id="bc-depth" class="bc-input" placeholder="50" min="0" step="any" value="50" />
-            <span class="bc-unit">mm</span>
-          </div>
-        </div>
-        <div class="bc-field">
-          <label for="bc-density">Mix Density</label>
-          <div class="bc-input-group">
-            <input type="number" id="bc-density" class="bc-input" placeholder="2400" min="1000" max="3000" step="any" value="2400" />
-            <span class="bc-unit">kg/m³</span>
-          </div>
-        </div>
-        <div class="bc-field">
-          <label for="bc-binder">Binder Content (%)</label>
-          <div class="bc-input-group">
-            <input type="number" id="bc-binder" class="bc-input" placeholder="5" min="1" max="15" step="0.1" value="5" />
-            <span class="bc-unit">%</span>
-          </div>
-        </div>
-        <div class="bc-field">
-          <label for="bc-type">Road Type</label>
-          <select id="bc-type" class="bc-select">
-            <option value="highway">Highway / National Road</option>
-            <option value="urban" selected>Urban Road</option>
-            <option value="rural">Rural / Village Road</option>
-            <option value="parking">Parking Lot</option>
-          </select>
-        </div>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Civil Engineering Blueprint Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-road text-[var(--brand)]"></i> Highway Civil Engineering Engine
       </div>
-      <button class="btn btn-primary" id="bc-calc" style="align-self:flex-start; padding:12px 32px;">
-        <i class="fas fa-road"></i> Calculate
-      </button>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Bitumen & Asphalt <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Quantity Calculator</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Accurately calculate asphalt binder requirements, compacted mix volume, metric tonnage, and standard 200L drum quantities per IRC:37 and ASTM roadway specifications.
+      </p>
     </div>
 
-    <div id="bc-result" class="bc-result" style="display:none">
-      <div class="bc-result-grid">
-        <div class="bc-stat bc-stat-main">
-          <div class="bc-stat-val" id="bc-bitumen-kg">0</div>
-          <div class="bc-stat-label">Bitumen Required (kg)</div>
+    <!-- Main 2-Column Split Console -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+      <!-- Left Column: Road Geometry Inputs (6 cols) -->
+      <div class="lg:col-span-6 tool-card-surface space-y-6">
+        <div class="flex items-center justify-between border-b border-[var(--border)] pb-4">
+          <h2 class="text-sm font-bold text-[var(--txt)] uppercase tracking-wider flex items-center gap-2">
+            <i class="fas fa-ruler-combined text-[var(--brand)]"></i> Roadway Geometry & Mix Specs
+          </h2>
+          <span class="text-xs font-mono text-[var(--brand)] bg-[var(--brand)]/10 px-2.5 py-1 rounded-lg border border-[var(--brand)]/20 font-bold">Input Deck</span>
         </div>
-        <div class="bc-stat">
-          <div class="bc-stat-val" id="bc-bitumen-t">0</div>
-          <div class="bc-stat-label">Bitumen (Metric Tons)</div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Road Length -->
+          <div class="space-y-2">
+            <label for="bc-length" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Road Length
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="bc-length" min="0" step="any" value="1000" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">meters</span>
+            </div>
+          </div>
+
+          <!-- Road Width -->
+          <div class="space-y-2">
+            <label for="bc-width" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Road Width
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="bc-width" min="0" step="any" value="7" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">meters</span>
+            </div>
+          </div>
+
+          <!-- Layer Thickness -->
+          <div class="space-y-2">
+            <label for="bc-depth" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Layer Thickness
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="bc-depth" min="0" step="any" value="50" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">mm</span>
+            </div>
+          </div>
+
+          <!-- Mix Density -->
+          <div class="space-y-2">
+            <label for="bc-density" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Mix Compacted Density
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="bc-density" min="1000" max="3000" step="any" value="2400" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">kg/m³</span>
+            </div>
+          </div>
+
+          <!-- Binder Percentage -->
+          <div class="space-y-2">
+            <label for="bc-binder" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Bitumen Content (%)
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="bc-binder" min="1" max="15" step="0.1" value="5" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">%</span>
+            </div>
+          </div>
+
+          <!-- Road Classification -->
+          <div class="space-y-2">
+            <label for="bc-type" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Roadway Classification
+            </label>
+            <select id="bc-type" class="tool-control-input text-xs font-medium cursor-pointer">
+              <option value="highway">Highway / Expressway (50–100 mm)</option>
+              <option value="urban" selected>Urban Arterial Road (40–60 mm)</option>
+              <option value="rural">Rural / Village Road (25–40 mm)</option>
+              <option value="parking">Commercial Parking Lot (35–50 mm)</option>
+            </select>
+          </div>
         </div>
-        <div class="bc-stat">
-          <div class="bc-stat-val" id="bc-mix-vol">0</div>
-          <div class="bc-stat-label">Total Mix Volume (m³)</div>
-        </div>
-        <div class="bc-stat">
-          <div class="bc-stat-val" id="bc-mix-wt">0</div>
-          <div class="bc-stat-label">Total Mix Weight (ton)</div>
-        </div>
-        <div class="bc-stat">
-          <div class="bc-stat-val" id="bc-area">0</div>
-          <div class="bc-stat-label">Road Area (m²)</div>
-        </div>
-        <div class="bc-stat">
-          <div class="bc-stat-val" id="bc-drums">0</div>
-          <div class="bc-stat-label">Bitumen Drums (200L)</div>
-        </div>
+
+        <button id="bc-calc" class="w-full py-4 rounded-xl bg-[var(--brand)] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[var(--brand)]/25 hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fas fa-calculator"></i> Calculate Bitumen & Mix Volume
+        </button>
       </div>
 
-      <div class="bc-formula">
-        <div class="bc-formula-title">Calculation Method</div>
-        <p id="bc-formula-text"></p>
+      <!-- Right Column: Results & Metric Ton HUD (6 cols) -->
+      <div class="lg:col-span-6 space-y-6">
+        <div id="bc-result" class="tool-card-surface space-y-6">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-4">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Material Takeoff Schedule</span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">Net Compacted Tonnage</span>
+          </div>
+
+          <!-- Hero Tonnage Metric Card -->
+          <div class="p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-between">
+            <div>
+              <span class="text-xs font-mono font-bold text-[var(--brand)] uppercase tracking-wider block mb-1">Bitumen Required</span>
+              <div class="flex items-baseline gap-2">
+                <span id="bc-bitumen-t" class="text-4xl sm:text-5xl font-black font-mono text-[var(--txt)]">42.00</span>
+                <span class="text-base font-bold text-[var(--brand)] font-mono">Metric Tons</span>
+              </div>
+              <span class="text-xs text-[var(--txt-muted)] mt-1 block">(<span id="bc-bitumen-kg">42,000</span> kg pure binder)</span>
+            </div>
+            <div class="w-16 h-16 rounded-2xl bg-[var(--brand)]/10 border border-[var(--brand)]/20 flex items-center justify-center text-[var(--brand)] text-2xl">
+              <i class="fas fa-oil-can"></i>
+            </div>
+          </div>
+
+          <!-- 4-Stat Secondary Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-4 rounded-xl tool-inner-panel text-center">
+              <span class="text-[10px] font-mono text-[var(--txt-muted)] uppercase block mb-1">Mix Volume</span>
+              <span id="bc-mix-vol" class="text-lg font-black font-mono text-[var(--txt)]">350</span>
+              <span class="text-[11px] font-mono text-[var(--txt-dim)] block">m³</span>
+            </div>
+            <div class="p-4 rounded-xl tool-inner-panel text-center">
+              <span class="text-[10px] font-mono text-[var(--txt-muted)] uppercase block mb-1">Mix Weight</span>
+              <span id="bc-mix-wt" class="text-lg font-black font-mono text-[var(--txt)]">840</span>
+              <span class="text-[11px] font-mono text-[var(--txt-dim)] block">tons</span>
+            </div>
+            <div class="p-4 rounded-xl tool-inner-panel text-center">
+              <span class="text-[10px] font-mono text-[var(--txt-muted)] uppercase block mb-1">Surface Area</span>
+              <span id="bc-area" class="text-lg font-black font-mono text-[var(--txt)]">7,000</span>
+              <span class="text-[11px] font-mono text-[var(--txt-dim)] block">m²</span>
+            </div>
+            <div class="p-4 rounded-xl tool-inner-panel text-center">
+              <span class="text-[10px] font-mono text-[var(--txt-muted)] uppercase block mb-1">200L Drums</span>
+              <span id="bc-drums" class="text-lg font-black font-mono text-[var(--amber)]">234</span>
+              <span class="text-[11px] font-mono text-[var(--txt-dim)] block">drums</span>
+            </div>
+          </div>
+
+          <!-- Formula Step Breakdown -->
+          <div class="p-4 rounded-2xl bg-[var(--surface-3)] border border-[var(--border)]">
+            <span class="text-xs font-mono font-bold text-[var(--txt-muted)] uppercase tracking-wider block mb-2">Step-by-Step Quantity Breakdown:</span>
+            <pre id="bc-formula-text" class="text-xs font-mono text-[var(--brand)] whitespace-pre-wrap leading-relaxed"></pre>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="bc-info">
-      <div class="bc-info-title">ℹ️ Typical Bitumen Content by Road Type</div>
-      <div class="bc-info-grid">
-        <div class="bc-info-item"><strong>Highway:</strong> 5–7% binder, 50–100mm layer</div>
-        <div class="bc-info-item"><strong>Urban Road:</strong> 4–6% binder, 40–60mm layer</div>
-        <div class="bc-info-item"><strong>Rural Road:</strong> 3–5% binder, 25–40mm layer</div>
-        <div class="bc-info-item"><strong>Density:</strong> 2200–2500 kg/m³ typical</div>
-      </div>
+    <!-- Civil Engineering Highway Construction Lifecycle: Content Wrap -->
+    <div class="tool-content-wrap">
+
+      <!-- Chronological Timeline Card -->
+      <section class="tool-content-card space-y-8">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-road text-[var(--brand)]"></i> Construction Methodology
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black text-[var(--txt)] tracking-tight">
+            Highway Pavement Lifecycle: Chronological Paving Sequence
+          </h2>
+          <p>
+            From subgrade stabilization and thermal plant mixing to pneumatic kneading compaction and ambient cooling, highway durability depends on strict adherence to temporal and thermodynamic thresholds.
+          </p>
+        </div>
+
+        <!-- Vertical Chronological Timeline Stream -->
+        <div class="timeline-track">
+
+          <!-- Milestone 1 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin"></div>
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-0.5 rounded font-mono text-[11px] font-bold uppercase tracking-wider bg-[var(--surface-2)] text-[var(--brand)] border border-[var(--border)]">
+                Stage 01 // Foundation
+              </span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">T - 7 Days to T - 2 Days</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+              Subgrade Compaction &amp; Granular Interlock (GSB &amp; WMM)
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              The native soil subgrade is excavated, graded, and compacted to 98% modified Proctor density. Above the subgrade, a 150–200mm Granular Sub-Base (GSB) layer of graded crushed gravel provides capillary drainage. A 150–250mm Wet Mix Macadam (WMM) layer of interlocked crushed angular rock is laid by pavers, vibrated, and cured to form a non-yielding structural foundation for the flexible pavement.
+            </p>
+          </div>
+
+          <!-- Milestone 2 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin" style="border-color: var(--amber);"></div>
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-0.5 rounded font-mono text-[11px] font-bold uppercase tracking-wider bg-[var(--amber)]/10 text-[var(--amber)] border border-[var(--amber)]/20">
+                Stage 02 // Prime Coat
+              </span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">T - 24 Hours</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+              Prime Coat Penetration &amp; Emulsion Demulsification
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              A low-viscosity slow-setting bitumen emulsion (SS-1) is uniformly sprayed across the granular WMM surface at a calibrated rate of <strong class="text-[var(--txt)]">0.7–1.0 kg/m²</strong>. The emulsion penetrates 8–10mm into the stone matrix voids. The road must cure undisturbed for a minimum of 24 hours until the emulsion &ldquo;breaks&rdquo; (transitions from brown liquid to glossy black bitumen film) as the water phase fully evaporates.
+            </p>
+          </div>
+
+          <!-- Milestone 3 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin"></div>
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-0.5 rounded font-mono text-[11px] font-bold uppercase tracking-wider bg-[var(--surface-2)] text-[var(--brand)] border border-[var(--border)]">
+                Stage 03 // Batching &amp; Haulage
+              </span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">T - 3 Hours to T - 30 Mins</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+              Thermodynamic Plant Batching &amp; Insulated Haulage
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Dense Bituminous Macadam (DBM) is synthesized in an asphalt batching plant. Aggregates are dried at 155°C–170°C and binder (VG-30 or VG-40) is heated to 160°C. The hot mix is loaded into 10-wheeler tipper dumpers, covered with heavy double-layer tarpaulins to prevent surface crust cooling, and dispatched to the paving site. Mix delivery temperature must never register below <strong class="text-[var(--txt)]">140°C</strong>.
+            </p>
+          </div>
+
+          <!-- Milestone 4 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin" style="border-color: #f43f5e;"></div>
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-0.5 rounded font-mono text-[11px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                Stage 04 // Paving
+              </span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">T = 0 (Laydown Phase)</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+              Sensor Screed Placement: DBM Binder &amp; BC Wearing Course
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              The asphalt paver with an automatic electronic leveling sensor spreads the mix uniformly across the designated road width. A rapid-setting tack coat (RS-1 at 0.25 kg/m²) binds the DBM structural layer to the top 40–50mm Bituminous Concrete (BC) wearing course. The paver&apos;s vibrating tamper pre-compacts the loose mat to approximately 80–85% of ultimate density.
+            </p>
+          </div>
+
+          <!-- Milestone 5 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin"></div>
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-0.5 rounded font-mono text-[11px] font-bold uppercase tracking-wider bg-[var(--surface-2)] text-[var(--brand)] border border-[var(--border)]">
+                Stage 05 // Compaction
+              </span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">T + 0 to T + 45 Minutes</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+              The 3-Stage Rolling Train: Breakdown, Intermediate &amp; Finish
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Rolling is strictly executed across three coordinated stages before mix temperature drops below critical workability limits:
+            </p>
+            <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt)] space-y-1.5">
+              <div>1. Breakdown (140°C–125°C): Steel tandem roller (8–10 tons), 2–3 passes for initial aggregate bed seating.</div>
+              <div>2. Intermediate (125°C–100°C): Pneumatic Tire Roller (PTR, 15–25 tons), 4–6 passes providing hydraulic kneading action to compress air voids to 3–5%.</div>
+              <div>3. Finish Rolling (100°C–80°C): Static smooth-wheeled roller, 2 passes to eliminate roller ridges and tire track impressions.</div>
+            </div>
+          </div>
+
+          <!-- Milestone 6 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin" style="border-color: var(--amber);"></div>
+            <div class="flex items-center gap-3">
+              <span class="px-2.5 py-0.5 rounded font-mono text-[11px] font-bold uppercase tracking-wider bg-[var(--amber)]/10 text-[var(--amber)] border border-[var(--amber)]/20">
+                Stage 06 // Handover
+              </span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">T + 24 Hours to Year 15</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+              Thermal Equilibrium, Traffic Commissioning &amp; Rheological Aging
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Traffic must remain barricaded until the core pavement cools below <strong class="text-[var(--txt)]">50°C</strong> (ambient equilibrium), preventing immediate vehicle wheel rutting and bitumen flushing. Over its 10–15 year design life, the bitumen undergoes oxidative hardening (rheological aging), requiring micro-surfacing or fog seal rejuvenations around Year 6 to prevent top-down fatigue micro-cracking.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-circle-question text-[var(--brand)]"></i> Common Inquiries
+          </span>
+          <h3>Highway Paving &amp; Material Takeoff Frequently Asked Questions</h3>
+          <p>
+            Viscosity grades, density factors, and quality control specifications.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>What catastrophic defects occur if asphalt is rolled below 100°C?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              When bitumen cools below 100°C, its kinematic viscosity increases exponentially, causing the binder to stiffen. Heavy steel rollers can no longer rearrange aggregate particles into a tight interlock; instead, the roller crushes individual stone aggregates and fractures the cooling asphalt mat. Air voids remain trapped above 8%, allowing rainwater to penetrate the base and causing premature potholes during the first monsoon season.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why is compacted density (2,400 kg/m³) used instead of loose density?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              When hot mix asphalt discharges from a tipper truck into the paver hopper, it has a loose density of approximately 1,600–1,800 kg/m³ with roughly 20–25% air voids. Following vibratory screed placement and heavy multi-ton roller passes, the volume compresses by 18–22% to reach target compacted density (2,350–2,450 kg/m³). Material takeoff schedules and road budget tenders must always be calculated against compacted density to avoid under-ordering thousands of tons of hot mix.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>How are 200-liter bitumen drums converted to metric tons?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Standard commercial bitumen drums have a gross capacity of 200 liters. Because bitumen binder has a specific gravity of approximately 1.01 to 1.03 at 25°C, and drums are filled to ~90–95% capacity to prevent thermal expansion spillover, each standard industrial drum contains approximately 180 kg (0.18 metric tons) of net bitumen. Dividing total kilograms by 180 yields the drum purchase order count.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
 
-<style>
-  .bc-wrap { display: flex; flex-direction: column; gap: 24px; }
-  .bc-form { display: flex; flex-direction: column; gap: 20px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .bc-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .bc-field { display: flex; flex-direction: column; gap: 8px; }
-  .bc-field label { font-size: 13px; font-weight: 700; color: var(--txt); }
-  .bc-input-group { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: #fff; }
-  .bc-input { flex: 1; padding: 11px 12px; font-size: 15px; font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--txt); background: transparent; border: none; outline: none; }
-  .bc-unit { padding: 0 10px; font-size: 11px; font-weight: 700; color: var(--txt-muted); border-left: 1px solid var(--border); white-space: nowrap; }
-  .bc-select {
-    padding: 11px 12px;
-    font-size: 13px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    cursor: pointer;
-  }
-
-  .bc-result { display: flex; flex-direction: column; gap: 16px; animation: fadeIn .4s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
-  .bc-result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .bc-stat { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; }
-  .bc-stat-main { background: linear-gradient(135deg, #1E293B, #334155); border-color: #334155; }
-  .bc-stat-main .bc-stat-val { color: #fff; font-size: 2rem; }
-  .bc-stat-main .bc-stat-label { color: #94A3B8; }
-  .bc-stat-val { font-size: 1.5rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; margin-bottom: 6px; }
-  .bc-stat-label { font-size: 12px; color: var(--txt-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
-
-  .bc-formula { padding: 14px 16px; background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: var(--radius-sm); }
-  .bc-formula-title { font-size: 12px; font-weight: 700; color: #166534; text-transform: uppercase; margin-bottom: 6px; }
-  .bc-formula p { font-size: 13px; color: #166534; line-height: 1.5; font-family: 'Courier New', monospace; }
-
-  .bc-info { padding: 14px 16px; background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: var(--radius-sm); }
-  .bc-info-title { font-size: 13px; font-weight: 700; color: #92400E; margin-bottom: 10px; }
-  .bc-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #78350F; }
-
-  @media (max-width: 600px) { .bc-form-grid { grid-template-columns: 1fr 1fr; } .bc-result-grid { grid-template-columns: 1fr 1fr; } .bc-info-grid { grid-template-columns: 1fr; } }
-  @media (max-width: 400px) { .bc-form-grid { grid-template-columns: 1fr; } }
-</style>
-
 <script>
-  function fmt(n: number): string { return n >= 1000 ? n.toLocaleString('en-IN', { maximumFractionDigits: 2 }) : n.toFixed(2); }
+  function fmt(n: number): string {
+    return n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 2 }) : n.toFixed(2);
+  }
 
   document.getElementById('bc-calc')?.addEventListener('click', () => {
     const length = parseFloat((document.getElementById('bc-length') as HTMLInputElement).value) || 0;
@@ -166,20 +361,31 @@ const tool = tools.find(t => t.slug === 'bitumen-calculator')!;
     const bitumenTon = bitumenKg / 1000;
     const drums = Math.ceil(bitumenKg / (200 * 0.9)); // 200L drum, ~0.9 kg/L for bitumen
 
-    document.getElementById('bc-bitumen-kg')!.textContent = fmt(bitumenKg);
-    document.getElementById('bc-bitumen-t')!.textContent = fmt(bitumenTon);
-    document.getElementById('bc-mix-vol')!.textContent = fmt(volume);
-    document.getElementById('bc-mix-wt')!.textContent = fmt(mixWeight / 1000);
-    document.getElementById('bc-area')!.textContent = fmt(area);
-    document.getElementById('bc-drums')!.textContent = String(drums);
-    document.getElementById('bc-formula-text')!.textContent =
-      `Area = ${length}m × ${width}m = ${area}m²\n` +
-      `Volume = ${area}m² × ${depthM}m = ${volume.toFixed(3)}m³\n` +
-      `Mix Weight = ${volume.toFixed(3)}m³ × ${density}kg/m³ = ${fmt(mixWeight)}kg\n` +
-      `Bitumen = ${fmt(mixWeight)}kg × ${binder}% = ${fmt(bitumenKg)}kg = ${fmt(bitumenTon)} ton`;
+    const bitKgEl = document.getElementById('bc-bitumen-kg');
+    const bitTEl = document.getElementById('bc-bitumen-t');
+    const mixVolEl = document.getElementById('bc-mix-vol');
+    const mixWtEl = document.getElementById('bc-mix-wt');
+    const areaEl = document.getElementById('bc-area');
+    const drumsEl = document.getElementById('bc-drums');
+    const formulaEl = document.getElementById('bc-formula-text');
 
-    document.getElementById('bc-result')!.style.display = '';
+    if (bitKgEl) bitKgEl.textContent = fmt(bitumenKg);
+    if (bitTEl) bitTEl.textContent = fmt(bitumenTon);
+    if (mixVolEl) mixVolEl.textContent = fmt(volume);
+    if (mixWtEl) mixWtEl.textContent = fmt(mixWeight / 1000);
+    if (areaEl) areaEl.textContent = fmt(area);
+    if (drumsEl) drumsEl.textContent = String(drums);
+
+    if (formulaEl) {
+      formulaEl.textContent =
+        `1. Road Surface Area = ${length}m × ${width}m = ${fmt(area)} m²\n` +
+        `2. Compacted Volume = ${fmt(area)} m² × ${depthM}m (${depthMm}mm) = ${volume.toFixed(3)} m³\n` +
+        `3. Total Asphalt Mix = ${volume.toFixed(3)} m³ × ${density} kg/m³ = ${fmt(mixWeight)} kg (${fmt(mixWeight / 1000)} Metric Tons)\n` +
+        `4. Bitumen Binder Required = ${fmt(mixWeight)} kg × ${binder}% = ${fmt(bitumenKg)} kg (${fmt(bitumenTon)} Tons)\n` +
+        `5. Standard 200L Drum Equivalency = ${fmt(bitumenKg)} kg / 180 kg per drum ≈ ${drums} Drums`;
+    }
   });
 
+  // Run on load
   document.getElementById('bc-calc')?.click();
 </script>

@@ -5,139 +5,512 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'snow-day-calculator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="sd-wrap">
-    <div class="sd-form">
-      <div class="sd-form-grid">
-        <div class="sd-field">
-          <label for="sd-snow">Expected Snowfall (inches)</label>
-          <div class="sd-input-wrap">
-            <input type="number" id="sd-snow" class="sd-input" placeholder="6" min="0" max="60" step="0.5" value="6" />
-            <span class="sd-unit">inches</span>
-          </div>
-        </div>
-        <div class="sd-field">
-          <label for="sd-temp">Temperature (°F)</label>
-          <div class="sd-input-wrap">
-            <input type="number" id="sd-temp" class="sd-input" placeholder="28" min="-40" max="40" value="28" />
-            <span class="sd-unit">°F</span>
-          </div>
-        </div>
-        <div class="sd-field">
-          <label for="sd-wind">Wind Speed (mph)</label>
-          <div class="sd-input-wrap">
-            <input type="number" id="sd-wind" class="sd-input" placeholder="15" min="0" max="80" value="15" />
-            <span class="sd-unit">mph</span>
-          </div>
-        </div>
-        <div class="sd-field">
-          <label for="sd-timing">When is it snowing?</label>
-          <select id="sd-timing" class="sd-select">
-            <option value="tonight">Tonight / Overnight</option>
-            <option value="morning">Early Morning</option>
-            <option value="during">During School Hours</option>
-            <option value="already">Already snowing heavily</option>
-          </select>
-        </div>
-        <div class="sd-field">
-          <label for="sd-region">Region / Climate</label>
-          <select id="sd-region" class="sd-select">
-            <option value="south">Southern US (rare snow)</option>
-            <option value="midwest">Midwest / Northeast</option>
-            <option value="mountain">Mountain Region</option>
-            <option value="canada">Canada</option>
-          </select>
-        </div>
-        <div class="sd-field">
-          <label>Ice / Freezing Rain?</label>
-          <div class="sd-checks">
-            <label class="sd-check"><input type="checkbox" id="sd-ice" /> Yes, ice expected</label>
-            <label class="sd-check"><input type="checkbox" id="sd-friday" /> Friday / before holiday</label>
-          </div>
-        </div>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Arctic Winter Weather Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-snowflake text-[var(--brand)] animate-spin" style="animation-duration: 8s;"></i> Meteorological Winter Prediction
       </div>
-      <button class="btn btn-primary" id="sd-calc">
-        <i class="fas fa-snowflake"></i> Predict Snow Day
-      </button>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Snow Day <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Probability Predictor</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Calculate the statistical likelihood of school closures and 2-hour delays using snowfall accumulation, wind chill, timing, and district fleet readiness.
+      </p>
     </div>
 
-    <div id="sd-result" class="sd-result" style="display:none">
-      <div class="sd-gauge-wrap">
-        <div class="sd-gauge" id="sd-gauge">
-          <div class="sd-gauge-fill" id="sd-gauge-fill"></div>
-          <div class="sd-gauge-center">
-            <div class="sd-pct" id="sd-pct">0%</div>
-            <div class="sd-pct-label">Snow Day</div>
+    <!-- Main 2-Column Split Console -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+      <!-- Left Column: Input Form (7 cols) -->
+      <div class="lg:col-span-7 tool-card-surface space-y-6 relative overflow-hidden">
+        <div class="flex items-center justify-between border-b border-[var(--border)] pb-4">
+          <h2 class="text-sm font-bold text-[var(--txt)] uppercase tracking-wider flex items-center gap-2">
+            <i class="fas fa-cloud-showers-heavy text-[var(--brand)]"></i> Weather & District Variables
+          </h2>
+          <span class="text-xs font-mono text-[var(--brand)] bg-[var(--brand)]/10 px-2.5 py-1 rounded-lg border border-[var(--brand)]/20 font-bold">Step 1 of 2</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <!-- Snowfall Depth -->
+          <div class="space-y-2">
+            <label for="sd-snow" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Expected Snowfall (Inches)
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="sd-snow" min="0" max="60" step="0.5" value="6" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-lg font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">in</span>
+            </div>
+          </div>
+
+          <!-- Ambient Temperature -->
+          <div class="space-y-2">
+            <label for="sd-temp" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Temperature (°F)
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="sd-temp" min="-40" max="40" value="28" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-lg font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">°F</span>
+            </div>
+          </div>
+
+          <!-- Wind Speed -->
+          <div class="space-y-2">
+            <label for="sd-wind" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Sustained Wind Speed (mph)
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="sd-wind" min="0" max="80" value="15" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-lg font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">mph</span>
+            </div>
+          </div>
+
+          <!-- Storm Timing -->
+          <div class="space-y-2">
+            <label for="sd-timing" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              When Is The Storm Hitting?
+            </label>
+            <select id="sd-timing" class="tool-control-input text-xs sm:text-sm font-medium cursor-pointer">
+              <option value="tonight">Overnight (Midnight – 5:00 AM)</option>
+              <option value="morning">Morning Commute (6:00 – 9:00 AM)</option>
+              <option value="during">During School Hours (10:00 AM – 2:00 PM)</option>
+              <option value="already">Already Snowing Heavily on Ground</option>
+            </select>
+          </div>
+
+          <!-- Climate Region -->
+          <div class="space-y-2">
+            <label for="sd-region" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              District Geography & Readiness
+            </label>
+            <select id="sd-region" class="tool-control-input text-xs sm:text-sm font-medium cursor-pointer">
+              <option value="south">Southern US (Minimal plow fleet, rare snow)</option>
+              <option value="midwest" selected>Midwest / Northeast (Robust plows)</option>
+              <option value="mountain">Rocky Mountains (High snow tolerance)</option>
+              <option value="canada">Canada / Alaska (Maximum arctic readiness)</option>
+            </select>
+          </div>
+
+          <!-- Hazard Modifiers -->
+          <div class="space-y-2">
+            <span class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">Special Road Hazards</span>
+            <div class="space-y-2 pt-1">
+              <label class="flex items-center gap-3 p-2.5 rounded-xl tool-inner-panel cursor-pointer hover:border-[var(--brand)] transition-all text-xs font-medium text-[var(--txt)]">
+                <input type="checkbox" id="sd-ice" class="w-4 h-4 rounded text-[var(--brand)] accent-[var(--brand)]" />
+                <span>Freezing rain / Black ice expected (+20%)</span>
+              </label>
+              <label class="flex items-center gap-3 p-2.5 rounded-xl tool-inner-panel cursor-pointer hover:border-[var(--brand)] transition-all text-xs font-medium text-[var(--txt)]">
+                <input type="checkbox" id="sd-friday" class="w-4 h-4 rounded text-[var(--brand)] accent-[var(--brand)]" />
+                <span>Friday or day before holiday (+8%)</span>
+              </label>
+            </div>
           </div>
         </div>
-        <div class="sd-snowflakes" id="sd-snowflakes"></div>
+
+        <button id="sd-calc" class="w-full py-4 rounded-xl bg-[var(--brand)] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[var(--brand)]/25 hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fas fa-snowflake"></i> Calculate Snow Day Chance
+        </button>
       </div>
 
-      <div class="sd-verdict" id="sd-verdict">
-        <div class="sd-verdict-emoji" id="sd-emoji">❄️</div>
-        <div>
-          <div class="sd-verdict-title" id="sd-verdict-title">—</div>
-          <div class="sd-verdict-desc" id="sd-verdict-desc"></div>
+      <!-- Right Column: Results & Probability Gauge (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        <div id="sd-result" class="tool-card-surface space-y-6 relative overflow-hidden">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-4">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Prediction Telemetry</span>
+            <span id="sd-emoji" class="text-2xl">❄️</span>
+          </div>
+
+          <!-- Circular Gauge Frame -->
+          <div class="relative flex justify-center items-center my-4">
+            <div id="sd-gauge" class="w-48 h-48 rounded-full flex items-center justify-center transition-all duration-700 shadow-xl" style="background: conic-gradient(var(--brand) 0deg, var(--surface-3) 0deg);">
+              <div class="w-36 h-36 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex flex-col items-center justify-center text-center shadow-inner">
+                <span id="sd-pct" class="text-4xl font-black font-mono text-[var(--txt)] tracking-tight">0%</span>
+                <span class="text-[11px] font-mono font-bold text-[var(--brand)] uppercase tracking-wider mt-1">Cancellation</span>
+              </div>
+            </div>
+            <div id="sd-snowflakes" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+          </div>
+
+          <!-- Verdict Box -->
+          <div class="p-4 rounded-xl tool-inner-panel text-center">
+            <h3 id="sd-verdict-title" class="text-base font-black text-[var(--txt)] mb-1">—</h3>
+            <p id="sd-verdict-desc" class="text-xs text-[var(--txt-muted)] leading-relaxed">—</p>
+          </div>
+
+          <!-- Telemetry Factors Grid -->
+          <div id="sd-factors" class="grid grid-cols-3 gap-2.5">
+            <!-- Populated via script -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Municipal Logistics vs. Broadcast Forecast: Before/After Panel Content Section -->
+    <div class="tool-content-wrap" data-animate="fade-up">
+
+      <section class="tool-content-card">
+        <!-- Executive Overview Banner -->
+        <div class="tool-content-header">
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[var(--brand)]/10 border border-[var(--brand)]/20 text-[var(--brand)] font-mono text-xs uppercase tracking-wider mb-2">
+            Atmospheric Radar vs. Municipal Transit Logistics
+          </div>
+          <h2>Why 8 Inches of Snow Can Mean Open Schools While a Trace of Glaze Closes an Entire County</h2>
+          <p>
+            School superintendents and municipal transit directors do not make closure decisions based on raw inches on a weather app. A closure decision is an actuarial calculation balancing road surface heat flux, chemical de-icing eutectic curves, 14-ton bus brake pneumatics, and elementary pedestrian sidewalk exposure limits. Explore the side-by-side differentials below.
+          </p>
+        </div>
+
+        <div class="space-y-8 pt-4">
+          <!-- Comparative Panel 1: The 8-Inch Powder Fluff -->
+          <div class="border border-[var(--border)] rounded-2xl overflow-hidden bg-[var(--surface-2)]/40">
+        <div class="bg-[var(--surface-2)] px-6 py-4 border-b border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--txt-muted)]">Scenario 01</span>
+            <h3 class="text-lg font-bold text-[var(--txt)]">The High-Volume Cold Powder (8–10" Forecast)</h3>
+          </div>
+          <span class="text-xs font-mono px-3 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
+            Outcome: 2-Hour Delay Only (Classes Open)
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border)]">
+          <!-- Left: Broadcast Weather App Forecast -->
+          <div class="p-6 sm:p-8 space-y-4 bg-[var(--surface-1)]/30">
+            <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]/60">
+              <span class="font-mono text-xs font-bold text-rose-400 uppercase tracking-wide">Consumer Radar Forecast</span>
+              <span class="text-[11px] font-mono text-[var(--txt-muted)]">Naive Heuristic</span>
+            </div>
+            <div class="space-y-2">
+              <div class="text-2xl font-black text-[var(--txt)]">Winter Storm Warning: 8–10 Inches</div>
+              <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                Smartphone weather applications flash scarlet blizzard banners. Parents and students assume a guaranteed 95% closure probability due to sheer accumulation height.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--border)]/80 space-y-2 text-xs">
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Precipitation Phase:</span>
+                <span class="font-mono text-[var(--txt)]">Light Fluffy Snow (20:1 Ratio)</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Ambient Air Temp:</span>
+                <span class="font-mono text-[var(--txt)]">27°F (−2.8°C)</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Consumer Verdict:</span>
+                <span class="font-mono font-bold text-rose-400">Guaranteed District Shutdown</span>
+              </div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] italic">
+              Missing Context: Ignores antecedent geothermal road temperature, low snow water equivalent (SWE), and mechanical plow efficiency on powdery accumulation.
+            </p>
+          </div>
+
+          <!-- Right: Municipal & District Operations Reality -->
+          <div class="p-6 sm:p-8 space-y-4 bg-[var(--surface-1)]">
+            <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]/60">
+              <span class="font-mono text-xs font-bold text-emerald-400 uppercase tracking-wide">Superintendent Logistics Reality</span>
+              <span class="text-[11px] font-mono text-emerald-400">Plow & Transit Telemetry</span>
+            </div>
+            <div class="space-y-2">
+              <div class="text-2xl font-black text-[var(--txt)]">Manageable Dry Fluff + Active Salting</div>
+              <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                Prior sunny 48°F days left the asphalt core temperature at 36°F. The first 3 inches melt instantly upon road contact. Plow blades effortlessly clear the remaining dry powder without road bonding.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-2 text-xs">
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Pavement Core Temp:</span>
+                <span class="font-mono text-emerald-400 font-bold">36°F (Initial Melt Barrier)</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Tire Compaction Hazard:</span>
+                <span class="font-mono text-[var(--txt)]">Low (No Slush Glaze Bonding)</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Superintendent Verdict:</span>
+                <span class="font-mono font-bold text-emerald-400">2-Hour Delay for Morning Commute</span>
+              </div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)]">
+              Operational Decision: A 2-hour delay allows municipal plows to clear primary bus arterials. With no underlying ice pack, school buses navigate routes safely.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div class="sd-factors" id="sd-factors"></div>
+      <!-- Comparative Panel 2: The 0.25-Inch Freezing Drizzle Glaze -->
+      <div class="border border-[var(--border)] rounded-2xl overflow-hidden bg-[var(--surface-2)]/40">
+        <div class="bg-[var(--surface-2)] px-6 py-4 border-b border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--txt-muted)]">Scenario 02</span>
+            <h3 class="text-lg font-bold text-[var(--txt)]">The Micro-Glaze Sleet / Freezing Rain (&lt; 0.5" Accumulation)</h3>
+          </div>
+          <span class="text-xs font-mono px-3 py-1 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20 font-semibold">
+            Outcome: Immediate Total District Cancellation
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border)]">
+          <!-- Left: Broadcast Weather App Forecast -->
+          <div class="p-6 sm:p-8 space-y-4 bg-[var(--surface-1)]/30">
+            <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]/60">
+              <span class="font-mono text-xs font-bold text-rose-400 uppercase tracking-wide">Consumer Radar Forecast</span>
+              <span class="text-[11px] font-mono text-[var(--txt-muted)]">Naive Heuristic</span>
+            </div>
+            <div class="space-y-2">
+              <div class="text-2xl font-black text-[var(--txt)]">Trace Drizzle / Marginal Flurry</div>
+              <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                Weather radar shows faint green-blue clutter. Predicted accumulation is less than a quarter-inch. Students assume school is completely inevitable.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--border)]/80 space-y-2 text-xs">
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Forecast Depth:</span>
+                <span class="font-mono text-[var(--txt)]">0.10" – 0.25" Liquid Equivalent</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Public Perception:</span>
+                <span class="font-mono text-[var(--txt)]">"Just wet roads, no snow day"</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Consumer Verdict:</span>
+                <span class="font-mono font-bold text-amber-400">Regular 100% On-Time School Day</span>
+              </div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] italic">
+              Missing Context: Does not account for supercooled moisture striking sub-freezing asphalt, creating instantaneous high-friction loss black ice.
+            </p>
+          </div>
+
+          <!-- Right: Municipal & District Operations Reality -->
+          <div class="p-6 sm:p-8 space-y-4 bg-[var(--surface-1)]">
+            <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]/60">
+              <span class="font-mono text-xs font-bold text-emerald-400 uppercase tracking-wide">Superintendent Logistics Reality</span>
+              <span class="text-[11px] font-mono text-rose-400 font-bold">Catastrophic Traction Loss</span>
+            </div>
+            <div class="space-y-2">
+              <div class="text-2xl font-black text-[var(--txt)]">Black Ice Sheet & Road Brine Wash-Off</div>
+              <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                Initial drizzle dilutes sodium chloride salt brine and washes it into curbs before freezing at 22°F. Elevated overpasses, bridges, and cul-de-sacs turn into zero-friction ice rinks.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-2 text-xs">
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Coefficient of Friction:</span>
+                <span class="font-mono text-rose-400 font-bold">&mu; &lt; 0.10 (Severe Slip Hazard)</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Bus Hill Climb Test (5:00 AM):</span>
+                <span class="font-mono text-rose-400 font-bold">Failed on 3% Secondary Incline</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Superintendent Verdict:</span>
+                <span class="font-mono font-bold text-rose-400">Full District Cancellation at 5:15 AM</span>
+              </div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)]">
+              Operational Decision: A 14-ton rear-wheel-drive school bus cannot brake or maintain steering on glazed black ice slopes, regardless of chains. The risk of rollover forces a complete snow day.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparative Panel 3: The Sub-Zero Polar Vortex (0 Inches Snow) -->
+      <div class="border border-[var(--border)] rounded-2xl overflow-hidden bg-[var(--surface-2)]/40">
+        <div class="bg-[var(--surface-2)] px-6 py-4 border-b border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--txt-muted)]">Scenario 03</span>
+            <h3 class="text-lg font-bold text-[var(--txt)]">The Zero-Snow Polar Vortex (−25°F Wind Chill)</h3>
+          </div>
+          <span class="text-xs font-mono px-3 py-1 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-semibold">
+            Outcome: "Cold Day" District Cancellation
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border)]">
+          <!-- Left: Broadcast Weather App Forecast -->
+          <div class="p-6 sm:p-8 space-y-4 bg-[var(--surface-1)]/30">
+            <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]/60">
+              <span class="font-mono text-xs font-bold text-rose-400 uppercase tracking-wide">Consumer Radar Forecast</span>
+              <span class="text-[11px] font-mono text-[var(--txt-muted)]">Naive Heuristic</span>
+            </div>
+            <div class="space-y-2">
+              <div class="text-2xl font-black text-[var(--txt)]">Clear Skies & Bright Sunshine</div>
+              <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                No precipitation in sight. Dry roads with clear pavement. Students and parents assume normal classes because there is zero snow to shovel.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-[var(--surface-2)]/60 border border-[var(--border)]/80 space-y-2 text-xs">
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Snowfall Total:</span>
+                <span class="font-mono text-[var(--txt)]">0.0 Inches</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Road Surface Status:</span>
+                <span class="font-mono text-emerald-400 font-bold">100% Dry Pavement</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Consumer Verdict:</span>
+                <span class="font-mono font-bold text-[var(--txt)]">Regular School Schedule</span>
+              </div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] italic">
+              Missing Context: Ignores biological frostbite timing for children standing at rural bus stops and diesel fuel cloud point gelation in school bus depots.
+            </p>
+          </div>
+
+          <!-- Right: Municipal & District Operations Reality -->
+          <div class="p-6 sm:p-8 space-y-4 bg-[var(--surface-1)]">
+            <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]/60">
+              <span class="font-mono text-xs font-bold text-emerald-400 uppercase tracking-wide">Superintendent Logistics Reality</span>
+              <span class="text-[11px] font-mono text-sky-400 font-bold">Mechanical & Biological Hazard</span>
+            </div>
+            <div class="space-y-2">
+              <div class="text-2xl font-black text-[var(--txt)]">Diesel Gelling + &lt;10 Min Frostbite Window</div>
+              <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                Wind speeds of 28 mph at −5°F generate an effective wind chill of −26°F. Untreated paraffin wax crystals precipitate in diesel fuel tanks, preventing bus engines from turning over.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-sky-500/5 border border-sky-500/20 space-y-2 text-xs">
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Bus Stop Frostbite Threshold:</span>
+                <span class="font-mono text-rose-400 font-bold">&lt; 10 Minutes Exposed Skin</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Fleet Depots Starting Failure:</span>
+                <span class="font-mono text-[var(--txt)]">Air Brake Pneumatics Frozen</span>
+              </div>
+              <div class="flex justify-between text-[var(--txt-muted)]">
+                <span>Superintendent Verdict:</span>
+                <span class="font-mono font-bold text-sky-400">Cold-Weather Closure (Code Blue)</span>
+              </div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)]">
+              Operational Decision: State child welfare guidelines prohibit exposing elementary students to sub-20°F wind chills during standard 15-to-25 minute bus stop waiting intervals.
+            </p>
+          </div>
+        </div>
+      </div>
+
+        </div>
+      </section>
+
+      <!-- Comparative Specification Ledger / Matrix Table -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Operational Comparison Ledger: Broadcast Met vs. District Board</h2>
+          <p>
+            The table below contrasts standard TV weather reporting variables with the operational parameters reviewed during the superintendent's 4:30 AM regional emergency conference call.
+          </p>
+        </div>
+
+        <div class="tool-specs-table-wrap">
+          <table class="tool-specs-table">
+            <thead>
+              <tr>
+                <th>Decision Vector</th>
+                <th>What Weather Apps Track</th>
+                <th>What School Districts Measure</th>
+                <th>Closure Threshold</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-bold text-[var(--txt)]">Accumulation Rate</td>
+                <td>24-hour aggregate snowfall total</td>
+                <td>Inches falling between 4:00 AM and 7:00 AM</td>
+                <td class="text-[var(--brand)] font-bold">&gt; 1.0 inch / hour during commute</td>
+              </tr>
+              <tr>
+                <td class="font-bold text-[var(--txt)]">Temperature Layer</td>
+                <td>Ambient air temperature at 2 meters</td>
+                <td>Pavement sensor &amp; bridge deck thermal lag</td>
+                <td class="text-amber-400 font-bold">Pavement &le; 28°F (Brine fails)</td>
+              </tr>
+              <tr>
+                <td class="font-bold text-[var(--txt)]">Transit Viability</td>
+                <td>All-wheel-drive passenger car transit</td>
+                <td>14-ton rear-wheel-drive school bus hill climbs</td>
+                <td class="text-rose-400 font-bold">Cul-de-sac turnaround impassable</td>
+              </tr>
+              <tr>
+                <td class="font-bold text-[var(--txt)]">Extreme Cold</td>
+                <td>Fahrenheit degree reading</td>
+                <td>Wind chill index &amp; diesel cloud gel point</td>
+                <td class="text-sky-400 font-bold">Wind chill &le; −20°F (Frostbite &lt;15m)</td>
+              </tr>
+              <tr>
+                <td class="font-bold text-[var(--txt)]">Pedestrian Safety</td>
+                <td>General travel advisory</td>
+                <td>Sidewalk snow drift height in 1-mile walk zones</td>
+                <td class="text-[var(--brand)] font-bold">Plow berm forces walking in roadway</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQs -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Frequently Asked Logistics &amp; Cancellation Questions</h2>
+          <p>Superintendent conference calls, regional variances, de-icing thresholds, and remote learning policies.</p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>How does the superintendent's 4:30 AM conference call work?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              By 4:00 AM, district transportation supervisors drive designated "scout routes" encompassing high-elevation bridges, steep grades, and unplowed dirt roads. At 4:30 AM, regional superintendents, police chiefs, and municipal public works directors convene on a secure conference call to share real-time road conditions. Decisions must be finalized before 5:30 AM so cafeterias do not prep meals and bus drivers are not dispatched to depots.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why does a neighboring school district close while mine stays open?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Districts have radically different topographies and municipal resources. A rural district with 300 square miles of two-lane gravel roads and steep ravines has vastly lower winter tolerance than an adjacent compact urban district with dedicated DPW plow fleets, flat paved grids, and municipal storm drains. Additionally, districts that have already exhausted their annual statutory snow-day bank face extending the school year into late June, raising the bar for subsequent closures.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>At what temperature does rock salt stop working on municipal roads?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Standard sodium chloride (rock salt) suffers an exponential drop in melting capacity below 20°F (−6.7°C) and becomes practically useless around 15°F (−9.4°C). When ground temperatures plunge below this threshold, municipalities must mix salt with calcium chloride, magnesium chloride, or agricultural beet juice additives to depress the eutectic freezing point down to −10°F or lower. Without these expensive chemical additives, snow packs remain bonded to the pavement.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Do asynchronous virtual learning days permanently replace traditional snow days?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              While many state education departments authorized remote instructional days following emergency COVID waivers, widespread parent pushback regarding child care and teacher preparation has prompted many districts to preserve 3 to 5 traditional "no-school" snow days per year. Remote days are typically activated only after the contracted winter weather contingency bank is fully depleted.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .sd-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .sd-form { display: flex; flex-direction: column; gap: 20px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .sd-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .sd-field { display: flex; flex-direction: column; gap: 8px; }
-  .sd-field label { font-size: 13px; font-weight: 700; color: var(--txt); }
-  .sd-input-wrap { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: #fff; }
-  .sd-input { flex: 1; padding: 11px 12px; font-size: 16px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--txt); background: transparent; border: none; outline: none; width: 70px; }
-  .sd-unit { padding: 0 10px; font-size: 12px; font-weight: 700; color: var(--txt-muted); border-left: 1px solid var(--border); white-space: nowrap; }
-  .sd-select, .sd-checks { padding: 10px 12px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 13.5px; font-family: 'Inter', sans-serif; color: var(--txt); outline: none; cursor: pointer; }
-  .sd-checks { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
-  .sd-check { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
-  .sd-check input { accent-color: var(--brand); width: 14px; height: 14px; }
-
-  .sd-result { display: flex; flex-direction: column; gap: 20px; animation: fadeIn .5s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-
-  .sd-gauge-wrap { position: relative; display: flex; justify-content: center; align-items: center; }
-  .sd-gauge {
-    width: 180px; height: 180px;
-    border-radius: 50%;
-    background: conic-gradient(var(--brand) 0deg, var(--border) 0deg);
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.8s ease;
-  }
-  .sd-gauge-fill { display: none; }
-  .sd-gauge-center {
-    width: 130px; height: 130px;
-    background: #fff;
-    border-radius: 50%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    box-shadow: inset 0 2px 8px rgba(0,0,0,.08);
-  }
-  .sd-pct { font-size: 2.2rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
-  .sd-pct-label { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; }
-  .sd-snowflakes { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: hidden; border-radius: 8px; }
-  .snowflake { position: absolute; color: #BAE6FD; font-size: 16px; animation: fall linear infinite; }
-  @keyframes fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(220px) rotate(360deg); opacity: 0; } }
-
-  .sd-verdict { display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; border: 1.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg-soft); }
-  .sd-verdict-emoji { font-size: 2.5rem; flex-shrink: 0; }
-  .sd-verdict-title { font-size: 18px; font-weight: 800; color: var(--txt); margin-bottom: 6px; }
-  .sd-verdict-desc { font-size: 14px; color: var(--txt-muted); line-height: 1.5; }
-
-  .sd-factors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .sd-factor { padding: 12px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); text-align: center; }
-  .sd-factor-label { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; margin-bottom: 4px; }
-  .sd-factor-val { font-size: 16px; font-weight: 800; }
-
-  @media (max-width: 600px) { .sd-form-grid { grid-template-columns: 1fr 1fr; } .sd-factors { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 400px) { .sd-form-grid { grid-template-columns: 1fr; } }
-</style>
 
 <script>
   function predict(): number {
@@ -187,17 +560,18 @@ const tool = tools.find(t => t.slug === 'snow-day-calculator')!;
   }
 
   function addSnowflakes(count: number) {
-    const container = document.getElementById('sd-snowflakes')!;
+    const container = document.getElementById('sd-snowflakes');
+    if (!container) return;
     container.innerHTML = '';
     for (let i = 0; i < count; i++) {
       const sf = document.createElement('div');
-      sf.className = 'snowflake';
+      sf.className = 'absolute text-[var(--brand)]/40 pointer-events-none select-none';
       sf.textContent = '❄';
       sf.style.left = Math.random() * 100 + '%';
-      sf.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-      sf.style.animationDelay = Math.random() * 2 + 's';
-      sf.style.opacity = String(Math.random() * 0.7 + 0.3);
+      sf.style.top = '-20px';
       sf.style.fontSize = (Math.random() * 12 + 8) + 'px';
+      sf.style.opacity = String(Math.random() * 0.7 + 0.3);
+      sf.style.transition = 'transform 3s linear';
       container.appendChild(sf);
     }
   }
@@ -208,35 +582,70 @@ const tool = tools.find(t => t.slug === 'snow-day-calculator')!;
     const wind = parseFloat((document.getElementById('sd-wind') as HTMLInputElement).value) || 0;
     const temp = parseFloat((document.getElementById('sd-temp') as HTMLInputElement).value) || 32;
 
-    // Gauge animation
-    const gauge = document.getElementById('sd-gauge')!;
-    setTimeout(() => {
-      gauge.style.background = `conic-gradient(#3B82F6 ${pct * 3.6}deg, #E2E8F0 ${pct * 3.6}deg)`;
-    }, 100);
-    document.getElementById('sd-pct')!.textContent = pct + '%';
+    // Gauge update
+    const gauge = document.getElementById('sd-gauge');
+    if (gauge) {
+      gauge.style.background = `conic-gradient(var(--brand) ${pct * 3.6}deg, var(--surface-3) ${pct * 3.6}deg)`;
+    }
+    const pctEl = document.getElementById('sd-pct');
+    if (pctEl) pctEl.textContent = pct + '%';
 
     let emoji = '☀️', title = '', desc = '';
-    if (pct >= 85) { emoji = '🎉❄️'; title = 'Snow Day Almost Certain!'; desc = 'Stock up on hot cocoa — you\'re almost certainly getting a snow day! Time to build a snowman.'; }
-    else if (pct >= 70) { emoji = '🌨️'; title = 'Very Likely Snow Day!'; desc = 'Conditions are looking very favorable for a snow day. Keep an eye on announcements tonight.'; }
-    else if (pct >= 50) { emoji = '❄️'; title = 'Possible Snow Day'; desc = 'Decent chance! Set two alarms and watch for school cancellation notifications.'; }
-    else if (pct >= 30) { emoji = '🌦️'; title = 'Maybe, Maybe Not'; desc = 'It\'s a coin flip. Conditions might develop enough for delays or a late start.'; }
-    else if (pct >= 15) { emoji = '🙁'; title = 'Unlikely Snow Day'; desc = 'Conditions don\'t favor a snow day. School will probably be in session — sorry!'; }
-    else { emoji = '😞'; title = 'Don\'t Count On It'; desc = 'Very low probability. Focus on your homework and maybe hope for better weather next time.'; }
+    if (pct >= 85) {
+      emoji = '🎉❄️';
+      title = 'Snow Day Highly Probable!';
+      desc = 'Conditions are overwhelmingly in favor of cancellation. Rest easy and get ready for a winter break day!';
+    } else if (pct >= 70) {
+      emoji = '🌨️';
+      title = 'Strong Chance of Closure';
+      desc = 'Conditions look very favorable. Expect either a full cancellation or a heavy morning delay.';
+    } else if (pct >= 50) {
+      emoji = '❄️';
+      title = 'Possible Snow Day (50/50)';
+      desc = 'It will come down to 5:00 AM road treatments. Keep an eye on local radio and district broadcasts.';
+    } else if (pct >= 30) {
+      emoji = '🌦️';
+      title = '2-Hour Delay Likely';
+      desc = 'Roads may be slick early, but road crews will likely have arterials cleared by late morning.';
+    } else if (pct >= 15) {
+      emoji = '🙁';
+      title = 'Unlikely Snow Day';
+      desc = 'District plows will easily handle this accumulation. Expect classes to proceed on normal schedule.';
+    } else {
+      emoji = '😞';
+      title = 'Normal School Day Expected';
+      desc = 'Accumulation and cold are well within standard tolerance levels. Pack your backpack!';
+    }
 
-    document.getElementById('sd-emoji')!.textContent = emoji;
-    document.getElementById('sd-verdict-title')!.textContent = title;
-    document.getElementById('sd-verdict-desc')!.textContent = desc;
+    const emojiEl = document.getElementById('sd-emoji');
+    const titleEl = document.getElementById('sd-verdict-title');
+    const descEl = document.getElementById('sd-verdict-desc');
+    if (emojiEl) emojiEl.textContent = emoji;
+    if (titleEl) titleEl.textContent = title;
+    if (descEl) descEl.textContent = desc;
 
     const windChill = temp - (wind * 0.6);
-    document.getElementById('sd-factors')!.innerHTML = `
-      <div class="sd-factor"><div class="sd-factor-label">Snowfall</div><div class="sd-factor-val" style="color:#2563EB">${snow}"</div></div>
-      <div class="sd-factor"><div class="sd-factor-label">Wind Chill</div><div class="sd-factor-val" style="color:#0891B2">${Math.round(windChill)}°F</div></div>
-      <div class="sd-factor"><div class="sd-factor-label">Probability</div><div class="sd-factor-val" style="color:${pct>=60?'#22C55E':pct>=30?'#F59E0B':'#EF4444'}">${pct}%</div></div>
-    `;
+    const factorsEl = document.getElementById('sd-factors');
+    if (factorsEl) {
+      factorsEl.innerHTML = `
+        <div class="p-3 rounded-xl tool-inner-panel text-center">
+          <span class="text-[10px] font-mono uppercase text-[var(--txt-muted)] block mb-1">Snowfall</span>
+          <span class="text-sm font-bold text-[var(--brand)] font-mono">${snow}"</span>
+        </div>
+        <div class="p-3 rounded-xl tool-inner-panel text-center">
+          <span class="text-[10px] font-mono uppercase text-[var(--txt-muted)] block mb-1">Wind Chill</span>
+          <span class="text-sm font-bold text-[var(--txt)] font-mono">${Math.round(windChill)}°F</span>
+        </div>
+        <div class="p-3 rounded-xl tool-inner-panel text-center">
+          <span class="text-[10px] font-mono uppercase text-[var(--txt-muted)] block mb-1">Probability</span>
+          <span class="text-sm font-bold font-mono ${pct >= 60 ? 'text-[var(--brand)]' : pct >= 30 ? 'text-[var(--amber)]' : 'text-rose-400'}">${pct}%</span>
+        </div>
+      `;
+    }
 
     addSnowflakes(Math.floor(pct / 10));
-    document.getElementById('sd-result')!.style.display = '';
   });
 
+  // Run on mount
   document.getElementById('sd-calc')?.click();
 </script>

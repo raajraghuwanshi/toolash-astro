@@ -5,147 +5,459 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'blood-pressure-calculator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="bp-wrap">
-    <div class="bp-form">
-      <div class="bp-field-group">
-        <div class="bp-field">
-          <label for="bp-sys">Systolic (mmHg)</label>
-          <div class="bp-input-wrap">
-            <input type="number" id="bp-sys" class="bp-input" placeholder="120" min="60" max="300" value="120" />
-            <span class="bp-unit">mmHg</span>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Medical Console Hero -->
+    <div class="tool-hero-box">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="tool-badge-pill mb-3">
+            <i class="fas fa-heart-pulse text-[var(--brand)]"></i> AHA / ACC 2017 Guidelines
           </div>
-          <div class="bp-hint">Top number (pressure when heart beats)</div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--txt)] tracking-tight">
+            Blood Pressure <span class="shimmer-text">Diagnostic Calculator</span>
+          </h1>
+          <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
+            Instantly check systolic and diastolic blood pressure readings against official clinical categories. Get clear risk assessments and lifestyle guidance.
+          </p>
         </div>
-        <div class="bp-separator">/</div>
-        <div class="bp-field">
-          <label for="bp-dia">Diastolic (mmHg)</label>
-          <div class="bp-input-wrap">
-            <input type="number" id="bp-dia" class="bp-input" placeholder="80" min="40" max="200" value="80" />
-            <span class="bp-unit">mmHg</span>
+
+        <!-- Privacy & Medical Notice Badge -->
+        <div class="tool-inner-panel flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[var(--brand-soft)] border border-[var(--border)] flex items-center justify-center text-[var(--brand)] text-base">
+            <i class="fas fa-shield-halved"></i>
           </div>
-          <div class="bp-hint">Bottom number (pressure when heart rests)</div>
+          <div>
+            <span class="text-[10.5px] font-mono text-[var(--txt-dim)] uppercase block tracking-wider font-semibold">Privacy Guaranteed</span>
+            <span class="text-xs font-bold text-[var(--txt)]">100% In-Browser Clinical Evaluation</span>
+          </div>
         </div>
       </div>
-      <div class="bp-field">
-        <label for="bp-pulse">Pulse Rate (optional)</label>
-        <div class="bp-input-wrap" style="max-width:200px">
-          <input type="number" id="bp-pulse" class="bp-input" placeholder="72" min="40" max="200" value="72" />
-          <span class="bp-unit">bpm</span>
-        </div>
-      </div>
-      <button class="btn btn-primary" id="bp-calc" style="align-self:flex-start; padding:12px 32px;">
-        <i class="fas fa-heart-pulse"></i> Check BP
-      </button>
     </div>
 
-    <div id="bp-result" class="bp-result" style="display:none">
-      <div class="bp-result-main" id="bp-result-main">
-        <div class="bp-result-reading" id="bp-reading"></div>
-        <div class="bp-result-category" id="bp-category"></div>
-        <div class="bp-result-advice" id="bp-advice"></div>
+    <!-- Medical Input Console & Diagnostic Readout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+      <!-- Input Form -->
+      <div class="lg:col-span-6 tool-card-surface space-y-5">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--txt)] flex items-center gap-2">
+          <i class="fas fa-stethoscope text-[var(--brand)]"></i> Enter Monitor Readings
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="bp-sys" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-dim)] mb-1.5 font-mono">
+              Systolic (Upper)
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                id="bp-sys"
+                placeholder="120"
+                min="60"
+                max="300"
+                value="120"
+                class="tool-control-input pr-16 text-lg font-bold font-mono"
+              />
+              <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--txt-dim)] font-mono">mmHg</span>
+            </div>
+            <div class="text-[11px] text-[var(--txt-dim)] mt-1">Pressure during heartbeat</div>
+          </div>
+
+          <div>
+            <label for="bp-dia" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-dim)] mb-1.5 font-mono">
+              Diastolic (Lower)
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                id="bp-dia"
+                placeholder="80"
+                min="40"
+                max="200"
+                value="80"
+                class="tool-control-input pr-16 text-lg font-bold font-mono"
+              />
+              <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--txt-dim)] font-mono">mmHg</span>
+            </div>
+            <div class="text-[11px] text-[var(--txt-dim)] mt-1">Pressure between beats</div>
+          </div>
+        </div>
+
+        <div>
+          <label for="bp-pulse" class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-dim)] mb-1.5 font-mono">
+            Pulse Rate (Optional)
+          </label>
+          <div class="relative max-w-xs">
+            <input
+              type="number"
+              id="bp-pulse"
+              placeholder="72"
+              min="40"
+              max="200"
+              value="72"
+              class="tool-control-input pr-14 text-sm font-mono"
+            />
+            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--txt-dim)] font-mono">bpm</span>
+          </div>
+        </div>
+
+        <button
+          id="bp-calc"
+          class="btn btn-primary w-full py-3.5 text-xs font-mono uppercase tracking-wider"
+        >
+          <i class="fas fa-heart-pulse"></i> Evaluate Blood Pressure
+        </button>
       </div>
 
-      <div class="bp-scale">
-        <div class="bp-scale-title">Blood Pressure Categories</div>
-        <div class="bp-scale-rows">
-          <div class="bp-scale-row" id="bp-row-normal" data-cat="normal">
-            <div class="bp-scale-dot" style="background:#22C55E"></div>
-            <div class="bp-scale-range">
-              <div class="bp-scale-cat">Normal</div>
-              <div class="bp-scale-nums">Systolic &lt; 120 AND Diastolic &lt; 80</div>
-            </div>
+      <!-- Diagnostic Result Screen -->
+      <div class="lg:col-span-6 flex flex-col gap-4">
+        <div id="bp-result-main" class="tool-card-surface text-center transition-all">
+          <span class="text-xs font-bold uppercase tracking-widest text-[var(--txt-dim)] mb-1 block font-mono">Clinical Evaluation</span>
+          <div id="bp-reading" class="text-4xl sm:text-5xl font-extrabold font-mono my-2 flex items-baseline justify-center gap-1.5 text-[var(--txt)]">
+            120/80
           </div>
-          <div class="bp-scale-row" id="bp-row-elevated" data-cat="elevated">
-            <div class="bp-scale-dot" style="background:#84CC16"></div>
-            <div class="bp-scale-range">
-              <div class="bp-scale-cat">Elevated</div>
-              <div class="bp-scale-nums">Systolic 120–129 AND Diastolic &lt; 80</div>
-            </div>
+          <div id="bp-category" class="text-lg font-bold mt-1 mb-2 text-[var(--brand)]">
+            Normal
           </div>
-          <div class="bp-scale-row" id="bp-row-high1" data-cat="high1">
-            <div class="bp-scale-dot" style="background:#F59E0B"></div>
-            <div class="bp-scale-range">
-              <div class="bp-scale-cat">High BP Stage 1</div>
-              <div class="bp-scale-nums">Systolic 130–139 OR Diastolic 80–89</div>
+          <p id="bp-advice" class="text-xs text-[var(--txt-muted)] max-w-md mx-auto leading-relaxed">
+            Your blood pressure is in a healthy range. Keep up healthy physical activity and balanced nutrition.
+          </p>
+        </div>
+
+        <!-- Interactive Scale Rows -->
+        <div class="tool-card-surface p-4 space-y-2">
+          <div class="bp-scale-row flex items-center justify-between p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-3)] transition-all text-xs" data-cat="normal">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+              <span class="font-bold text-[var(--txt)]">Normal</span>
             </div>
+            <span class="text-[var(--txt-dim)] font-mono text-[11px]">&lt;120 and &lt;80</span>
           </div>
-          <div class="bp-scale-row" id="bp-row-high2" data-cat="high2">
-            <div class="bp-scale-dot" style="background:#EF4444"></div>
-            <div class="bp-scale-range">
-              <div class="bp-scale-cat">High BP Stage 2</div>
-              <div class="bp-scale-nums">Systolic ≥ 140 OR Diastolic ≥ 90</div>
+          <div class="bp-scale-row flex items-center justify-between p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-3)] transition-all text-xs" data-cat="elevated">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-lime-500 shadow-sm shadow-lime-500/50"></span>
+              <span class="font-bold text-[var(--txt)]">Elevated</span>
             </div>
+            <span class="text-[var(--txt-dim)] font-mono text-[11px]">120-129 and &lt;80</span>
           </div>
-          <div class="bp-scale-row" id="bp-row-crisis" data-cat="crisis">
-            <div class="bp-scale-dot" style="background:#7F1D1D"></div>
-            <div class="bp-scale-range">
-              <div class="bp-scale-cat">Hypertensive Crisis</div>
-              <div class="bp-scale-nums">Systolic &gt; 180 AND/OR Diastolic &gt; 120</div>
+          <div class="bp-scale-row flex items-center justify-between p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-3)] transition-all text-xs" data-cat="high1">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50"></span>
+              <span class="font-bold text-[var(--txt)]">Stage 1 High BP</span>
             </div>
+            <span class="text-[var(--txt-dim)] font-mono text-[11px]">130-139 or 80-89</span>
           </div>
-          <div class="bp-scale-row" id="bp-row-low" data-cat="low">
-            <div class="bp-scale-dot" style="background:#3B82F6"></div>
-            <div class="bp-scale-range">
-              <div class="bp-scale-cat">Low Blood Pressure</div>
-              <div class="bp-scale-nums">Systolic &lt; 90 OR Diastolic &lt; 60</div>
+          <div class="bp-scale-row flex items-center justify-between p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-3)] transition-all text-xs" data-cat="high2">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></span>
+              <span class="font-bold text-[var(--txt)]">Stage 2 High BP</span>
             </div>
+            <span class="text-[var(--txt-dim)] font-mono text-[11px]">≥140 or ≥90</span>
+          </div>
+          <div class="bp-scale-row flex items-center justify-between p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-3)] transition-all text-xs" data-cat="crisis">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-rose-600 shadow-sm shadow-rose-600/50 animate-pulse"></span>
+              <span class="font-bold text-rose-500">Hypertensive Crisis</span>
+            </div>
+            <span class="text-rose-500 font-mono text-[11px] font-bold">&gt;180 and/or &gt;120</span>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="bp-disclaimer">
-        <i class="fas fa-circle-info"></i>
-        <span>This tool is for informational purposes only. Always consult a healthcare professional for medical advice.</span>
-      </div>
+    <!-- Clinical Hemodynamics & Diagnostic Comparison (Comparison Table Archetype) -->
+    <div class="tool-content-wrap">
+      <section class="tool-content-card">
+        <!-- Table 1: Master Clinical Guidelines Comparison Matrix -->
+        <div class="tool-content-header">
+          <h2>Clinical Hypertension Diagnostic Thresholds: AHA vs. ESC vs. WHO</h2>
+          <p>
+            Cardiology consensus varies internationally regarding stage boundaries and treatment intervention triggers. Compare official thresholds across the American Heart Association (AHA/ACC 2017) and the European Society of Cardiology (ESC 2024).
+          </p>
+        </div>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-2xl bg-[var(--surface-1)]">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="border-b border-[var(--border)] bg-[var(--surface-2)] text-[var(--txt)] font-mono uppercase tracking-wider text-[11px]">
+                <th class="py-3.5 px-4 font-bold">Category</th>
+                <th class="py-3.5 px-4 font-bold">Systolic (mmHg)</th>
+                <th class="py-3.5 px-4 font-bold">Diastolic (mmHg)</th>
+                <th class="py-3.5 px-4 font-bold">AHA/ACC 2017 (USA)</th>
+                <th class="py-3.5 px-4 font-bold">ESC 2024 (Europe)</th>
+                <th class="py-3.5 px-4 font-bold">First-Line Clinical Intervention</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)] font-sans text-[var(--txt-muted)]">
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Optimal / Normal
+                </td>
+                <td class="py-4 px-4 font-mono text-emerald-400 font-bold">&lt; 120</td>
+                <td class="py-4 px-4 font-mono text-emerald-400 font-bold">&lt; 80</td>
+                <td class="py-4 px-4 text-xs">Normal</td>
+                <td class="py-4 px-4 text-xs">Optimal</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">
+                  Annual routine screening; maintain cardiovascular exercise and low-sodium diet.
+                </td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Elevated / Pre-Hypertension
+                </td>
+                <td class="py-4 px-4 font-mono text-lime-400 font-bold">120 – 129</td>
+                <td class="py-4 px-4 font-mono text-lime-400 font-bold">&lt; 80</td>
+                <td class="py-4 px-4 text-xs">Elevated</td>
+                <td class="py-4 px-4 text-xs">Normal</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">
+                  Non-pharmacological lifestyle intervention; DASH dietary protocol; 3–6 month re-evaluation.
+                </td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Stage 1 Hypertension
+                </td>
+                <td class="py-4 px-4 font-mono text-amber-400 font-bold">130 – 139</td>
+                <td class="py-4 px-4 font-mono text-amber-400 font-bold">80 – 89</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    Hypertension Stg 1
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-xs">High Normal</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">
+                  Lifestyle change + single-agent anti-hypertensive medication if 10-yr ASCVD risk exceeds 10%.
+                </td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Stage 2 Hypertension
+                </td>
+                <td class="py-4 px-4 font-mono text-red-400 font-bold">&ge; 140</td>
+                <td class="py-4 px-4 font-mono text-red-400 font-bold">&ge; 90</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                    Hypertension Stg 2
+                  </span>
+                </td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                    Grade 1 / 2 HTN
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-xs leading-relaxed">
+                  Immediate dual-agent combination pharmacotherapy (e.g., ACE inhibitor + CCB) plus monthly titration.
+                </td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-rose-500">
+                  Hypertensive Crisis
+                </td>
+                <td class="py-4 px-4 font-mono text-rose-500 font-bold">&gt; 180</td>
+                <td class="py-4 px-4 font-mono text-rose-500 font-bold">&gt; 120</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    Crisis Alert
+                  </span>
+                </td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    Emergency/Urgency
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-xs leading-relaxed text-rose-400 font-medium">
+                  Immediate emergency room triage; intravenous labetalol/nicardipine if acute target organ damage present.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Table 2: Physiological Hemodynamics Matrix -->
+      <section class="space-y-4">
+        <div class="max-w-3xl space-y-2">
+          <h2 class="text-2xl sm:text-3xl font-black text-[var(--txt)] tracking-tight">
+            Hemodynamic Metrics: Systolic vs. Diastolic vs. Pulse Pressure vs. MAP
+          </h2>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Blood pressure is multi-dimensional. Clinical outcomes correlate differently with arterial compliance, cardiac output, and peripheral resistance.
+          </p>
+        </div>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-2xl bg-[var(--surface-1)]">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="border-b border-[var(--border)] bg-[var(--surface-2)] text-[var(--txt)] font-mono uppercase tracking-wider text-[11px]">
+                <th class="py-3.5 px-4 font-bold">Hemodynamic Metric</th>
+                <th class="py-3.5 px-4 font-bold">Mathematical Definition</th>
+                <th class="py-3.5 px-4 font-bold">Optimal Baseline</th>
+                <th class="py-3.5 px-4 font-bold">Primary Physiological Determinant</th>
+                <th class="py-3.5 px-4 font-bold">Target Organ Damage Implication</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)] font-sans text-[var(--txt-muted)]">
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Systolic BP (SBP)
+                </td>
+                <td class="py-4 px-4 font-mono text-xs">Peak cardiac contraction pressure</td>
+                <td class="py-4 px-4 font-mono text-xs text-[var(--brand)] font-bold">100 – 119 mmHg</td>
+                <td class="py-4 px-4 text-xs">Left ventricular stroke volume &amp; aortic elastic compliance.</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">Cerebral hemorrhagic stroke, left ventricular hypertrophy, aortic dissection.</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Diastolic BP (DBP)
+                </td>
+                <td class="py-4 px-4 font-mono text-xs">Resting inter-beat vascular pressure</td>
+                <td class="py-4 px-4 font-mono text-xs text-[var(--brand)] font-bold">60 – 79 mmHg</td>
+                <td class="py-4 px-4 text-xs">Total peripheral arteriolar resistance &amp; vessel diameter.</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">Coronary ischemia; subendocardial perfusion occurs strictly during diastole.</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Pulse Pressure (PP)
+                </td>
+                <td class="py-4 px-4 font-mono text-xs">SBP &minus; DBP</td>
+                <td class="py-4 px-4 font-mono text-xs text-amber-400 font-bold">30 – 50 mmHg</td>
+                <td class="py-4 px-4 text-xs">Large artery stiffness and reflected pressure wave speed.</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">PP &gt; 60 mmHg indicates severe arteriosclerosis and triples myocardial infarction risk in seniors.</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Mean Arterial Pressure (MAP)
+                </td>
+                <td class="py-4 px-4 font-mono text-xs">DBP + ⅓(SBP &minus; DBP)</td>
+                <td class="py-4 px-4 font-mono text-xs text-blue-400 font-bold">70 – 100 mmHg</td>
+                <td class="py-4 px-4 text-xs">Average continuous perfusion pressure through systemic microcirculation.</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">MAP &lt; 65 mmHg triggers renal tubular necrosis and acute ischemic kidney failure.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Table 3: Diagnostic Measurement Modalities Comparison -->
+      <section class="space-y-4">
+        <div class="max-w-3xl space-y-2">
+          <h2 class="text-2xl sm:text-3xl font-black text-[var(--txt)] tracking-tight">
+            Diagnostic Modality Accuracy &amp; Masked Hypertension Detection
+          </h2>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Single clinical readings frequently mislead due to transient stress responses. Compare standard diagnostic screening modalities.
+          </p>
+        </div>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-2xl bg-[var(--surface-1)]">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="border-b border-[var(--border)] bg-[var(--surface-2)] text-[var(--txt)] font-mono uppercase tracking-wider text-[11px]">
+                <th class="py-3.5 px-4 font-bold">Measurement Modality</th>
+                <th class="py-3.5 px-4 font-bold">Technology Core</th>
+                <th class="py-3.5 px-4 font-bold">White-Coat Bias Risk</th>
+                <th class="py-3.5 px-4 font-bold">Nocturnal Dipping Detection</th>
+                <th class="py-3.5 px-4 font-bold">Clinical Diagnostic Weight</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)] font-sans text-[var(--txt-muted)]">
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  24-Hour Ambulatory (ABPM)
+                </td>
+                <td class="py-4 px-4 text-xs">Programmed cuff inflation every 15–30 min day/night</td>
+                <td class="py-4 px-4 text-emerald-400 font-mono font-bold">Zero (0%)</td>
+                <td class="py-4 px-4 text-emerald-400 font-mono font-bold">Yes (Gold Standard)</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">Highest clinical prognostic power; definitive diagnostic requirement for true resistant hypertension.</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Home Automated Upper-Arm (HBPM)
+                </td>
+                <td class="py-4 px-4 text-xs">Oscillometric digital sensor with calibrated brachial cuff</td>
+                <td class="py-4 px-4 text-emerald-400 font-mono font-bold">Very Low (&lt;5%)</td>
+                <td class="py-4 px-4 text-red-400 font-mono font-bold">No (Awake only)</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">Recommended for long-term medication titration; requires 7-day morning/evening duplicate protocol.</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Clinic Manual Sphygmomanometer
+                </td>
+                <td class="py-4 px-4 text-xs">Auscultatory Korotkoff sounds via stethoscope</td>
+                <td class="py-4 px-4 text-red-400 font-mono font-bold">Severe (15–30%)</td>
+                <td class="py-4 px-4 text-red-400 font-mono font-bold">No</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">Prone to terminal digit preference (rounding to 0) and clinician conversation artifact.</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/60 transition-colors">
+                <td class="py-4 px-4 font-bold text-[var(--txt)]">
+                  Wrist / Optical Smartwatch
+                </td>
+                <td class="py-4 px-4 text-xs">Photoplethysmography (PPG) pulse transit time</td>
+                <td class="py-4 px-4 text-amber-400 font-mono font-bold">Uncalibrated Drift</td>
+                <td class="py-4 px-4 text-amber-400 font-mono font-bold">Unvalidated</td>
+                <td class="py-4 px-4 text-xs leading-relaxed">Unsuitable for diagnostic decisions or clinical medication changes under AHA guidelines.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Cardiovascular Diagnostic Frequently Asked Questions</h2>
+          <p>
+            Nocturnal dipping, cuff sizing errors, and isolated systolic hypertension.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why is nocturnal &ldquo;non-dipping&rdquo; considered an alarming cardiovascular marker?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              In healthy human physiology, sympathetic nervous activity subsides during sleep, causing blood pressure to dip naturally by 10% to 20% compared to daytime averages. Individuals whose blood pressure fails to dip (&ldquo;non-dippers&rdquo;) or paradoxically rises during sleep (&ldquo;reverse dippers&rdquo;) suffer chronic vascular endothelial shear stress, exhibiting three times higher incidences of ischemic strokes, heart failure, and chronic kidney disease.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>How does an incorrect monitor cuff size skew diagnostic readings?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Cuff size is one of the largest sources of outpatient measurement error. Using a standard adult cuff on a muscular or obese arm (cuff too small) requires excess pneumatic pressure to compress the brachial artery, artificially inflating systolic readings by <strong class="text-[var(--txt)]">10 to 15 mmHg</strong> (miscategorizing normotensive patients as hypertensive). Conversely, a cuff that is too large underestimates true blood pressure.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is Isolated Systolic Hypertension (ISH) in older adults?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Isolated Systolic Hypertension occurs when systolic pressure is elevated (&ge;130 or &ge;140 mmHg) while diastolic pressure remains normal or low (&lt;80 mmHg). This condition results from structural arterial stiffening: the collagen matrix replaces elastin fibers in the aortic wall over decades, preventing the aorta from buffering systolic pulse waves. Treatment requires careful titration to lower systolic pressure without dropping diastolic pressure below 60 mmHg (which compromises coronary perfusion).
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
 
-<style>
-  .bp-wrap { display: flex; flex-direction: column; gap: 24px; }
-  .bp-form { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .bp-field-group { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
-  .bp-separator { font-size: 2rem; font-weight: 300; color: var(--txt-muted); margin-top: 32px; }
-  .bp-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 160px; }
-  .bp-field label { font-size: 14px; font-weight: 600; color: var(--txt); }
-  .bp-input-wrap { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: #fff; }
-  .bp-input { flex: 1; padding: 12px 14px; font-size: 18px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--txt); background: transparent; border: none; outline: none; width: 80px; }
-  .bp-unit { padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--txt-muted); border-left: 1px solid var(--border); white-space: nowrap; }
-  .bp-hint { font-size: 11px; color: var(--txt-dim); }
-
-  .bp-result { display: flex; flex-direction: column; gap: 20px; animation: fadeIn .4s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-
-  .bp-result-main { text-align: center; padding: 28px; border-radius: var(--radius-lg); border: 1.5px solid var(--border); }
-  .bp-result-reading { font-size: 3.5rem; font-weight: 900; font-family: 'Outfit', sans-serif; margin-bottom: 8px; }
-  .bp-result-category { font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; }
-  .bp-result-advice { font-size: 14px; color: #475569; max-width: 400px; margin: 0 auto; line-height: 1.5; }
-
-  .bp-scale { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .bp-scale-title { padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--txt); }
-  .bp-scale-rows { display: flex; flex-direction: column; }
-  .bp-scale-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background .15s; }
-  .bp-scale-row:last-child { border-bottom: none; }
-  .bp-scale-row.active { background: #EFF6FF; }
-  .bp-scale-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-  .bp-scale-cat { font-size: 14px; font-weight: 700; color: var(--txt); }
-  .bp-scale-nums { font-size: 12px; color: var(--txt-muted); margin-top: 2px; }
-
-  .bp-disclaimer { display: flex; gap: 8px; padding: 12px 16px; background: #FFF7ED; border: 1.5px solid #FED7AA; border-radius: var(--radius-sm); font-size: 12.5px; color: #78350F; }
-  .bp-disclaimer i { color: #D97706; flex-shrink: 0; margin-top: 2px; }
-</style>
-
 <script>
-  interface BPCategory { id: string; cat: string; color: string; bg: string; advice: string; }
+  interface BPCategory { id: string; cat: string; color: string; advice: string; }
 
   function classify(sys: number, dia: number): BPCategory {
-    if (sys > 180 || dia > 120) return { id: 'crisis', cat: 'Hypertensive Crisis', color: '#7F1D1D', bg: '#FEF2F2', advice: 'Seek emergency medical attention immediately.' };
-    if (sys < 90 || dia < 60) return { id: 'low', cat: 'Low Blood Pressure', color: '#1D4ED8', bg: '#EFF6FF', advice: 'You may experience dizziness. Consult a doctor.' };
-    if (sys >= 140 || dia >= 90) return { id: 'high2', cat: 'High Blood Pressure Stage 2', color: '#DC2626', bg: '#FEF2F2', advice: 'Consult a healthcare professional promptly.' };
-    if (sys >= 130 || dia >= 80) return { id: 'high1', cat: 'High Blood Pressure Stage 1', color: '#D97706', bg: '#FFFBEB', advice: 'Lifestyle changes and monitoring are recommended.' };
-    if (sys >= 120 && dia < 80) return { id: 'elevated', cat: 'Elevated', color: '#65A30D', bg: '#F7FEE7', advice: 'Monitor regularly and maintain a healthy lifestyle.' };
-    return { id: 'normal', cat: 'Normal', color: '#15803D', bg: '#F0FDF4', advice: 'Your blood pressure is in a healthy range. Keep it up!' };
+    if (sys > 180 || dia > 120) return { id: 'crisis', cat: 'Hypertensive Crisis', color: '#f43f5e', advice: 'Seek emergency medical attention immediately. Re-test after 5 minutes.' };
+    if (sys < 90 || dia < 60) return { id: 'low', cat: 'Low Blood Pressure', color: '#38bdf8', advice: 'Low pressure may cause lightheadedness or fatigue. Consult your doctor.' };
+    if (sys >= 140 || dia >= 90) return { id: 'high2', cat: 'High Blood Pressure Stage 2', color: '#ef4444', advice: 'Consult a healthcare professional promptly for evaluation and medication review.' };
+    if (sys >= 130 || dia >= 80) return { id: 'high1', cat: 'High Blood Pressure Stage 1', color: 'var(--amber)', advice: 'Lifestyle modifications, low sodium nutrition, and monitoring are recommended.' };
+    if (sys >= 120 && dia < 80) return { id: 'elevated', cat: 'Elevated', color: '#84cc16', advice: 'Monitor readings regularly and maintain a healthy, active lifestyle.' };
+    return { id: 'normal', cat: 'Normal', color: 'var(--brand)', advice: 'Your blood pressure is in an optimal healthy range. Keep up your active lifestyle!' };
   }
 
   document.getElementById('bp-calc')?.addEventListener('click', () => {
@@ -155,17 +467,22 @@ const tool = tools.find(t => t.slug === 'blood-pressure-calculator')!;
 
     const result = classify(sys, dia);
     const main = document.getElementById('bp-result-main')!;
-    main.style.background = result.bg;
-    document.getElementById('bp-reading')!.innerHTML = `<span style="color:${result.color}">${sys}</span><span style="font-size:1.5rem;color:#94A3B8">/</span><span style="color:${result.color}">${dia}</span>`;
+    main.style.borderColor = result.color;
+    document.getElementById('bp-reading')!.innerHTML = `<span style="color:${result.color}">${sys}</span><span class="text-[var(--txt-dim)] text-2xl mx-1">/</span><span style="color:${result.color}">${dia}</span><span class="text-xs text-[var(--txt-dim)] font-normal ml-2 font-mono">mmHg</span>`;
     document.getElementById('bp-category')!.textContent = result.cat;
     document.getElementById('bp-category')!.style.color = result.color;
     document.getElementById('bp-advice')!.textContent = result.advice;
 
     document.querySelectorAll('.bp-scale-row').forEach(row => {
-      row.classList.toggle('active', (row as HTMLElement).dataset.cat === result.id);
+      const el = row as HTMLElement;
+      if (el.dataset.cat === result.id) {
+        el.style.borderColor = result.color;
+        el.style.backgroundColor = 'var(--surface-solid)';
+      } else {
+        el.style.borderColor = '';
+        el.style.backgroundColor = '';
+      }
     });
-
-    document.getElementById('bp-result')!.style.display = '';
   });
 
   document.getElementById('bp-calc')?.click();

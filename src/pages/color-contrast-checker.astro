@@ -5,139 +5,527 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'color-contrast-checker')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="cc-wrap">
-    <div class="cc-inputs">
-      <div class="cc-field">
-        <label for="cc-fg">Foreground (Text) Color</label>
-        <div class="cc-color-row">
-          <input type="color" id="cc-fg-picker" value="#FFFFFF" class="cc-color-picker" />
-          <input type="text" id="cc-fg" class="cc-hex" value="#FFFFFF" maxlength="7" spellcheck="false" />
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Toolarsh Accessibility & Design Studio Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-universal-access text-[var(--brand)]"></i> WCAG 2.1 & ADA Section 508 Engine
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Color <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Contrast Studio</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Evaluate luminance contrast ratios between foreground text and background surfaces to guarantee accessible, crystal-clear typography.
+      </p>
+    </div>
+
+    <!-- Live Ratio Floating Scorecard -->
+    <div class="flex flex-wrap items-center justify-between gap-4 tool-card-surface p-5 mb-8">
+      <div class="flex items-center gap-6">
+        <div>
+          <span class="text-[11px] font-mono text-[var(--txt-muted)] uppercase block tracking-wider">Contrast Ratio</span>
+          <span id="cc-ratio" class="text-3xl sm:text-4xl font-black text-[var(--brand)] font-mono">21.00:1</span>
+        </div>
+        <div class="h-10 w-[1px] bg-[var(--border)]"></div>
+        <div>
+          <span class="text-[11px] font-mono text-[var(--txt-muted)] uppercase tracking-wider block mb-1">Overall Verdict</span>
+          <span id="cc-verdict" class="text-xs font-black text-[var(--brand)] bg-[var(--brand)]/15 border border-[var(--brand)]/30 px-3 py-1 rounded-lg text-center inline-block">
+            AAA PASS
+          </span>
         </div>
       </div>
-      <div class="cc-swatch-preview" id="cc-preview">
-        <span id="cc-preview-text">Sample Text Aa</span>
+      <div class="text-xs font-mono text-[var(--txt-dim)]">
+        Compliance Target: WCAG 2.1 Level AA / AAA
       </div>
-      <div class="cc-field">
-        <label for="cc-bg">Background Color</label>
-        <div class="cc-color-row">
-          <input type="color" id="cc-bg-picker" value="#1E293B" class="cc-color-picker" />
-          <input type="text" id="cc-bg" class="cc-hex" value="#1E293B" maxlength="7" spellcheck="false" />
+    </div>
+
+    <!-- Main Interactive Studio Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+      <!-- Left Column: Controls & Presets (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        <!-- Color Pickers Card -->
+        <div class="tool-card-surface space-y-5">
+          <h3 class="text-sm font-bold text-[var(--txt)] uppercase tracking-wider flex items-center gap-2">
+            <i class="fas fa-sliders text-[var(--brand)]"></i> Color Parameters
+          </h3>
+
+          <!-- Text Color Picker -->
+          <div class="space-y-2">
+            <label for="cc-fg" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Foreground (Text) Color
+            </label>
+            <div class="flex items-center gap-3 tool-control-input p-2">
+              <input type="color" id="cc-fg-picker" value="#FFFFFF" class="w-10 h-9 rounded-xl cursor-pointer bg-transparent border-0 p-0" />
+              <input type="text" id="cc-fg" value="#FFFFFF" maxlength="7" spellcheck="false" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold uppercase tracking-wider outline-none" />
+              <span class="text-xs font-mono text-[var(--txt-dim)] pr-2">HEX</span>
+            </div>
+          </div>
+
+          <!-- Background Color Picker -->
+          <div class="space-y-2">
+            <label for="cc-bg" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Background Surface Color
+            </label>
+            <div class="flex items-center gap-3 tool-control-input p-2">
+              <input type="color" id="cc-bg-picker" value="#059669" class="w-10 h-9 rounded-xl cursor-pointer bg-transparent border-0 p-0" />
+              <input type="text" id="cc-bg" value="#059669" maxlength="7" spellcheck="false" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold uppercase tracking-wider outline-none" />
+              <span class="text-xs font-mono text-[var(--txt-dim)] pr-2">HEX</span>
+            </div>
+          </div>
+
+          <!-- Quick Palette Presets -->
+          <div class="pt-3 border-t border-[var(--border)]">
+            <span class="text-xs font-bold text-[var(--txt-muted)] block mb-3">Quick Benchmark Presets</span>
+            <div class="flex flex-wrap gap-2">
+              <button class="cc-swatch-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-zinc-700 cursor-pointer" data-fg="#FFFFFF" data-bg="#000000" style="background:#000000; color:#ffffff;">
+                OLED Contrast
+              </button>
+              <button class="cc-swatch-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-blue-500/40 cursor-pointer" data-fg="#FFFFFF" data-bg="#2563EB" style="background:#2563EB; color:#ffffff;">
+                Royal Blue
+              </button>
+              <button class="cc-swatch-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-zinc-300 cursor-pointer" data-fg="#0F172A" data-bg="#F8FAFC" style="background:#F8FAFC; color:#0F172A;">
+                Clean Light
+              </button>
+              <button class="cc-swatch-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-zinc-800 cursor-pointer" data-fg="#F1F5F9" data-bg="#0F172A" style="background:#0F172A; color:#F1F5F9;">
+                Deep Slate
+              </button>
+              <button class="cc-swatch-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-emerald-500/40 cursor-pointer" data-fg="#FFFFFF" data-bg="#059669" style="background:#059669; color:#ffffff;">
+                Toolarsh Jade
+              </button>
+              <button class="cc-swatch-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border border-amber-500/40 cursor-pointer" data-fg="#000000" data-bg="#F59E0B" style="background:#F59E0B; color:#000000;">
+                Warm Amber
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Live Mockup Canvas & Compliance Badges (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        <!-- Live Visual Interactive Simulation Frame -->
+        <div id="cc-preview" class="rounded-3xl border border-[var(--border)] p-8 min-h-[260px] flex flex-col justify-between transition-colors shadow-2xl relative overflow-hidden" style="background-color: #059669;">
+          <div class="flex items-center justify-between border-b pb-4 border-current/15">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider opacity-70">Interactive Canvas Simulation</span>
+            <span class="text-xs font-mono font-bold opacity-70">16px / 18pt / 24pt</span>
+          </div>
+
+          <div class="py-6 space-y-3">
+            <h2 id="cc-preview-heading" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #FFFFFF;">
+              The quick brown fox jumps over the lazy dog.
+            </h2>
+            <p id="cc-preview-text" class="text-sm sm:text-base leading-relaxed max-w-xl opacity-90" style="color: #FFFFFF;">
+              Ensuring adequate visual contrast allows users with low vision, age-related optical conditions, or extreme screen glare to navigate digital interfaces without strain.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 pt-4 border-t border-current/15">
+            <span class="px-4 py-2 rounded-xl text-xs font-bold shadow-sm" id="cc-preview-button" style="background: #FFFFFF; color: #059669;">
+              Sample Action CTA
+            </span>
+            <span class="text-xs font-medium opacity-80 underline cursor-pointer">Sample Underlined Hyperlink</span>
+          </div>
+        </div>
+
+        <!-- 4-Tier WCAG 2.1 Scorecard Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          <!-- AA Normal -->
+          <div id="w-aa-normal" class="tool-inner-panel p-4 text-center">
+            <span class="text-[11px] font-mono font-bold text-[var(--txt-muted)] block mb-1">AA Normal</span>
+            <span class="text-xs font-mono text-[var(--txt-dim)] block mb-2">≥ 4.5:1</span>
+            <div id="b-aa-normal" class="text-xs font-black px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              ✓ PASS
+            </div>
+          </div>
+
+          <!-- AA Large -->
+          <div id="w-aa-large" class="tool-inner-panel p-4 text-center">
+            <span class="text-[11px] font-mono font-bold text-[var(--txt-muted)] block mb-1">AA Large</span>
+            <span class="text-xs font-mono text-[var(--txt-dim)] block mb-2">≥ 3.0:1</span>
+            <div id="b-aa-large" class="text-xs font-black px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              ✓ PASS
+            </div>
+          </div>
+
+          <!-- AAA Normal -->
+          <div id="w-aaa-normal" class="tool-inner-panel p-4 text-center">
+            <span class="text-[11px] font-mono font-bold text-[var(--txt-muted)] block mb-1">AAA Normal</span>
+            <span class="text-xs font-mono text-[var(--txt-dim)] block mb-2">≥ 7.0:1</span>
+            <div id="b-aaa-normal" class="text-xs font-black px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              ✓ PASS
+            </div>
+          </div>
+
+          <!-- AAA Large -->
+          <div id="w-aaa-large" class="tool-inner-panel p-4 text-center">
+            <span class="text-[11px] font-mono font-bold text-[var(--txt-muted)] block mb-1">AAA Large</span>
+            <span class="text-xs font-mono text-[var(--txt-dim)] block mb-2">≥ 4.5:1</span>
+            <div id="b-aaa-large" class="text-xs font-black px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              ✓ PASS
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="cc-results" id="cc-results">
-      <div class="cc-ratio-box">
-        <div class="cc-ratio-num" id="cc-ratio">—</div>
-        <div class="cc-ratio-label">Contrast Ratio</div>
-      </div>
-      <div class="cc-wcag-grid">
-        <div class="cc-wcag-item" id="w-aa-normal">
-          <div class="cc-wcag-label">AA Normal</div>
-          <div class="cc-wcag-req">≥ 4.5:1</div>
-          <div class="cc-wcag-badge" id="b-aa-normal">—</div>
+    <!-- Accessible Design Architecture: Comparison Table Archetype -->
+    <div class="tool-content-wrap">
+      
+      <section class="tool-content-card">
+        <!-- Lead Editorial Header -->
+        <div class="tool-content-header">
+          <h2>Visual Contrast Matrix &amp; Algorithmic Standards</h2>
+          <p>
+            Web accessibility regulations do not measure aesthetic preference—they quantify photon luminance ratios against human retinal photoreceptor limits. Under WCAG 2.1 and the upcoming APCA perceptual model, specific interface targets require mathematically non-negotiable luminosity deltas.
+          </p>
         </div>
-        <div class="cc-wcag-item" id="w-aa-large">
-          <div class="cc-wcag-label">AA Large</div>
-          <div class="cc-wcag-req">≥ 3:1</div>
-          <div class="cc-wcag-badge" id="b-aa-large">—</div>
-        </div>
-        <div class="cc-wcag-item" id="w-aaa-normal">
-          <div class="cc-wcag-label">AAA Normal</div>
-          <div class="cc-wcag-req">≥ 7:1</div>
-          <div class="cc-wcag-badge" id="b-aaa-normal">—</div>
-        </div>
-        <div class="cc-wcag-item" id="w-aaa-large">
-          <div class="cc-wcag-label">AAA Large</div>
-          <div class="cc-wcag-req">≥ 4.5:1</div>
-          <div class="cc-wcag-badge" id="b-aaa-large">—</div>
-        </div>
-      </div>
-    </div>
 
-    <div class="cc-swatches">
-      <div class="cc-swatches-label">Quick presets</div>
-      <div class="cc-swatches-row">
-        <button class="cc-swatch-btn" data-fg="#FFFFFF" data-bg="#000000" style="background:#000;color:#fff">Black/White</button>
-        <button class="cc-swatch-btn" data-fg="#FFFFFF" data-bg="#2563EB" style="background:#2563EB;color:#fff">Blue/White</button>
-        <button class="cc-swatch-btn" data-fg="#1E293B" data-bg="#F8FAFC" style="background:#F8FAFC;color:#1E293B;border-color:#E2E8F0">Light Mode</button>
-        <button class="cc-swatch-btn" data-fg="#F1F5F9" data-bg="#0F172A" style="background:#0F172A;color:#F1F5F9">Dark Mode</button>
-        <button class="cc-swatch-btn" data-fg="#FFFFFF" data-bg="#DC2626" style="background:#DC2626;color:#fff">Red/White</button>
-        <button class="cc-swatch-btn" data-fg="#FFFFFF" data-bg="#7C3AED" style="background:#7C3AED;color:#fff">Purple/White</button>
+        <div class="space-y-12">
+          <!-- Comparison Table 1: WCAG 2.1 Conformance Thresholds -->
+          <div class="space-y-4">
+        <div class="flex items-baseline justify-between border-b border-[var(--border)] pb-3">
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+            01. WCAG 2.1 Level AA vs Level AAA Conformance Matrix
+          </h3>
+          <span class="font-mono text-xs text-[var(--txt-muted)]">ISO/IEC 40500:2012 Specification</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm border-collapse">
+            <thead>
+              <tr class="border-b border-[var(--border)] bg-[var(--surface-2)]/60 text-[var(--txt-muted)] font-mono uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-4">Typographic &amp; UI Target</th>
+                <th class="py-3.5 px-4">Min. Level AA</th>
+                <th class="py-3.5 px-4">Enhanced Level AAA</th>
+                <th class="py-3.5 px-4">Legal Mandates</th>
+                <th class="py-3.5 px-4">Optical Failure Mode</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)] text-[var(--txt)]">
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">
+                  Body Copy &amp; Paragraphs
+                  <span class="block text-xs font-normal text-[var(--txt-muted)] mt-0.5">Regular weight below 18pt (24px) or bold below 14pt (18.5px)</span>
+                </td>
+                <td class="py-4 px-4 font-mono font-bold text-teal-500 dark:text-teal-400">4.50 : 1</td>
+                <td class="py-4 px-4 font-mono font-bold text-emerald-500 dark:text-emerald-400">7.00 : 1</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">ADA Title III, Section 508, EU EN 301 549</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Letterform blur for low visual acuity and age-related presbyopia</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">
+                  Large Display &amp; Hero Headings
+                  <span class="block text-xs font-normal text-[var(--txt-muted)] mt-0.5">≥ 18pt (24px) regular, or ≥ 14pt (18.5px) bold weight</span>
+                </td>
+                <td class="py-4 px-4 font-mono font-bold text-teal-500 dark:text-teal-400">3.00 : 1</td>
+                <td class="py-4 px-4 font-mono font-bold text-emerald-500 dark:text-emerald-400">4.50 : 1</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Universal baseline across all digital media</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Peripheral loss of letter counters under direct sunlight glare</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">
+                  Interactive Controls &amp; Form Fields
+                  <span class="block text-xs font-normal text-[var(--txt-muted)] mt-0.5">Input borders, radio outlines, checkboxes, toggle switch states</span>
+                </td>
+                <td class="py-4 px-4 font-mono font-bold text-teal-500 dark:text-teal-400">3.00 : 1</td>
+                <td class="py-4 px-4 font-mono text-[var(--txt-muted)]">N/A (3.0:1)</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">WCAG 2.1 Criterion 1.4.11 (Non-Text Contrast)</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Invisible form hitboxes resulting in missed form fields</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">
+                  Keyboard Focus Rings
+                  <span class="block text-xs font-normal text-[var(--txt-muted)] mt-0.5">Active outlines indicating keyboard navigation caret</span>
+                </td>
+                <td class="py-4 px-4 font-mono font-bold text-teal-500 dark:text-teal-400">3.00 : 1</td>
+                <td class="py-4 px-4 font-mono font-bold text-emerald-500 dark:text-emerald-400">4.50 : 1</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">WCAG 2.2 Criterion 2.4.13 (Focus Appearance)</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Disorientation for motor-impaired and keyboard-only navigators</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">
+                  Inactive / Disabled Controls
+                  <span class="block text-xs font-normal text-[var(--txt-muted)] mt-0.5">Disabled buttons, inert inputs, placeholder text without value</span>
+                </td>
+                <td class="py-4 px-4 font-mono text-[var(--txt-muted)]">Exempt</td>
+                <td class="py-4 px-4 font-mono text-[var(--txt-muted)]">Exempt</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">W3C Explicit Exception Clause</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">User ambiguity between non-clickable button and broken action</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <!-- Comparison Table 2: WCAG 2.x vs APCA (WCAG 3 Candidate) -->
+      <div class="space-y-4">
+        <div class="flex items-baseline justify-between border-b border-[var(--border)] pb-3">
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+            02. Comparative Architecture: WCAG 2.1 Math vs. APCA Perceptual Model
+          </h3>
+          <span class="font-mono text-xs text-[var(--txt-muted)]">Next-Gen Accessibility Analysis</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm border-collapse">
+            <thead>
+              <tr class="border-b border-[var(--border)] bg-[var(--surface-2)]/60 text-[var(--txt-muted)] font-mono uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-4 w-1/4">Evaluation Dimension</th>
+                <th class="py-3.5 px-4 w-1/3">WCAG 2.1 (Relative Luminance)</th>
+                <th class="py-3.5 px-4 w-1/3">APCA (Advanced Perceptual Contrast)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)] text-[var(--txt)]">
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">Mathematical Formula</td>
+                <td class="py-4 px-4 font-mono text-xs text-[var(--txt-muted)]">
+                  (L1 + 0.05) / (L2 + 0.05)
+                  <span class="block text-[11px] font-sans text-[var(--txt-dim)] mt-1">Simple ratio of relative luminance where 0.05 accounts for ambient flare.</span>
+                </td>
+                <td class="py-4 px-4 font-mono text-xs text-[var(--txt-muted)]">
+                  Lc = S_power(Y_txt, Y_bg)
+                  <span class="block text-[11px] font-sans text-[var(--txt-dim)] mt-1">Nonlinear power curve modeling human photoreceptor transduction.</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">Polarity Asymmetry</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">
+                  Symmetric: Black on white yields identical 21:1 score to white on black. Ignores retinal halation.
+                </td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">
+                  Polarity-aware: Generates signed Lightness Contrast (Lc). Distinguishes dark-mode glare from light-mode acuity.
+                </td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">Font Weight &amp; Spatial Frequency</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">
+                  Binary size threshold only (&lt;18pt vs ≥18pt). Completely ignores ultra-thin font weights (100–300).
+                </td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">
+                  Continuous matrix: Directly couples required contrast value to both font size (px) and font weight (100–900).
+                </td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">Saturated Color Treatment</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">
+                  Known failure case with saturated blues and oranges; frequently fails perceptually legible pairs.
+                </td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">
+                  Calibrated to human CIE cone sensitivities, preventing false-rejection of accessible saturated brand colors.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Comparison Table 3: Vision Deficiency Chromatic Shift -->
+      <div class="space-y-4">
+        <div class="flex items-baseline justify-between border-b border-[var(--border)] pb-3">
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+            03. Color Vision Deficiency (CVD) Chromatic Shift Matrix
+          </h3>
+          <span class="font-mono text-xs text-[var(--txt-muted)]">Retinal Photoreceptor Variances</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm border-collapse">
+            <thead>
+              <tr class="border-b border-[var(--border)] bg-[var(--surface-2)]/60 text-[var(--txt-muted)] font-mono uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-4">Condition</th>
+                <th class="py-3.5 px-4">Biological Deficit</th>
+                <th class="py-3.5 px-4">Demographic Prevalence</th>
+                <th class="py-3.5 px-4">Confused Color Pairs</th>
+                <th class="py-3.5 px-4">Safe Design Protocol</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)] text-[var(--txt)]">
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">Protanopia / Protanomaly</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Long-wavelength (L-cone) red photoreceptor absence or defect</td>
+                <td class="py-4 px-4 font-mono text-xs font-bold text-[var(--brand)]">~1.3% Males</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Red vs. Black, Dark Brown vs. Dark Olive, Purple vs. Blue</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Never rely on red alert text alone; add prefix icons and underline indicators</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">Deuteranopia / Deuteranomaly</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Medium-wavelength (M-cone) green photoreceptor absence or defect</td>
+                <td class="py-4 px-4 font-mono text-xs font-bold text-[var(--brand)]">~5.4% Males</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Bright Green vs. Yellow, Cyan vs. Light Grey, Light Pink vs. White</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Pair green success states with checkmark glyphs; verify 4.5:1 luminance against background</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">Tritanopia / Tritanomaly</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Short-wavelength (S-cone) blue photoreceptor absence or defect</td>
+                <td class="py-4 px-4 font-mono text-xs font-bold text-[var(--brand)]">~0.01% All</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Deep Blue vs. Dark Grey, Yellow vs. Light Violet, Orange vs. Red</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Maintain strong luminance contrast deltas; do not distinguish links solely by blue color</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-4 px-4 font-semibold">Achromatopsia / Cataracts</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Complete absence of cone function or crystalline lens clouding</td>
+                <td class="py-4 px-4 font-mono text-xs font-bold text-[var(--brand)]">1 in 33,000 / Common in elderly</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">All chromatic hues collapse to greyscale tonal values</td>
+                <td class="py-4 px-4 text-xs text-[var(--txt-muted)]">Target Level AAA (7.0:1) for critical checkout, healthcare, and educational actions</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Comparison Table 4: Digital Interface Color Pair Registry -->
+      <div class="space-y-4">
+        <div class="flex items-baseline justify-between border-b border-[var(--border)] pb-3">
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+            04. Benchmark UI Color Pair Comparison Registry
+          </h3>
+          <span class="font-mono text-xs text-[var(--txt-muted)]">Common Digital Combinations</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm border-collapse">
+            <thead>
+              <tr class="border-b border-[var(--border)] bg-[var(--surface-2)]/60 text-[var(--txt-muted)] font-mono uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-4">Foreground Hex</th>
+                <th class="py-3.5 px-4">Background Hex</th>
+                <th class="py-3.5 px-4">Ratio</th>
+                <th class="py-3.5 px-4">AA Normal (&ge;4.5)</th>
+                <th class="py-3.5 px-4">AAA Normal (&ge;7.0)</th>
+                <th class="py-3.5 px-4">Recommended UI Placement</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)] text-[var(--txt)]">
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#000000;"></span>#000000
+                </td>
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#FFFFFF;"></span>#FFFFFF
+                </td>
+                <td class="py-3 px-4 font-mono font-bold text-emerald-500">21.00 : 1</td>
+                <td class="py-3 px-4 font-mono text-xs text-emerald-500">PASS</td>
+                <td class="py-3 px-4 font-mono text-xs text-emerald-500">PASS</td>
+                <td class="py-3 px-4 text-xs text-[var(--txt-muted)]">High-contrast e-readers; consider slate-900 on desktop to soften eye strain</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#0F172A;"></span>#0F172A
+                </td>
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#F8FAFC;"></span>#F8FAFC
+                </td>
+                <td class="py-3 px-4 font-mono font-bold text-emerald-500">18.25 : 1</td>
+                <td class="py-3 px-4 font-mono text-xs text-emerald-500">PASS</td>
+                <td class="py-3 px-4 font-mono text-xs text-emerald-500">PASS</td>
+                <td class="py-3 px-4 text-xs text-[var(--txt-muted)]">Gold standard for modern SaaS long-form prose and editorial documentation</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#FFFFFF;"></span>#FFFFFF
+                </td>
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#2563EB;"></span>#2563EB
+                </td>
+                <td class="py-3 px-4 font-mono font-bold text-teal-500">4.56 : 1</td>
+                <td class="py-3 px-4 font-mono text-xs text-emerald-500">PASS</td>
+                <td class="py-3 px-4 font-mono text-xs text-rose-500">FAIL</td>
+                <td class="py-3 px-4 text-xs text-[var(--txt-muted)]">Standard primary action buttons; compliant for AA body and buttons</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#FFFFFF;"></span>#FFFFFF
+                </td>
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#F59E0B;"></span>#F59E0B
+                </td>
+                <td class="py-3 px-4 font-mono font-bold text-rose-500">2.14 : 1</td>
+                <td class="py-3 px-4 font-mono text-xs text-rose-500">FAIL</td>
+                <td class="py-3 px-4 font-mono text-xs text-rose-500">FAIL</td>
+                <td class="py-3 px-4 text-xs text-[var(--txt-muted)]">Severe accessibility error: Amber warning buttons must use black text (#000000)</td>
+              </tr>
+              <tr class="hover:bg-[var(--surface-2)]/40 transition-colors">
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#94A3B8;"></span>#94A3B8
+                </td>
+                <td class="py-3 px-4 font-mono text-xs font-bold text-[var(--txt)]">
+                  <span class="inline-block w-3 h-3 rounded-full mr-1.5 border border-zinc-500 align-middle" style="background:#FFFFFF;"></span>#FFFFFF
+                </td>
+                <td class="py-3 px-4 font-mono font-bold text-rose-500">2.58 : 1</td>
+                <td class="py-3 px-4 font-mono text-xs text-rose-500">FAIL</td>
+                <td class="py-3 px-4 font-mono text-xs text-rose-500">FAIL</td>
+                <td class="py-3 px-4 text-xs text-[var(--txt-muted)]">Common placeholder text error; darkens to #64748B (4.6:1) for legal compliance</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Accessibility Compliance Frequently Asked Questions</h2>
+          <p>
+            Essential legal, technical, and optical considerations for enterprise accessibility audits.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why can pure black text on pure white backgrounds induce eye strain?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              At maximum 21:1 contrast, pure black (#000000) text against bright white (#FFFFFF) OLED or backlit displays can cause visual halation—a phenomenon where bright photons spill across the boundary of dark glyphs. This creates visual vibrations or blur, especially for readers with astigmatism or dyslexia. Softer pairings like deep slate (#0F172A) on warm off-white (#F8FAFC) maintain pristine AAA compliance (18.25:1) without optical fatigue.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Are disabled buttons exempt from the 4.5:1 contrast requirement?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Yes. WCAG 2.1 Criterion 1.4.3 explicitly exempts text and UI components that are purely decorative or part of an inactive user interface element. However, modern inclusive design encourages avoiding disabled states where possible: keeping buttons active and displaying an informative inline error tooltip when clicked provides superior clarity for screen reader users.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>How does font weight influence the required contrast ratio?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Under WCAG 2.1, typography that is bold (font weight ≥700) qualifies as "Large Text" at 14pt (~18.5px), lowering the required threshold from 4.5:1 down to 3.0:1. Conversely, ultra-thin weights (such as 100 or 200) pass the mathematical 4.5:1 threshold in software but remain illegible in practice due to thin stroke width, which the emerging APCA standard actively addresses.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Does this tool transmit inputted hex codes or brand palettes to external servers?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Zero network transmissions occur. All RGB conversions, sRGB gamma de-linearizations, and relative luminance calculations execute entirely in your local browser runtime via client-side JavaScript. Proprietary brand color palettes and unreleased design tokens remain completely secure on your machine.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .cc-wrap { display: flex; flex-direction: column; gap: 24px; }
-  .cc-inputs { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .cc-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 180px; }
-  .cc-field label { font-size: 13px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
-  .cc-color-row { display: flex; gap: 10px; align-items: center; }
-  .cc-color-picker { width: 48px; height: 42px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; padding: 3px; background: var(--bg-soft); }
-  .cc-hex {
-    flex: 1;
-    padding: 10px 14px;
-    font-size: 15px;
-    font-family: 'Courier New', monospace;
-    font-weight: 600;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: border-color .15s;
-  }
-  .cc-hex:focus { border-color: var(--brand); }
-  .cc-swatch-preview {
-    flex: 1;
-    min-height: 80px;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1.5px solid var(--border);
-    padding: 16px;
-  }
-  #cc-preview-text { font-size: 22px; font-weight: 700; font-family: 'Inter', sans-serif; }
-
-  .cc-results { display: flex; gap: 16px; flex-wrap: wrap; align-items: stretch; }
-  .cc-ratio-box {
-    padding: 24px 32px;
-    background: linear-gradient(135deg, #EFF6FF, #F5F3FF);
-    border-radius: var(--radius-lg);
-    text-align: center;
-    min-width: 140px;
-    border: 1.5px solid var(--border);
-    display: flex; flex-direction: column; justify-content: center;
-  }
-  .cc-ratio-num { font-size: 2.8rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
-  .cc-ratio-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; margin-top: 4px; }
-
-  .cc-wcag-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; flex: 1; }
-  .cc-wcag-item { padding: 14px 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 4px; }
-  .cc-wcag-label { font-size: 13px; font-weight: 700; color: var(--txt); }
-  .cc-wcag-req { font-size: 11px; color: var(--txt-muted); }
-  .cc-wcag-badge { font-size: 14px; font-weight: 800; margin-top: 4px; }
-  .badge-pass { color: #22C55E; }
-  .badge-fail { color: #EF4444; }
-
-  .cc-swatches-label { font-size: 13px; font-weight: 600; color: var(--txt-muted); margin-bottom: 10px; }
-  .cc-swatches-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .cc-swatch-btn {
-    padding: 8px 14px;
-    border-radius: 100px;
-    border: 1.5px solid rgba(0,0,0,.15);
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform .15s, box-shadow .15s;
-    font-family: 'Inter', sans-serif;
-  }
-  .cc-swatch-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
-</style>
 
 <script>
   function hexToRgb(hex: string): [number,number,number] | null {
@@ -166,22 +554,57 @@ const tool = tools.find(t => t.slug === 'color-contrast-checker')!;
   }
 
   function setBadge(id: string, pass: boolean) {
-    const el = document.getElementById(id)!;
-    if (pass) { el.textContent = '✓ Pass'; el.className = 'cc-wcag-badge badge-pass'; }
-    else { el.textContent = '✗ Fail'; el.className = 'cc-wcag-badge badge-fail'; }
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (pass) {
+      el.textContent = '✓ PASS';
+      el.className = 'text-xs font-black px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+    } else {
+      el.textContent = '✗ FAIL';
+      el.className = 'text-xs font-black px-2 py-1 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30';
+    }
   }
 
   function update() {
     const fgVal = (document.getElementById('cc-fg') as HTMLInputElement).value;
     const bgVal = (document.getElementById('cc-bg') as HTMLInputElement).value;
-    const preview = document.getElementById('cc-preview')!;
-    preview.style.background = bgVal;
-    document.getElementById('cc-preview-text')!.style.color = fgVal;
+
+    const preview = document.getElementById('cc-preview');
+    const previewHeading = document.getElementById('cc-preview-heading');
+    const previewText = document.getElementById('cc-preview-text');
+    const previewBtn = document.getElementById('cc-preview-button');
+
+    if (preview) preview.style.backgroundColor = bgVal;
+    if (previewHeading) previewHeading.style.color = fgVal;
+    if (previewText) previewText.style.color = fgVal;
+    if (previewBtn) {
+      previewBtn.style.backgroundColor = fgVal;
+      previewBtn.style.color = bgVal;
+    }
 
     const ratio = contrastRatio(fgVal, bgVal);
     if (ratio === null) return;
 
-    document.getElementById('cc-ratio')!.textContent = ratio.toFixed(2) + ':1';
+    const ratioEl = document.getElementById('cc-ratio');
+    if (ratioEl) ratioEl.textContent = ratio.toFixed(2) + ':1';
+
+    const verdictEl = document.getElementById('cc-verdict');
+    if (verdictEl) {
+      if (ratio >= 7) {
+        verdictEl.textContent = 'AAA PASS';
+        verdictEl.className = 'text-xs font-black text-emerald-300 bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-1 rounded-md text-center';
+      } else if (ratio >= 4.5) {
+        verdictEl.textContent = 'AA PASS';
+        verdictEl.className = 'text-xs font-black text-teal-300 bg-teal-500/20 border border-teal-500/40 px-2.5 py-1 rounded-md text-center';
+      } else if (ratio >= 3) {
+        verdictEl.textContent = 'LARGE TEXT ONLY';
+        verdictEl.className = 'text-xs font-black text-amber-300 bg-amber-500/20 border border-amber-500/40 px-2.5 py-1 rounded-md text-center';
+      } else {
+        verdictEl.textContent = 'FAIL WCAG';
+        verdictEl.className = 'text-xs font-black text-red-300 bg-red-500/20 border border-red-500/40 px-2.5 py-1 rounded-md text-center';
+      }
+    }
+
     setBadge('b-aa-normal', ratio >= 4.5);
     setBadge('b-aa-large', ratio >= 3);
     setBadge('b-aaa-normal', ratio >= 7);
@@ -191,6 +614,7 @@ const tool = tools.find(t => t.slug === 'color-contrast-checker')!;
   function syncPicker(pickerId: string, hexId: string) {
     const picker = document.getElementById(pickerId) as HTMLInputElement;
     const hex = document.getElementById(hexId) as HTMLInputElement;
+    if (!picker || !hex) return;
     picker.addEventListener('input', () => { hex.value = picker.value.toUpperCase(); update(); });
     hex.addEventListener('input', () => {
       const v = hex.value;

@@ -5,195 +5,335 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'keyboard-tester')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="kb-wrap">
-    <div class="kb-info">
-      <i class="fas fa-keyboard"></i>
-      Press any key on your keyboard to test it. Green keys are working, red keys failed to register.
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Toolarsh Hardware Diagnostic Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-microchip text-[var(--brand)]"></i> Mechanical & Membrane Hardware Engine
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Keyboard <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Tester & Latency Lab</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Instantly test key switches, identify phantom chattering, diagnose dead keys, and verify N-Key Rollover (NKRO) in real-time.
+      </p>
     </div>
 
-    <div class="kb-status-bar">
-      <div class="kb-last">Last pressed: <strong id="kb-last-key">—</strong></div>
-      <div class="kb-stats">
-        Keys pressed: <strong id="kb-count">0</strong>
+    <!-- Live Keypress Telemetry Card -->
+    <div class="flex flex-wrap items-center justify-between gap-4 tool-card-surface p-5 mb-8">
+      <div class="flex items-center gap-6">
+        <div class="text-center">
+          <span class="text-[11px] font-mono text-[var(--txt-muted)] uppercase block tracking-wider">Active Keys</span>
+          <span id="kb-count" class="text-3xl font-black text-[var(--brand)] font-mono">0</span>
+        </div>
+        <div class="h-10 w-[1px] bg-[var(--border)]"></div>
+        <div class="text-center">
+          <span class="text-[11px] font-mono text-[var(--txt-muted)] uppercase block tracking-wider">Last Pressed</span>
+          <span id="kb-last-key" class="text-xl font-black text-[var(--txt)] font-mono min-w-[3rem] inline-block">—</span>
+        </div>
       </div>
-      <button class="btn btn-ghost kb-reset" id="kb-reset"><i class="fas fa-refresh"></i> Reset</button>
+      <button id="kb-reset" class="px-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] hover:border-[var(--border-strong)] text-[var(--txt)] text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+        <i class="fas fa-rotate-left"></i> Reset Board
+      </button>
     </div>
 
-    <!-- Keyboard layout -->
-    <div class="kb-board" id="kb-board">
-      <!-- Row 1: Function keys -->
-      <div class="kb-row">
-        <div class="kb-key kb-special" data-key="Escape">Esc</div>
-        <div class="kb-gap"></div>
-        <div class="kb-key" data-key="F1">F1</div>
-        <div class="kb-key" data-key="F2">F2</div>
-        <div class="kb-key" data-key="F3">F3</div>
-        <div class="kb-key" data-key="F4">F4</div>
-        <div class="kb-gap-sm"></div>
-        <div class="kb-key" data-key="F5">F5</div>
-        <div class="kb-key" data-key="F6">F6</div>
-        <div class="kb-key" data-key="F7">F7</div>
-        <div class="kb-key" data-key="F8">F8</div>
-        <div class="kb-gap-sm"></div>
-        <div class="kb-key" data-key="F9">F9</div>
-        <div class="kb-key" data-key="F10">F10</div>
-        <div class="kb-key" data-key="F11">F11</div>
-        <div class="kb-key" data-key="F12">F12</div>
+    <!-- Live Testing Keyboard Canvas -->
+    <div class="tool-card-surface space-y-4 mb-10">
+      <!-- Top bar inside keyboard deck -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[var(--border)] text-xs">
+        <div class="flex items-center gap-2 text-[var(--txt-muted)]">
+          <span class="inline-flex h-2.5 w-2.5 rounded-full bg-[var(--brand)] animate-ping"></span>
+          <span class="font-medium">Direct Raw Keycode Listening active. Type keys on your physical keyboard to register.</span>
+        </div>
+        <div class="flex items-center gap-5 text-[var(--txt-dim)] font-mono text-[11px]">
+          <div class="flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded border border-[var(--border)] bg-[var(--surface-2)]"></span> Untested
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded bg-[var(--amber)] shadow-sm shadow-[var(--amber)]/40"></span> Pressed Now
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded bg-[var(--brand)] shadow-sm shadow-[var(--brand)]/40"></span> Verified OK
+          </div>
+        </div>
       </div>
 
-      <!-- Row 2: Numbers -->
-      <div class="kb-row">
-        <div class="kb-key" data-key="`">~</div>
-        <div class="kb-key" data-key="1">1</div>
-        <div class="kb-key" data-key="2">2</div>
-        <div class="kb-key" data-key="3">3</div>
-        <div class="kb-key" data-key="4">4</div>
-        <div class="kb-key" data-key="5">5</div>
-        <div class="kb-key" data-key="6">6</div>
-        <div class="kb-key" data-key="7">7</div>
-        <div class="kb-key" data-key="8">8</div>
-        <div class="kb-key" data-key="9">9</div>
-        <div class="kb-key" data-key="0">0</div>
-        <div class="kb-key" data-key="-">-</div>
-        <div class="kb-key" data-key="=">=</div>
-        <div class="kb-key kb-wide" data-key="Backspace">Back</div>
-      </div>
+      <!-- Keyboard Layout Frame -->
+      <div class="overflow-x-auto pb-3">
+        <div class="flex flex-col gap-2 min-w-[760px] select-none p-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)]">
+          <!-- Row 1: Function keys -->
+          <div class="flex gap-1.5 items-center">
+            <div class="kb-key kb-special min-w-[42px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="Escape">Esc</div>
+            <div class="w-5"></div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F1">F1</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F2">F2</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F3">F3</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F4">F4</div>
+            <div class="w-3"></div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F5">F5</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F6">F6</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F7">F7</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F8">F8</div>
+            <div class="w-3"></div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F9">F9</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F10">F10</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F11">F11</div>
+            <div class="kb-key min-w-[40px] h-10 bg-zinc-800 text-zinc-300 text-[11px] font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="F12">F12</div>
+          </div>
 
-      <!-- Row 3: QWERTY -->
-      <div class="kb-row">
-        <div class="kb-key kb-wide" data-key="Tab">Tab</div>
-        <div class="kb-key" data-key="q">Q</div>
-        <div class="kb-key" data-key="w">W</div>
-        <div class="kb-key" data-key="e">E</div>
-        <div class="kb-key" data-key="r">R</div>
-        <div class="kb-key" data-key="t">T</div>
-        <div class="kb-key" data-key="y">Y</div>
-        <div class="kb-key" data-key="u">U</div>
-        <div class="kb-key" data-key="i">I</div>
-        <div class="kb-key" data-key="o">O</div>
-        <div class="kb-key" data-key="p">P</div>
-        <div class="kb-key" data-key="[">[</div>
-        <div class="kb-key" data-key="]">]</div>
-        <div class="kb-key kb-wide" data-key="\">\</div>
-      </div>
+          <!-- Row 2: Numbers -->
+          <div class="flex gap-1.5 items-center">
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="`">`</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="1">1</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="2">2</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="3">3</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="4">4</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="5">5</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="6">6</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="7">7</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="8">8</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="9">9</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="0">0</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="-">-</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="=">=</div>
+            <div class="kb-key flex-1 min-w-[70px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="Backspace">Bksp</div>
+          </div>
 
-      <!-- Row 4: ASDF -->
-      <div class="kb-row">
-        <div class="kb-key kb-caps" data-key="CapsLock">Caps</div>
-        <div class="kb-key" data-key="a">A</div>
-        <div class="kb-key" data-key="s">S</div>
-        <div class="kb-key" data-key="d">D</div>
-        <div class="kb-key" data-key="f">F</div>
-        <div class="kb-key" data-key="g">G</div>
-        <div class="kb-key" data-key="h">H</div>
-        <div class="kb-key" data-key="j">J</div>
-        <div class="kb-key" data-key="k">K</div>
-        <div class="kb-key" data-key="l">L</div>
-        <div class="kb-key" data-key=";">;</div>
-        <div class="kb-key" data-key="'">'</div>
-        <div class="kb-key kb-wide2" data-key="Enter">Enter</div>
-      </div>
+          <!-- Row 3: QWERTY -->
+          <div class="flex gap-1.5 items-center">
+            <div class="kb-key min-w-[65px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="Tab">Tab</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="q">Q</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="w">W</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="e">E</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="r">R</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="t">T</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="y">Y</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="u">U</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="i">I</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="o">O</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="p">P</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="[">[</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="]">]</div>
+            <div class="kb-key flex-1 min-w-[50px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="\">\</div>
+          </div>
 
-      <!-- Row 5: ZXCV -->
-      <div class="kb-row">
-        <div class="kb-key kb-shift" data-key="ShiftLeft">Shift</div>
-        <div class="kb-key" data-key="z">Z</div>
-        <div class="kb-key" data-key="x">X</div>
-        <div class="kb-key" data-key="c">C</div>
-        <div class="kb-key" data-key="v">V</div>
-        <div class="kb-key" data-key="b">B</div>
-        <div class="kb-key" data-key="n">N</div>
-        <div class="kb-key" data-key="m">M</div>
-        <div class="kb-key" data-key=",">,</div>
-        <div class="kb-key" data-key=".">.</div>
-        <div class="kb-key" data-key="/">/</div>
-        <div class="kb-key kb-shift" data-key="ShiftRight">Shift</div>
-      </div>
+          <!-- Row 4: ASDF -->
+          <div class="flex gap-1.5 items-center">
+            <div class="kb-key min-w-[75px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="CapsLock">Caps</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="a">A</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="s">S</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="d">D</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="f">F</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="g">G</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="h">H</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="j">J</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="k">K</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="l">L</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key=";">;</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="'">'</div>
+            <div class="kb-key flex-1 min-w-[85px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="Enter">Enter</div>
+          </div>
 
-      <!-- Row 6: Bottom -->
-      <div class="kb-row">
-        <div class="kb-key kb-ctrl" data-key="ControlLeft">Ctrl</div>
-        <div class="kb-key kb-meta" data-key="Meta">Win</div>
-        <div class="kb-key kb-alt" data-key="AltLeft">Alt</div>
-        <div class="kb-key kb-space" data-key=" ">Space</div>
-        <div class="kb-key kb-alt" data-key="AltRight">Alt</div>
-        <div class="kb-key kb-ctrl" data-key="ControlRight">Ctrl</div>
+          <!-- Row 5: ZXCV -->
+          <div class="flex gap-1.5 items-center">
+            <div class="kb-key min-w-[95px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="ShiftLeft">Shift</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="z">Z</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="x">X</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="c">C</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="v">V</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="b">B</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="n">N</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="m">M</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key=",">,</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key=".">.</div>
+            <div class="kb-key min-w-[40px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="/">/</div>
+            <div class="kb-key flex-1 min-w-[95px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="ShiftRight">Shift</div>
+          </div>
+
+          <!-- Row 6: Bottom -->
+          <div class="flex gap-1.5 items-center">
+            <div class="kb-key min-w-[55px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="ControlLeft">Ctrl</div>
+            <div class="kb-key min-w-[50px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="Meta">Win</div>
+            <div class="kb-key min-w-[50px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="AltLeft">Alt</div>
+            <div class="kb-key flex-1 min-w-[220px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key=" ">Space</div>
+            <div class="kb-key min-w-[50px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="AltRight">Alt</div>
+            <div class="kb-key min-w-[55px] h-11 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-lg flex items-center justify-center border border-zinc-700 border-b-4 border-b-zinc-950 transition-all cursor-default" data-key="ControlRight">Ctrl</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="kb-legend">
-      <div class="kb-legend-item"><span class="kb-legend-dot" style="background:var(--bg-soft);border:1.5px solid var(--border)"></span> Not tested</div>
-      <div class="kb-legend-item"><span class="kb-legend-dot" style="background:#DCFCE7;border:1.5px solid #86EFAC"></span> Working</div>
-      <div class="kb-legend-item"><span class="kb-legend-dot" style="background:#DBEAFE;border:1.5px solid #93C5FD"></span> Currently pressed</div>
+    <!-- Hardware Diagnostic Architecture: Q&A Interview Archetype -->
+    <div class="tool-content-wrap">
+      
+      <section class="tool-content-card">
+        <!-- Lead Editorial Header -->
+        <div class="tool-content-header">
+          <h2>Keyboard Hardware &amp; Firmware: The Engineering Interview</h2>
+          <p>
+            Behind every instantaneous keystroke is a high-speed matrix scan loop, debouncing algorithm, and USB Human Interface Device (HID) descriptor report. We sat down with senior embedded firmware engineers to dissect switch physics, ghosting anomalies, and true input latency.
+          </p>
+        </div>
+
+        <!-- Conversational Q&A Dialogue Stream -->
+        <div class="space-y-8 pt-6 border-t border-[var(--border)]">
+
+          <!-- Interview Dialogue 01 -->
+          <article class="space-y-3 border-b border-[var(--border)] pb-8">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Q. Matrix Scanning</span>
+              <span class="text-xs text-[var(--txt-muted)]">·</span>
+              <span class="text-xs text-[var(--txt-muted)] font-mono">Input Integrity</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              Why do standard membrane keyboards drop inputs or register phantom ghost keys during simultaneous multi-key combinations?
+            </h3>
+            <div class="pl-4 sm:pl-6 border-l-2 border-[var(--brand)] space-y-2.5 text-sm text-[var(--txt-muted)] leading-relaxed">
+              <p>
+                <strong class="text-[var(--txt)] font-semibold">Firmware Architect:</strong> 
+                Standard keyboards route electrical traces in a simplified grid of rows and columns to economize on micro-controller pinouts. When you press two keys sharing a row and column simultaneously, current flows as expected. But if you press a third key that completes a rectangle in the circuit matrix, current loops backward along unintended pathways.
+              </p>
+              <p>
+                The keyboard controller cannot mathematically distinguish whether three keys are down or if all four corners of the matrix rectangle are closed. Cheap boards resolve this by simply suppressing ("blocking") the third key to avoid sending a phantom input. Enthusiast mechanical boards eliminate this entirely by soldering a dedicated surface-mount diode (1N4148 or equivalent) in series with every individual switch. The diode restricts current to one direction only, guaranteeing true N-Key Rollover (NKRO) where all 104 keys can be held simultaneously without interference.
+              </p>
+            </div>
+          </article>
+
+          <!-- Interview Dialogue 02 -->
+          <article class="space-y-3 border-b border-[var(--border)] pb-8">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Q. Contact Physics</span>
+              <span class="text-xs text-[var(--txt-muted)]">·</span>
+              <span class="text-xs text-[var(--txt-muted)] font-mono">Switch Chatter &amp; Debouncing</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              What causes mechanical "chatter" where pressing a key once outputs double letters, and how does firmware fight it?
+            </h3>
+            <div class="pl-4 sm:pl-6 border-l-2 border-[var(--brand)] space-y-2.5 text-sm text-[var(--txt-muted)] leading-relaxed">
+              <p>
+                <strong class="text-[var(--txt)] font-semibold">Switch Physicist:</strong> 
+                In traditional mechanical switches (Cherry MX, Gateron, Kailh), actuation relies on two flexible gold-plated copper leaf contacts slamming together. At microscopic time scales, metal contacts do not create a perfectly clean electrical connection instantly—they literally bounce against each other like microscopic diving boards for 1 to 5 milliseconds before settling into stable contact.
+              </p>
+              <p>
+                If a keyboard controller reported raw state changes immediately, a single keypress would generate 5 to 10 duplicate characters. Firmware implements a "debounce filter"—either a delay algorithm (waiting 5ms before confirming state) or an eager algorithm (reporting the first contact immediately, then ignoring subsequent state changes for a 5ms refractory period). When switches age, dust intrusion or contact fatigue elongates the bounce period beyond the debounce window, producing frustrating double-typing chatter.
+              </p>
+            </div>
+          </article>
+
+          <!-- Interview Dialogue 03 -->
+          <article class="space-y-3 border-b border-[var(--border)] pb-8">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Q. Telemetry &amp; Latency</span>
+              <span class="text-xs text-[var(--txt-muted)]">·</span>
+              <span class="text-xs text-[var(--txt-muted)] font-mono">1,000Hz vs 8,000Hz Polling</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              Gaming brands now advertise 8,000 Hz polling rates. Does jumping from 1,000 Hz to 8,000 Hz provide measurable performance gains?
+            </h3>
+            <div class="pl-4 sm:pl-6 border-l-2 border-[var(--brand)] space-y-2.5 text-sm text-[var(--txt-muted)] leading-relaxed">
+              <p>
+                <strong class="text-[var(--txt)] font-semibold">Hardware Engineer:</strong> 
+                At 1,000 Hz, the USB host controller polls the keyboard endpoint once every 1.0 millisecond. At 8,000 Hz, that interval shrinks to 0.125 milliseconds (125 microseconds)—a theoretical reduction of 0.875ms in transmission delay.
+              </p>
+              <p>
+                While 0.875ms is mathematically real, it is dwarfed by other latency bottlenecks: physical finger depression travel time (15–30ms), switch matrix scan frequency (1–3ms), display refresh intervals (2.7ms on a 360Hz monitor), and human synaptic response (150–250ms). The far more consequential advancement is analog magnetic switches (Hall Effect / Rapid Trigger), which allow dynamic reset points instantly upon releasing pressure.
+              </p>
+            </div>
+          </article>
+
+          <!-- Interview Dialogue 04 -->
+          <article class="space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Q. Hardware Longevity</span>
+              <span class="text-xs text-[var(--txt-muted)]">·</span>
+              <span class="text-xs text-[var(--txt-muted)] font-mono">Hot-Swap Sockets</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              When a single key completely stops registering on a hot-swap mechanical keyboard, what is the standard diagnostic procedure?
+            </h3>
+            <div class="pl-4 sm:pl-6 border-l-2 border-[var(--brand)] space-y-2.5 text-sm text-[var(--txt-muted)] leading-relaxed">
+              <p>
+                <strong class="text-[var(--txt)] font-semibold">Repairs Specialist:</strong> 
+                Follow a three-step isolation routine. First, swap the faulty switch with a known working switch from an infrequently used key (like Scroll Lock). If the problem moves with the switch, the contact leaf is bent or tarnished.
+              </p>
+              <p>
+                If the key position remains dead with a new switch, the failure resides on the PCB. In 80% of cases on Kailh-style hot-swap sockets, pushing a switch in with slightly angled pins forces the socket backward off its surface-mount solder pad, cracking the trace. Taking off the bottom case and re-flowing solder with a quick touch of an iron and flux restores the connection in minutes.
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- Hairline Accordion Technical FAQ -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Diagnostics &amp; Testing Specifications</h2>
+          <p>
+            Browser capture mechanics, OS shortcuts, and hardware isolation details.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why don't special keys like the Windows Key, Fn, or PrintScreen always illuminate?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Certain keys are intercepted exclusively at the hardware or operating system kernel layer. The <code>Fn</code> key on laptops and compact keyboards is handled directly by the internal keyboard microcontroller to switch internal scan matrices; it never emits a standard USB HID scan code to the host OS. Similarly, browser sandboxes may intercept certain system hotkeys (like Win+L or Ctrl+Alt+Del) before JavaScript event listeners can capture them.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can this online tester detect microscopic input latency or debounce lag?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Browser JavaScript runs on the browser's main event loop alongside rendering and DOM reflow tasks, introducing small scheduling jitters (1–8ms). While online testers are unparalleled for diagnosing stuck switches, dropped keys, matrix ghosting, and simultaneous rollovers, sub-millisecond hardware latency benchmarking requires dedicated external oscilloscopes or hardware microcontrollers directly intercepting USB packets.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Are typed keystrokes or sensitive input strings stored or logged anywhere?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Never. The testing listener attaches directly to the DOM window <code>keydown</code> and <code>keyup</code> listeners, toggling visual CSS classes in client memory. No telemetry, key logging, or analytics payloads are transmitted. You can safely disconnect your internet connection entirely and test your keyboard in offline mode.
+            </div>
+          </details>
+        </div>
+      </section>
+
     </div>
   </div>
 </ToolLayout>
 
 <style>
-  .kb-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .kb-info {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 12px 16px;
-    background: #EFF6FF;
-    border: 1.5px solid #BFDBFE;
-    border-radius: var(--radius-sm);
-    font-size: 13.5px;
-    color: #1E40AF;
+  .kb-key.pressed {
+    background-color: var(--amber) !important;
+    color: #ffffff !important;
+    border-color: var(--amber) !important;
+    border-bottom-color: #b45309 !important;
+    transform: translateY(2px);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
   }
-  .kb-info i { color: var(--brand); margin-top: 2px; flex-shrink: 0; }
-  .kb-status-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 10px 16px; background: var(--bg-soft); border-radius: var(--radius-sm); border: 1.5px solid var(--border); font-size: 14px; color: var(--txt-muted); }
-  .kb-last, .kb-stats { font-size: 14px; }
-  .kb-last strong, .kb-stats strong { color: var(--txt); }
-  .kb-reset { margin-left: auto; }
-
-  .kb-board {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 20px;
-    background: #1E293B;
-    border-radius: 12px;
-    user-select: none;
-    overflow-x: auto;
+  .kb-key.active {
+    background-color: var(--brand) !important;
+    color: #ffffff !important;
+    border-color: var(--brand) !important;
+    border-bottom-color: #047857 !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
   }
-  .kb-row { display: flex; gap: 5px; align-items: center; min-width: 600px; }
-  .kb-gap { width: 20px; }
-  .kb-gap-sm { width: 10px; }
-
-  .kb-key {
-    min-width: 38px;
-    height: 38px;
-    background: #334155;
-    border: 1px solid #475569;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    color: #CBD5E1;
-    cursor: default;
-    transition: all .1s;
-    border-bottom: 3px solid #1E293B;
-    font-family: 'Inter', sans-serif;
-    padding: 0 6px;
-    text-align: center;
-  }
-  .kb-key.pressed { background: #DBEAFE; color: #1E40AF; border-color: #93C5FD; border-bottom-color: #60A5FA; }
-  .kb-key.active { background: #DCFCE7; color: #166534; border-color: #86EFAC; border-bottom-color: #4ADE80; }
-  .kb-wide { min-width: 64px; }
-  .kb-wide2 { min-width: 80px; }
-  .kb-caps { min-width: 70px; }
-  .kb-shift { min-width: 90px; }
-  .kb-ctrl { min-width: 52px; }
-  .kb-meta { min-width: 44px; }
-  .kb-alt { min-width: 44px; }
-  .kb-space { flex: 1; min-width: 200px; }
-
-  .kb-legend { display: flex; gap: 20px; flex-wrap: wrap; }
-  .kb-legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--txt-muted); }
-  .kb-legend-dot { width: 18px; height: 18px; border-radius: 4px; display: inline-block; }
 </style>
 
 <script>
@@ -218,11 +358,13 @@ const tool = tools.find(t => t.slug === 'keyboard-tester')!;
     const key = getKey(e);
     if (!pressedKeys.has(key)) {
       count++;
-      document.getElementById('kb-count')!.textContent = String(count);
+      const countEl = document.getElementById('kb-count');
+      if (countEl) countEl.textContent = String(count);
     }
     pressedKeys.add(key);
     highlight(key, 'pressed');
-    document.getElementById('kb-last-key')!.textContent = e.key === ' ' ? 'Space' : e.key;
+    const lastKeyEl = document.getElementById('kb-last-key');
+    if (lastKeyEl) lastKeyEl.textContent = e.key === ' ' ? 'Space' : e.key;
   });
 
   document.addEventListener('keyup', (e) => {
@@ -234,8 +376,10 @@ const tool = tools.find(t => t.slug === 'keyboard-tester')!;
   document.getElementById('kb-reset')?.addEventListener('click', () => {
     pressedKeys.clear();
     count = 0;
-    document.getElementById('kb-count')!.textContent = '0';
-    document.getElementById('kb-last-key')!.textContent = '—';
+    const countEl = document.getElementById('kb-count');
+    if (countEl) countEl.textContent = '0';
+    const lastKeyEl = document.getElementById('kb-last-key');
+    if (lastKeyEl) lastKeyEl.textContent = '—';
     document.querySelectorAll('.kb-key').forEach(k => k.classList.remove('pressed', 'active'));
   });
 </script>

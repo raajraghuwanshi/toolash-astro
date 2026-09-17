@@ -12,20 +12,20 @@ const toolsJson = JSON.stringify(tools.map(t => ({
 })));
 
 const catColors: Record<string, string> = {
-  writing: '#EA580C',
-  security: '#059669',
-  generators: '#D97706',
-  calculators: '#0D9488',
+  writing: '#4F46E5',
+  security: '#0284C7',
+  generators: '#7C3AED',
+  calculators: '#2563EB',
   converters: '#E11D48',
-  media: '#F97316',
+  media: '#C026D3',
 };
 const catBgs: Record<string, string> = {
-  writing: 'rgba(234, 88, 12, 0.1)',
-  security: 'rgba(5, 150, 105, 0.1)',
-  generators: 'rgba(217, 119, 6, 0.1)',
-  calculators: 'rgba(13, 148, 136, 0.1)',
-  converters: 'rgba(225, 29, 72, 0.1)',
-  media: 'rgba(249, 115, 22, 0.1)',
+  writing: 'rgba(79, 70, 229, 0.10)',
+  security: 'rgba(2, 132, 199, 0.10)',
+  generators: 'rgba(124, 58, 237, 0.10)',
+  calculators: 'rgba(37, 99, 235, 0.10)',
+  converters: 'rgba(225, 29, 72, 0.10)',
+  media: 'rgba(192, 38, 211, 0.10)',
 };
 ---
 
@@ -146,8 +146,8 @@ const catBgs: Record<string, string> = {
   }
 
   function renderItems(items, label) {
-    const color = (cat) => catColors[cat] || '#059669';
-    const bg = (cat) => catBgs[cat] || 'rgba(5, 150, 105, 0.1)';
+    const color = (cat) => catColors[cat] || '#4F46E5';
+    const bg = (cat) => catBgs[cat] || 'rgba(79, 70, 229, 0.10)';
 
     if (!results) return;
 

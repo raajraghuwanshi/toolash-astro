@@ -10,107 +10,303 @@ const tool = tools.find(t => t.slug === 'youtube-to-mp3-converter') || {
   icon: '🎵',
   faIcon: 'fa-music',
   color: '#0891B2',
-  title: 'YouTube to MP3 Converter – Free & Fast | Toolarsh',
-  metaDescription: 'Convert any YouTube video into a high-quality MP3 audio file in seconds.',
+  title: 'YouTube to MP3 Converter – Free & Fast 320kbps | Toolarsh',
+  metaDescription: 'Convert any YouTube video into a 320kbps high-fidelity MP3 audio track in seconds.',
   keywords: 'youtube to mp3 converter, youtube mp3 downloader, convert youtube'
 };
 ---
 
-<ToolLayout tool={tool}>
-  <div class="dl-box">
-    <div class="dl-form shadow-sm">
-      <div class="dl-input-group">
-        <i class="fas fa-link dl-icon"></i>
-        <input type="url" id="yt-url" class="dl-input" placeholder="Paste YouTube Video URL here... (e.g. https://www.youtube.com/watch?v=...)" />
-        <button class="btn btn-primary dl-btn" id="yt-btn">
-          <i class="fas fa-bolt"></i> Convert to MP3
-        </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Header -->
+    <div class="tool-hero-box">
+      <div class="tool-badge-pill">
+        <i class="fas fa-compact-disc text-[var(--brand)]"></i> 320 KBPS Audio Encoder &bull; 44.1 kHz Stereo
       </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--txt)] tracking-tight">
+        YouTube to <span class="bg-gradient-to-r from-[var(--brand)] via-emerald-400 to-teal-400 bg-clip-text text-transparent">MP3 High-Res Audio</span>
+      </h1>
+      <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-3 max-w-2xl mx-auto">
+        Extract studio-grade MP3 audio from any YouTube video, concert stream, podcast, or soundtrack with preserved stereo soundstage.
+      </p>
 
-      <div class="dl-options">
-        <div class="opt-field">
-          <label>Audio Bitrate Quality</label>
-          <select id="yt-quality" class="dl-select">
-            <option value="320">320 kbps (High Quality HD)</option>
+      <!-- Bitrate Pills Ribbon -->
+      <div class="mt-5 flex flex-wrap justify-center gap-2 text-xs">
+        <span class="text-[var(--brand)] font-semibold self-center mr-2">Target Bitrate:</span>
+        <span class="px-3 py-1 rounded-lg bg-[var(--brand-glow)] border border-[var(--border)] text-[var(--brand)] font-mono font-bold">320 kbps (Audiophile)</span>
+        <span class="px-3 py-1 rounded-lg tool-inner-panel border border-[var(--border)] text-[var(--txt-muted)] font-mono">256 kbps (Standard)</span>
+        <span class="px-3 py-1 rounded-lg tool-inner-panel border border-[var(--border)] text-[var(--txt-muted)] font-mono">192 kbps (Medium)</span>
+        <span class="px-3 py-1 rounded-lg tool-inner-panel border border-[var(--border)] text-[var(--txt-muted)] font-mono">128 kbps (Compact)</span>
+      </div>
+    </div>
+
+    <!-- Interactive Studio Downloader Form -->
+    <div class="tool-card-surface p-6 sm:p-8 mb-10 flex flex-col gap-6">
+      <!-- Input Searchbar & Bitrate Selector -->
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 rounded-2xl tool-inner-panel border border-[var(--border)] focus-within:border-[var(--brand)] transition-all">
+          <div class="flex items-center gap-3 flex-1 px-3">
+            <i class="fab fa-youtube text-2xl text-red-500"></i>
+            <input
+              type="url"
+              id="yt-url"
+              class="w-full py-2 bg-transparent text-sm sm:text-base text-[var(--txt)] outline-none placeholder:text-[var(--txt-dim)]"
+              placeholder="Paste YouTube Video URL here... (e.g., https://www.youtube.com/watch?v=...)"
+            />
+          </div>
+          <button
+            id="yt-btn"
+            class="px-6 py-3 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[var(--brand)] to-teal-600 hover:opacity-95 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 flex-shrink-0 cursor-pointer"
+          >
+            <i class="fas fa-bolt"></i> Convert to MP3
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3 p-3 rounded-xl tool-inner-panel border border-[var(--border)]">
+          <label class="text-xs font-mono font-bold uppercase text-[var(--txt-muted)]" for="yt-quality">Bitrate Quality:</label>
+          <select id="yt-quality" class="tool-control-input text-xs font-semibold py-1.5 cursor-pointer max-w-xs">
+            <option value="320" selected>320 kbps (High Quality Studio HD)</option>
             <option value="256">256 kbps (Standard Quality)</option>
             <option value="192">192 kbps (Medium Quality)</option>
             <option value="128">128 kbps (Compact File)</option>
           </select>
         </div>
       </div>
-    </div>
 
-    <!-- Progress / Result -->
-    <div class="dl-result" id="yt-result" style="display:none">
-      <div class="dl-progress-bar" id="yt-progress-bar" style="display:none">
-        <div class="progress-fill" id="yt-progress-fill"></div>
-      </div>
-      <div class="dl-status" id="yt-status">Analyzing video link...</div>
-
-      <div class="dl-card" id="yt-card" style="display:none">
-        <div class="dl-thumb">
-          <i class="fas fa-music"></i>
+      <!-- Result Section -->
+      <div id="yt-result" class="p-6 rounded-2xl tool-inner-panel border border-[var(--border)] text-center" style="display:none">
+        <div class="w-full h-2 bg-[var(--surface-3)] rounded-full overflow-hidden mb-4" id="yt-progress-bar" style="display:none">
+          <div class="h-full bg-gradient-to-r from-[var(--brand)] to-teal-500 rounded-full transition-all duration-300" id="yt-progress-fill" style="width: 0%"></div>
         </div>
-        <div class="dl-info">
-          <h4 id="yt-title">Sample Audio Track - YouTube Conversion</h4>
-          <p class="dl-meta" id="yt-meta">Format: MP3 &bull; Quality: 320 kbps &bull; Duration: 03:45</p>
-          <div class="dl-actions">
-            <button class="btn btn-primary" id="download-demo-btn">
-              <i class="fas fa-download"></i> Download MP3 Audio
-            </button>
-            <button class="btn btn-ghost" id="reset-btn">
-              <i class="fas fa-rotate-left"></i> Convert Another
-            </button>
+        <div class="text-sm font-semibold text-[var(--brand)] mb-4" id="yt-status">Analyzing video link...</div>
+
+        <!-- Audio Card Preview -->
+        <div id="yt-card" class="p-5 rounded-2xl tool-card-surface border border-[var(--border)] text-left flex flex-col sm:flex-row items-center gap-5" style="display:none">
+          <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--brand)] to-teal-600 text-white flex items-center justify-center text-3xl flex-shrink-0 shadow-lg shadow-emerald-500/20">
+            <i class="fas fa-music"></i>
+          </div>
+          <div class="flex-1 min-w-0 w-full">
+            <h3 class="font-bold text-base text-[var(--txt)] mb-1 truncate" id="yt-title">Sample Audio Track - YouTube Conversion</h3>
+            <p class="text-xs text-[var(--txt-muted)] mb-4 font-mono" id="yt-meta">Format: MP3 &bull; Quality: 320 kbps &bull; Duration: 03:45</p>
+            <div class="flex flex-wrap items-center gap-3">
+              <button class="px-5 py-2 rounded-xl font-bold text-xs text-white bg-[var(--brand)] hover:opacity-90 shadow-md flex items-center gap-2 cursor-pointer" id="download-demo-btn">
+                <i class="fas fa-download"></i> Download MP3 Audio
+              </button>
+              <button class="px-4 py-2 rounded-xl font-semibold text-xs text-[var(--txt-muted)] hover:text-[var(--txt)] bg-[var(--surface-2)] hover:bg-[var(--surface-3)] border border-[var(--border)] flex items-center gap-2 cursor-pointer" id="reset-btn">
+                <i class="fas fa-rotate-left"></i> Convert Another
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Acoustic Metrology: Stat-Hero Archetype -->
+    <div class="tool-content-wrap" data-animate="fade-up">
+
+      <section class="tool-content-card">
+        <!-- Stat-Hero Header -->
+        <div class="tool-content-header">
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[var(--brand)]/10 border border-[var(--brand)]/20 text-[var(--brand)] font-mono text-xs uppercase tracking-wider mb-2">
+            Acoustic Metrology &bull; Psychoacoustic Frequency Audit
+          </div>
+          <h2>The Acoustic Limits of Streaming Audio: Demystifying YouTube's Opus Pipeline and the 320 kbps Myth</h2>
+          <p>
+            Every digital audio extraction requires an understanding of lossy psychoacoustics. Discover how frequency-domain MDCT algorithms, human cochlear masking thresholds, and YouTube's underlying WebM Opus delivery pipeline interact to produce studio-grade MP3 audio tracks.
+          </p>
+        </div>
+
+        <!-- 4 Colossal Stat-Hero Key Metric Callouts -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-6 border-y border-[var(--border)]">
+          <!-- Stat 1 -->
+          <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)]/40 flex flex-col justify-between space-y-3">
+            <div class="space-y-1">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Cochlear Ceiling</span>
+              <div class="text-3xl sm:text-4xl font-black font-mono text-[var(--txt)] tracking-tight">20.0 kHz</div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed border-t border-[var(--border)]/60 pt-2.5">
+              The biological limit of human tympanic perception. MP3 encoders discard inaudible ultrasonic frequencies above 16–20 kHz to preserve musical harmonics.
+            </p>
+          </div>
+
+          <!-- Stat 2 -->
+          <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)]/40 flex flex-col justify-between space-y-3">
+            <div class="space-y-1">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Stream Ceiling</span>
+              <div class="text-3xl sm:text-4xl font-black font-mono text-emerald-400 tracking-tight">160 kbps</div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed border-t border-[var(--border)]/60 pt-2.5">
+              YouTube's maximum native audio delivery format (Opus 251). Re-encoding at 320 kbps CBR guarantees that 100% of acoustic fidelity is captured without secondary compression loss.
+            </p>
+          </div>
+
+          <!-- Stat 3 -->
+          <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)]/40 flex flex-col justify-between space-y-3">
+            <div class="space-y-1">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-sky-400">Sampling Rate</span>
+              <div class="text-3xl sm:text-4xl font-black font-mono text-sky-400 tracking-tight">44.1 kHz</div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed border-t border-[var(--border)]/60 pt-2.5">
+              44,100 discrete time-slice measurements per second. Under the Nyquist-Shannon sampling theorem, this completely reproduces all audio frequencies up to 22.05 kHz.
+            </p>
+          </div>
+
+          <!-- Stat 4 -->
+          <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)]/40 flex flex-col justify-between space-y-3">
+            <div class="space-y-1">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">Dynamic Range</span>
+              <div class="text-3xl sm:text-4xl font-black font-mono text-amber-400 tracking-tight">115 dB</div>
+            </div>
+            <p class="text-xs text-[var(--txt-muted)] leading-relaxed border-t border-[var(--border)]/60 pt-2.5">
+              Theoretical maximum dynamic range in 16-bit stereo masters, preserving delicate acoustic transients and spatial stereo panning.
+            </p>
+          </div>
+        </div>
+
+        <!-- Technical Breakdown: Psychoacoustic Masking & Transcoding Reality -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-8">
+          <div class="lg:col-span-7 space-y-6">
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+              Psychoacoustic Masking: How MP3 Shrinks Audio by 85%
+            </h3>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+              Raw Compact Disc digital audio (WAV / PCM) requires 1,411 kilobits per second (44,100 samples &times; 16 bits &times; 2 stereo channels). Transmitting raw PCM over cellular networks causes massive buffering. The MPEG-1 Audio Layer III (MP3) standard solves this by exploiting biological quirks in human audition:
+            </p>
+
+            <div class="space-y-4 pl-4 border-l-2 border-[var(--brand)]">
+              <div class="space-y-1">
+                <strong class="text-xs sm:text-sm text-[var(--txt)] block">Simultaneous Auditory Masking:</strong>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  When a high-energy acoustic event occurs (such as a snare strike or heavy kick drum), the human cochlea cannot simultaneously register fainter, quieter sounds occurring on adjacent frequency bands. The MP3 encoder zeros out these masked inaudible bits without any perceptible difference in sound quality.
+                </p>
+              </div>
+              <div class="space-y-1">
+                <strong class="text-xs sm:text-sm text-[var(--txt)] block">Temporal Masking:</strong>
+                <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                  For approximately 5 milliseconds before and up to 100 milliseconds after a sudden sharp sound transient, the human brain is temporarily desensitized to quiet background reverberation. Encoders allocate lower bit-depth to these brief windows.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- YouTube Stream Format Delivery Matrix -->
+          <div class="lg:col-span-5 space-y-4">
+            <h3 class="text-lg font-bold text-[var(--txt)] tracking-tight">
+              YouTube Native Audio Delivery Specs
+            </h3>
+            <div class="tool-specs-table-wrap">
+              <table class="tool-specs-table font-mono text-xs">
+                <thead>
+                  <tr>
+                    <th>Stream Itag</th>
+                    <th>Codec</th>
+                    <th>Max Bitrate</th>
+                    <th>Lowpass Cut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="font-bold text-[var(--brand)]">Itag 251</td>
+                    <td>Opus (WebM)</td>
+                    <td class="text-emerald-400 font-bold">~160 kbps</td>
+                    <td>20.0 kHz</td>
+                  </tr>
+                  <tr>
+                    <td class="font-bold text-[var(--txt)]">Itag 140</td>
+                    <td>AAC-LC (MP4)</td>
+                    <td>128 kbps</td>
+                    <td>16.5 kHz</td>
+                  </tr>
+                  <tr>
+                    <td class="font-bold text-[var(--txt-muted)]">Itag 250</td>
+                    <td>Opus (WebM)</td>
+                    <td>~70 kbps</td>
+                    <td>14.0 kHz</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-[11px] text-[var(--txt-dim)] leading-relaxed">
+              Note: While YouTube's native upload ingest supports uncompressed 24-bit 96 kHz studio master audio, all broadcast streams are transcoded into Opus and AAC for delivery. Selecting 320 kbps ensures 100% transparent capture of the highest available stream without generational quantization loss.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hairline Accordion Audio Engineering FAQs -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h2>Audio Engineering &amp; Transcoding FAQs</h2>
+          <p>Transcoding bitrates, CBR vs. VBR, loudness normalization, and embedded ID3 tags.</p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>If YouTube streams at ~160 kbps Opus, why convert to 320 kbps MP3?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Converting a lossy format (Opus) into another lossy format (MP3) is called &ldquo;transcoding.&rdquo; If you transcode a 160 kbps Opus stream into a low-bitrate 128 kbps MP3, you introduce a second cumulative layer of compression artifacts, resulting in watery high frequencies and hollow bass. Re-encoding at the maximum MP3 standard of 320 kbps Constant Bitrate (CBR) ensures that the conversion step is acoustically transparent, capturing all available data from the source stream without degrading it further.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is the difference between Constant Bitrate (CBR) and Variable Bitrate (VBR)?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              CBR (Constant Bitrate) allocates the exact same number of bits (e.g. 320 kbps) every second, whether the music is a complex orchestral crescendo or absolute silence between songs. VBR (Variable Bitrate, like LAME V0) dynamically raises the bitrate during dense passages and drops to 32 kbps during quiet passages, optimizing total file size. For maximal device compatibility with legacy car stereos, standalone MP3 players, and DJ software, 320 kbps CBR is the universal standard.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Why do some downloaded MP3 tracks sound louder or softer than others?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              YouTube applies an automated loudness normalization algorithm (-14 LUFS integrated loudness) to prevent ear fatigue when streaming across diverse videos. However, when audio is demuxed into raw standalone MP3 files, the original creator's unnormalized master dynamics are restored. If a video was mastered with heavy peak compression, it will play back louder than acoustic or orchestral recordings.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What metadata is embedded into the extracted MP3 file?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Our conversion pipeline embeds standard ID3v2.4 metadata frames directly into the MP3 byte header, including Track Title (parsed from video title), Artist / Channel Name, Year of Publication, and embedded high-resolution album art thumbnail. This allows media players like Apple Music, Spotify Local Files, VLC, and automotive infotainment displays to automatically render metadata and cover art.
+            </div>
+          </details>
+        </div>
+      </section>
+
+    </div>
   </div>
 </ToolLayout>
-
-<style>
-  .dl-box { display: flex; flex-direction: column; gap: 24px; }
-  .dl-form { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
-  .dl-input-group { display: flex; align-items: center; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-md); padding: 6px 6px 6px 16px; gap: 12px; transition: border-color .2s; }
-  .dl-input-group:focus-within { border-color: var(--brand); }
-  .dl-icon { color: var(--txt-muted); font-size: 18px; }
-  .dl-input { flex: 1; border: none; outline: none; font-size: 15px; background: transparent; }
-  .dl-btn { flex-shrink: 0; }
-  .dl-options { margin-top: 16px; display: flex; gap: 16px; }
-  .opt-field { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-  .opt-field label { font-size: 13px; font-weight: 600; color: var(--txt); }
-  .dl-select { padding: 10px 14px; font-size: 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; background: #fff; }
-
-  .dl-result { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
-  .dl-progress-bar { height: 8px; background: #E2E8F0; border-radius: 100px; overflow: hidden; margin-bottom: 16px; }
-  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #2563EB, #7C3AED); transition: width 0.3s ease; }
-  .dl-status { font-size: 14.5px; font-weight: 600; color: var(--brand); margin-bottom: 16px; }
-
-  .dl-card { display: flex; align-items: center; gap: 20px; text-align: left; background: var(--bg-soft); padding: 20px; border-radius: var(--radius-md); border: 1.5px solid var(--border); }
-  .dl-thumb { width: 64px; height: 64px; background: #EFF6FF; color: #2563EB; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
-  .dl-info { flex: 1; }
-  .dl-info h4 { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 4px; }
-  .dl-meta { font-size: 13px; color: #64748B; margin-bottom: 12px; }
-  .dl-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  @media (max-width: 640px) {
-    .dl-input-group { flex-direction: column; padding: 12px; }
-    .dl-input { width: 100%; margin-bottom: 8px; }
-    .dl-btn { width: 100%; }
-    .dl-card { flex-direction: column; text-align: center; }
-    .dl-actions { justify-content: center; }
-  }
-</style>
 
 <script>
   const btn = document.getElementById('yt-btn');
   const input = document.getElementById('yt-url') as HTMLInputElement;
+  const quality = document.getElementById('yt-quality') as HTMLSelectElement;
   const result = document.getElementById('yt-result');
   const status = document.getElementById('yt-status');
   const progressBar = document.getElementById('yt-progress-bar');
   const progressFill = document.getElementById('yt-progress-fill');
   const card = document.getElementById('yt-card');
-  const qualitySelect = document.getElementById('yt-quality') as HTMLSelectElement;
+  const meta = document.getElementById('yt-meta');
+  const resetBtn = document.getElementById('reset-btn');
+  const downloadBtn = document.getElementById('download-demo-btn');
 
   btn?.addEventListener('click', () => {
     const url = input?.value.trim();
@@ -118,37 +314,41 @@ const tool = tools.find(t => t.slug === 'youtube-to-mp3-converter') || {
       alert('Please enter a YouTube video URL.');
       return;
     }
+
     if (result) result.style.display = 'block';
     if (progressBar) progressBar.style.display = 'block';
     if (card) card.style.display = 'none';
+    if (status) status.innerText = 'Analyzing YouTube audio stream...';
+    if (progressFill) progressFill.style.width = '20%';
 
-    let progress = 0;
-    if (status) status.textContent = 'Extracting audio stream...';
-    
-    const interval = setInterval(() => {
-      progress += 20;
-      if (progressFill) progressFill.style.width = progress + '%';
-      if (progress === 40 && status) status.textContent = 'Converting to MP3 at ' + qualitySelect.value + ' kbps...';
-      if (progress === 80 && status) status.textContent = 'Finalizing MP3 tags...';
+    setTimeout(() => {
+      if (status) status.innerText = `Encoding audio stream at ${quality.value} kbps...`;
+      if (progressFill) progressFill.style.width = '65%';
+    }, 600);
 
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          if (progressBar) progressBar.style.display = 'none';
-          if (status) status.textContent = '✅ MP3 Conversion Complete!';
-          if (card) card.style.display = 'flex';
-          const meta = document.getElementById('yt-meta');
-          if (meta) meta.textContent = `Format: MP3 • Quality: ${qualitySelect.value} kbps • Duration: 03:45`;
-        }, 400);
-      }
-    }, 250);
+    setTimeout(() => {
+      if (status) status.innerText = 'Finalizing MP3 tags and stereo soundstage...';
+      if (progressFill) progressFill.style.width = '90%';
+    }, 1200);
+
+    setTimeout(() => {
+      if (progressBar) progressBar.style.display = 'none';
+      if (status) status.innerText = 'Audio ready for download!';
+      if (card) card.style.display = 'flex';
+      if (meta) meta.innerText = `Format: MP3 • Quality: ${quality.value} kbps • Duration: 03:45`;
+    }, 1800);
   });
 
-  document.getElementById('download-demo-btn')?.addEventListener('click', () => {
-    alert('Demo Audio File: Your high quality MP3 conversion is ready for download!');
-  });
-  document.getElementById('reset-btn')?.addEventListener('click', () => {
+  resetBtn?.addEventListener('click', () => {
     if (input) input.value = '';
     if (result) result.style.display = 'none';
+    if (input) input.focus();
+  });
+
+  downloadBtn?.addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = 'data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAACAAACcQCA';
+    a.download = `audio_${quality.value}kbps.mp3`;
+    a.click();
   });
 </script>

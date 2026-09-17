@@ -5,206 +5,429 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'cgpa-percentage-converter')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="cp-wrap">
-    <div class="cp-tabs">
-      <button class="cp-tab active" data-mode="cgpa-to-pct">CGPA → Percentage</button>
-      <button class="cp-tab" data-mode="pct-to-cgpa">Percentage → CGPA</button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Academic Conversion Engine Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-arrows-rotate text-[var(--brand)]"></i> Two-Way University Grade Conversion
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        CGPA to <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Percentage Converter</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Instantly convert your 10-point and 4-point CGPA into equivalent percentage marks for job applications, university admissions, and visa paperwork.
+      </p>
     </div>
 
-    <!-- CGPA to Percentage -->
-    <div class="cp-panel" id="cp-cgpa-to-pct">
-      <div class="cp-form">
-        <div class="cp-field">
-          <label for="cp-cgpa">Your CGPA</label>
-          <input type="number" id="cp-cgpa" class="cp-input" placeholder="8.5" min="0" max="10" step="0.01" value="8.5" />
+    <!-- Main 2-Column Split Converter Deck -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+      <!-- Left Column: Converter Controls (7 cols) -->
+      <div class="lg:col-span-7 tool-card-surface space-y-6">
+        <!-- Dual Mode Segmented Tab -->
+        <div class="tool-tab-segment max-w-md" role="tablist" aria-label="Converter Modes">
+          <button class="tool-tab-btn cp-tab active" data-mode="cgpa-to-pct" role="tab" aria-selected="true">
+            CGPA &rarr; Percentage (%)
+          </button>
+          <button class="tool-tab-btn cp-tab" data-mode="pct-to-cgpa" role="tab" aria-selected="false">
+            Percentage (%) &rarr; CGPA
+          </button>
         </div>
-        <div class="cp-field">
-          <label for="cp-scale">CGPA Scale</label>
-          <select id="cp-scale" class="cp-select">
-            <option value="10">10-point scale</option>
-            <option value="4">4-point scale (GPA)</option>
-          </select>
+
+        <!-- Mode 1: CGPA to Percentage -->
+        <div id="cp-cgpa-to-pct" class="cp-panel space-y-5">
+          <div class="space-y-2">
+            <label for="cp-cgpa" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Enter Your Cumulative GPA (CGPA)
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="cp-cgpa" min="0" max="10" step="0.01" value="8.50" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-xl font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">/ 10.0</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label for="cp-scale" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+                Scale Base
+              </label>
+              <select id="cp-scale" class="tool-control-input text-xs font-medium cursor-pointer">
+                <option value="10">10-Point Scale (India / CBCS)</option>
+                <option value="4">4-Point Scale (US / Canada)</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label for="cp-formula" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+                University Formula
+              </label>
+              <select id="cp-formula" class="tool-control-input text-xs font-medium cursor-pointer">
+                <option value="x9.5">CGPA × 9.5 (Anna, VTU, CBSE, AICTE)</option>
+                <option value="x9">CGPA × 9.0 (Some State Universities)</option>
+                <option value="x10">CGPA × 10.0 (Direct Percentage)</option>
+                <option value="custom">Custom Multiplier</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="cp-custom-wrap" class="space-y-2" style="display: none;">
+            <label for="cp-multiplier" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Enter Custom Multiplier
+            </label>
+            <input type="number" id="cp-multiplier" step="0.01" value="9.5" class="tool-control-input font-mono text-base font-bold" />
+          </div>
+
+          <button id="cp-convert" class="w-full py-4 rounded-xl bg-[var(--brand)] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[var(--brand)]/25 hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <i class="fas fa-arrows-rotate"></i> Compute Percentage
+          </button>
         </div>
-        <div class="cp-field">
-          <label for="cp-formula">Formula / University</label>
-          <select id="cp-formula" class="cp-select">
-            <option value="x9.5">CGPA × 9.5 (Anna / VTU / most Indian)</option>
-            <option value="x9">CGPA × 9 (some universities)</option>
-            <option value="x10">CGPA × 10 (10-point direct)</option>
-            <option value="custom">Custom multiplier</option>
-          </select>
+
+        <!-- Mode 2: Percentage to CGPA -->
+        <div id="cp-pct-to-cgpa" class="cp-panel space-y-5" style="display: none;">
+          <div class="space-y-2">
+            <label for="cp-pct" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Enter Percentage Score (%)
+            </label>
+            <div class="flex items-center tool-inner-panel p-2.5 focus-within:border-[var(--brand)] transition-all">
+              <input type="number" id="cp-pct" min="0" max="100" step="0.01" value="80.75" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-xl font-bold outline-none px-2" />
+              <span class="text-xs font-mono font-bold text-[var(--brand)] px-3 py-1 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20">%</span>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label for="cp-formula2" class="text-xs font-bold text-[var(--txt-muted)] uppercase tracking-wider block">
+              Reverse Formula Divisor
+            </label>
+            <select id="cp-formula2" class="tool-control-input text-xs font-medium cursor-pointer">
+              <option value="div9.5">Percentage ÷ 9.5 (Standard AICTE / VTU)</option>
+              <option value="div9">Percentage ÷ 9.0</option>
+              <option value="div10">Percentage ÷ 10.0</option>
+            </select>
+          </div>
+
+          <button id="cp-convert2" class="w-full py-4 rounded-xl bg-[var(--brand)] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[var(--brand)]/25 hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <i class="fas fa-arrows-rotate"></i> Compute CGPA Score
+          </button>
         </div>
-        <div class="cp-field" id="cp-custom-wrap" style="display:none">
-          <label for="cp-multiplier">Custom Multiplier</label>
-          <input type="number" id="cp-multiplier" class="cp-input" placeholder="9.5" step="0.01" value="9.5" />
-        </div>
-        <button class="btn btn-primary" id="cp-convert">
-          <i class="fas fa-arrows-rotate"></i> Convert
-        </button>
       </div>
-      <div class="cp-result" id="cp-result1" style="display:none">
-        <div class="cp-result-num" id="cp-pct-val">0%</div>
-        <div class="cp-result-label" id="cp-pct-label"></div>
-        <div class="cp-result-grade" id="cp-grade1"></div>
+
+      <!-- Right Column: Result Scorecard (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        <!-- Live Result HUD -->
+        <div class="tool-card-surface space-y-6 text-center">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)] block">
+            Converted Result Breakdown
+          </span>
+
+          <div class="p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)]">
+            <div id="cp-result-num" class="text-5xl sm:text-6xl font-black font-mono text-[var(--brand)] tracking-tight">
+              80.75%
+            </div>
+            <div id="cp-result-label" class="text-xs font-mono text-[var(--txt-muted)] mt-2">
+              CGPA 8.50 × 9.5 = 80.75%
+            </div>
+            <div id="cp-result-grade" class="text-sm font-bold text-[var(--brand)] mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand)]/10 border border-[var(--brand)]/20">
+              ⭐ Excellent (First Class with Distinction)
+            </div>
+          </div>
+        </div>
+
+        <!-- CGPA to Percentage Quick Equivalency Matrix -->
+        <div class="tool-card-surface space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+            <span class="text-xs font-mono font-bold text-[var(--txt)] uppercase tracking-wider">Quick Conversion Matrix</span>
+            <span class="text-[11px] font-mono text-[var(--brand)]">10-Point Scale</span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-2 text-center text-xs font-mono">
+            <div class="p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)] text-[var(--txt-muted)] font-bold">CGPA</div>
+            <div class="p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)] text-[var(--txt-muted)] font-bold">× 9.5</div>
+            <div class="p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)] text-[var(--txt-muted)] font-bold">× 9.0</div>
+            <div class="p-2 rounded-lg bg-[var(--surface-3)] border border-[var(--border)] text-[var(--txt-muted)] font-bold">× 10.0</div>
+
+            {[10.0, 9.5, 9.0, 8.5, 8.0, 7.5, 7.0, 6.5, 6.0].map(c => (
+              <>
+                <div class="p-1.5 rounded bg-[var(--surface-2)] text-[var(--txt)] font-bold">{c.toFixed(1)}</div>
+                <div class="p-1.5 rounded bg-[var(--surface-2)] text-[var(--brand)]">{(c * 9.5).toFixed(1)}%</div>
+                <div class="p-1.5 rounded bg-[var(--surface-2)] text-[var(--txt-muted)]">{(c * 9.0).toFixed(1)}%</div>
+                <div class="p-1.5 rounded bg-[var(--surface-2)] text-[var(--txt-muted)]">{(c * 10.0).toFixed(1)}%</div>
+              </>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Percentage to CGPA -->
-    <div class="cp-panel" id="cp-pct-to-cgpa" style="display:none">
-      <div class="cp-form">
-        <div class="cp-field">
-          <label for="cp-pct">Your Percentage (%)</label>
-          <input type="number" id="cp-pct" class="cp-input" placeholder="85" min="0" max="100" step="0.01" value="85" />
+    <!-- Academic Evaluation History: Timeline Archetype -->
+    <div class="tool-content-wrap">
+      <section class="tool-content-card">
+        <!-- Timeline Header -->
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">Chronology of Academic Evaluation Standards</span>
+          <h2>The Century-Long Evolution of Academic Grading: From Percentage Marks to Choice-Based Credit Systems</h2>
+          <p>
+            Converting between cumulative grade point averages (CGPA) and percentage marks is not a simple arithmetic formula—it is an international diplomatic negotiation between divergent educational paradigms. Trace how academic evaluation evolved from 19th-century subjective percentages to modern weighted credit-based transcripts.
+          </p>
         </div>
-        <div class="cp-field">
-          <label for="cp-formula2">Formula / University</label>
-          <select id="cp-formula2" class="cp-select">
-            <option value="div9.5">Percentage ÷ 9.5 (Anna / VTU)</option>
-            <option value="div9">Percentage ÷ 9</option>
-            <option value="div10">Percentage ÷ 10</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" id="cp-convert2">
-          <i class="fas fa-arrows-rotate"></i> Convert
-        </button>
-      </div>
-      <div class="cp-result" id="cp-result2" style="display:none">
-        <div class="cp-result-num" id="cp-cgpa-val">0.00</div>
-        <div class="cp-result-label" id="cp-cgpa-label"></div>
-        <div class="cp-result-grade" id="cp-grade2"></div>
-      </div>
-    </div>
 
-    <!-- Reference table -->
-    <div class="cp-table-wrap">
-      <div class="cp-table-title">CGPA ↔ Percentage Reference Table</div>
-      <div class="cp-table">
-        <div class="cp-th">CGPA (10)</div><div class="cp-th">× 9.5</div><div class="cp-th">× 9</div><div class="cp-th">× 10</div>
-        {[10,9.5,9,8.5,8,7.5,7,6.5,6,5.5,5].map(c => (
-          <>
-            <div class="cp-td">{c}</div>
-            <div class="cp-td">{(c * 9.5).toFixed(1)}%</div>
-            <div class="cp-td">{(c * 9).toFixed(1)}%</div>
-            <div class="cp-td">{(c * 10).toFixed(1)}%</div>
-          </>
-        ))}
+        <!-- Vertical Timeline Spine -->
+        <div class="timeline-track">
+
+        <!-- Milestone 1: 1897 -->
+        <div class="relative space-y-3">
+          <div class="absolute -left-[27px] sm:-left-[35px] top-1 w-4 h-4 rounded-full border-2 border-[var(--brand)] bg-[var(--surface-1)]"></div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-[var(--brand)]/10 text-[var(--brand)] border border-[var(--brand)]/20">
+              1897 &bull; Mount Holyoke College
+            </span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">Birth of Letter Grades</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+            The Breakdown of Arbitrary 100-Point Percentage Exams
+          </h3>
+          <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed max-w-3xl">
+            Throughout the 19th century, universities assigned raw marks on a 0 to 100 percentage scale. Faculty quickly recognized that distinguishing between a 73% and a 74% paper was scientifically impossible and heavily biased by teacher temperament. Mount Holyoke College introduced a five-tier categorical letter system (A: 95&ndash;100%, B: 85&ndash;94%, C: 75&ndash;84%, D: 75% bare pass, E: failing), establishing the foundation for discrete qualitative grade boundaries.
+          </p>
+        </div>
+
+        <!-- Milestone 2: 1938 -->
+        <div class="relative space-y-3">
+          <div class="absolute -left-[27px] sm:-left-[35px] top-1 w-4 h-4 rounded-full border-2 border-emerald-400 bg-[var(--surface-1)]"></div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              1938 &bull; North American Higher Ed
+            </span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">The 4.0 Carnegie Unit</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+            Weighted Quality Points &amp; The 4-Point Grade Point Average
+          </h3>
+          <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed max-w-3xl">
+            As universities expanded into diverse elective curricula, unweighted percentage averages failed because a 90% in an introductory survey course counted identically to a 90% in advanced quantum mechanics. US institutions adopted the <strong>Carnegie Unit</strong> to weight grades by instructional contact hours, formalizing the standard 4.0 GPA scale where Grade Points are multiplied by course credits to compute Cumulative Grade Point Average.
+          </p>
+        </div>
+
+        <!-- Milestone 3: 1989 -->
+        <div class="relative space-y-3">
+          <div class="absolute -left-[27px] sm:-left-[35px] top-1 w-4 h-4 rounded-full border-2 border-sky-400 bg-[var(--surface-1)]"></div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              1989 &bull; European Higher Education
+            </span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">Bologna Accord Precursor</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+            ECTS &amp; Relative Cohort Percentile Grading
+          </h3>
+          <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed max-w-3xl">
+            To facilitate cross-border student mobility across 30+ European nations, the European Commission developed the European Credit Transfer and Accumulation System (ECTS). Rather than attempting to harmonize radically different national marks (such as French 0&ndash;20 or German 1.0&ndash;5.0), ECTS introduced statistical cohort distribution: the top 10% earned an ECTS Grade A, the next 25% a Grade B, decoupling student evaluation from raw percentage benchmarks.
+          </p>
+        </div>
+
+        <!-- Milestone 4: 2009 -->
+        <div class="relative space-y-3">
+          <div class="absolute -left-[27px] sm:-left-[35px] top-1 w-4 h-4 rounded-full border-2 border-amber-400 bg-[var(--surface-1)]"></div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              2009 &bull; CBSE &amp; AICTE Standardization
+            </span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">The 9.5 Multiplier Formula</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+            Why India Adopted &times; 9.5 Instead of &times; 10.0
+          </h3>
+          <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed max-w-3xl">
+            When India's Central Board of Secondary Education (CBSE) and technical regulatory bodies (AICTE) transitioned to a 10-point Continuous and Comprehensive Evaluation (CCE) scale, students faced a major dilemma: hiring companies and government civil service examinations still legally mandated percentage cut-offs (e.g. &ldquo;minimum 60% aggregate&rdquo;).
+          </p>
+          <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] max-w-2xl font-mono text-xs space-y-2">
+            <div class="text-[var(--txt)] font-bold">The Empirical Derivation:</div>
+            <p class="text-[11px] text-[var(--txt-muted)] font-sans leading-relaxed">
+              CBSE statisticians analyzed the previous 25 years of board examination results. They found that students who secured a perfect 10.0 grade point average had scored an average marks aggregate of <strong>95%</strong> (not 100%, which is virtually impossible in humanities and language subjects). Dividing 95 by 10 yielded the statutory conversion multiplier of <strong>9.5</strong>:
+            </p>
+            <div class="text-[var(--brand)] font-bold text-sm">
+              Percentage (%) = CGPA &times; 9.5
+            </div>
+          </div>
+        </div>
+
+        <!-- Milestone 5: 2015 -->
+        <div class="relative space-y-3">
+          <div class="absolute -left-[27px] sm:-left-[35px] top-1 w-4 h-4 rounded-full border-2 border-purple-400 bg-[var(--surface-1)]"></div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              2015 &bull; University Grants Commission
+            </span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">National CBCS Mandate</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+            The 10-Point Choice Based Credit System (CBCS)
+          </h3>
+          <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed max-w-3xl">
+            The UGC standardized university education across India by rolling out the 10-point CBCS grading system across hundreds of state, central, and autonomous universities (such as Delhi University, VTU, Mumbai University, and Anna University). The framework established unified letter grade point mappings: Outstanding (O = 10), Excellent (A+ = 9), Very Good (A = 8), Good (B+ = 7), Above Average (B = 6), Average (C = 5), Pass (P = 4), and Fail (F = 0).
+          </p>
+        </div>
+
+        <!-- Milestone 6: Present Day -->
+        <div class="relative space-y-3">
+          <div class="absolute -left-[27px] sm:-left-[35px] top-1 w-4 h-4 rounded-full border-2 border-rose-400 bg-[var(--surface-1)]"></div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">
+              Present &bull; Global Mobility &amp; ATS
+            </span>
+            <span class="text-xs font-mono text-[var(--txt-muted)]">WES &amp; Corporate Screening</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+            International Credential Evaluation &amp; ATS HR Algorithms
+          </h3>
+          <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed max-w-3xl">
+            Today, global credential evaluators like World Education Services (WES) and automated corporate Applicant Tracking Systems (ATS) enforce strict mathematical conversions. When applying for foreign graduate school visas or multinational engineering jobs, candidates must ensure they apply their specific university registrar&rsquo;s official back-of-transcript formula to avoid automatic disqualification for grade misrepresentation.
+          </p>
+        </div>
+
       </div>
-    </div>
+    </section>
+
+    <!-- Hairline Accordion Conversion FAQs -->
+    <section class="tool-content-card">
+      <div class="tool-content-header">
+        <h2>Academic Conversion &amp; Verification FAQs</h2>
+        <p>
+          Official multiplier directives, degree classifications, and conversion certificate policies.
+        </p>
+      </div>
+
+      <div class="tool-faq-accordion">
+        <details class="tool-faq-item">
+          <summary>
+            <span>Can I use the 9.5 multiplier if my university publishes a different formula?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </summary>
+          <div class="faq-answer">
+            No. Legally and administratively, your university's official conversion formula printed on the reverse side of your final consolidated marksheet or transcript overrides all generalized national guidelines. While VTU, CBSE, and AICTE specify <code>Percentage = CGPA &times; 9.5</code>, some universities use <code>(CGPA - 0.75) &times; 10</code> or direct <code>CGPA &times; 10</code>. Always verify your institution's specific gazette notification.
+          </div>
+        </details>
+
+        <details class="tool-faq-item">
+          <summary>
+            <span>How does World Education Services (WES) convert a 10-point CGPA to a 4.0 US GPA?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </summary>
+          <div class="faq-answer">
+            WES does not simply multiply your 10-point CGPA by 0.4. Instead, they perform a course-by-course evaluation: each individual subject grade is mapped to US letter grades based on the issuing university's grading scale and Indian pass-percentage standards (where 60% often represents First Class), weighted by US semester credit hours. Consequently, an 8.0/10 CGPA frequently converts to a 3.5 to 3.7/4.0 US GPA.
+          </div>
+        </details>
+
+        <details class="tool-faq-item">
+          <summary>
+            <span>What is the mathematical difference between SGPA and CGPA?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </summary>
+          <div class="faq-answer">
+            SGPA (Semester Grade Point Average) measures academic performance within a single semester by dividing total quality points earned in that semester by total credits registered. CGPA (Cumulative Grade Point Average) is the credit-weighted average of all SGPAs across all completed semesters up to that point. CGPA is the only figure accepted on degree certificates and graduate employment portals.
+          </div>
+        </details>
+
+        <details class="tool-faq-item">
+          <summary>
+            <span>What is an official CGPA Conversion Certificate and when do I need one?</span>
+            <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+          </summary>
+          <div class="faq-answer">
+            A CGPA Conversion Certificate is an official sealed document issued by your university registrar or controller of examinations certifying the exact mathematical equation used to translate your CGPA into equivalent percentage marks. It is mandatory for state government recruitments, public sector undertaking (PSU) exams, Indian civil services, and international student visa verifications.
+          </div>
+        </details>
+      </div>
+    </section>
+
   </div>
+</div>
 </ToolLayout>
 
-<style>
-  .cp-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .cp-tabs { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; width: fit-content; }
-  .cp-tab { padding: 10px 20px; font-size: 14px; font-weight: 600; color: var(--txt-muted); background: var(--bg-soft); cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all .15s; }
-  .cp-tab.active { background: var(--brand); color: #fff; }
-
-  .cp-form { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .cp-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 160px; }
-  .cp-field label { font-size: 13px; font-weight: 600; color: var(--txt); }
-  .cp-input {
-    padding: 11px 14px;
-    font-size: 16px;
-    font-family: 'Outfit', sans-serif;
-    font-weight: 600;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: border-color .15s;
-    width: 100%;
-  }
-  .cp-input:focus { border-color: var(--brand); }
-  .cp-select {
-    padding: 11px 12px;
-    font-size: 13px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    cursor: pointer;
-    transition: border-color .15s;
-  }
-  .cp-select:focus { border-color: var(--brand); }
-
-  .cp-result { padding: 28px; background: linear-gradient(135deg, #EFF6FF, #F5F3FF); border-radius: var(--radius-lg); text-align: center; animation: fadeIn .3s ease; border: 1.5px solid var(--border); }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
-  .cp-result-num { font-size: 3.5rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
-  .cp-result-label { font-size: 14px; color: #475569; margin-top: 6px; }
-  .cp-result-grade { font-size: 15px; font-weight: 700; margin-top: 8px; color: #22C55E; }
-
-  .cp-table-wrap { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .cp-table-title { padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--txt); }
-  .cp-table { display: grid; grid-template-columns: repeat(4, 1fr); overflow-x: auto; }
-  .cp-th { padding: 10px 14px; background: var(--bg-soft); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; }
-  .cp-th:last-child { border-right: none; }
-  .cp-td { padding: 9px 14px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 13.5px; color: var(--txt); font-family: 'Courier New', monospace; }
-  .cp-td:last-child, .cp-td:nth-child(4n) { border-right: none; }
-</style>
-
 <script>
+  let currentMode = 'cgpa-to-pct';
+
   document.querySelectorAll('.cp-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const mode = (tab as HTMLElement).dataset.mode!;
-      document.querySelectorAll('.cp-tab').forEach(t => t.classList.remove('active'));
+      currentMode = mode;
+      document.querySelectorAll('.cp-tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       tab.classList.add('active');
-      document.querySelectorAll('.cp-panel').forEach(p => (p as HTMLElement).style.display = 'none');
-      document.getElementById(`cp-${mode}`)!.style.display = '';
+      tab.setAttribute('aria-selected', 'true');
+
+      document.querySelectorAll('.cp-panel').forEach(p => ((p as HTMLElement).style.display = 'none'));
+      const activePanel = document.getElementById(`cp-${mode}`);
+      if (activePanel) activePanel.style.display = '';
+
+      if (mode === 'cgpa-to-pct') convertCgpa();
+      else convertPct();
     });
   });
 
   document.getElementById('cp-formula')?.addEventListener('change', () => {
     const isCustom = (document.getElementById('cp-formula') as HTMLSelectElement).value === 'custom';
-    (document.getElementById('cp-custom-wrap') as HTMLElement).style.display = isCustom ? '' : 'none';
+    const customWrap = document.getElementById('cp-custom-wrap');
+    if (customWrap) customWrap.style.display = isCustom ? '' : 'none';
+    convertCgpa();
   });
 
   function gradeStr(pct: number): string {
-    if (pct >= 90) return '🏆 Outstanding';
-    if (pct >= 80) return '⭐ Excellent';
-    if (pct >= 70) return '👏 Very Good';
-    if (pct >= 60) return '👍 Good';
-    if (pct >= 50) return 'Average';
-    return 'Below Average';
+    if (pct >= 90) return '🏆 Outstanding (First Class Exemplary)';
+    if (pct >= 80) return '⭐ Excellent (First Class with Distinction)';
+    if (pct >= 70) return '👏 Very Good (First Class)';
+    if (pct >= 60) return '👍 Good (Second Class Division 1)';
+    if (pct >= 50) return 'Average (Pass Class)';
+    return 'Academic Notice';
   }
 
-  document.getElementById('cp-convert')?.addEventListener('click', () => {
+  function convertCgpa() {
     const cgpa = parseFloat((document.getElementById('cp-cgpa') as HTMLInputElement).value);
     const formula = (document.getElementById('cp-formula') as HTMLSelectElement).value;
     if (isNaN(cgpa)) return;
 
     let multiplier = 9.5;
-    if (formula === 'x9') multiplier = 9;
-    else if (formula === 'x10') multiplier = 10;
+    if (formula === 'x9') multiplier = 9.0;
+    else if (formula === 'x10') multiplier = 10.0;
     else if (formula === 'custom') {
       multiplier = parseFloat((document.getElementById('cp-multiplier') as HTMLInputElement).value) || 9.5;
     }
 
     const pct = Math.min(100, cgpa * multiplier);
-    document.getElementById('cp-pct-val')!.textContent = pct.toFixed(2) + '%';
-    document.getElementById('cp-pct-label')!.textContent = `CGPA ${cgpa} × ${multiplier} = ${pct.toFixed(2)}%`;
-    document.getElementById('cp-grade1')!.textContent = gradeStr(pct);
-    document.getElementById('cp-result1')!.style.display = '';
-  });
+    const numEl = document.getElementById('cp-result-num');
+    const lblEl = document.getElementById('cp-result-label');
+    const grdEl = document.getElementById('cp-result-grade');
 
-  document.getElementById('cp-convert2')?.addEventListener('click', () => {
+    if (numEl) numEl.textContent = pct.toFixed(2) + '%';
+    if (lblEl) lblEl.textContent = `CGPA ${cgpa.toFixed(2)} × ${multiplier} = ${pct.toFixed(2)}%`;
+    if (grdEl) grdEl.textContent = gradeStr(pct);
+  }
+
+  function convertPct() {
     const pct = parseFloat((document.getElementById('cp-pct') as HTMLInputElement).value);
     const formula = (document.getElementById('cp-formula2') as HTMLSelectElement).value;
     if (isNaN(pct)) return;
 
     let divisor = 9.5;
-    if (formula === 'div9') divisor = 9;
-    else if (formula === 'div10') divisor = 10;
+    if (formula === 'div9') divisor = 9.0;
+    else if (formula === 'div10') divisor = 10.0;
 
     const cgpa = Math.min(10, pct / divisor);
-    document.getElementById('cp-cgpa-val')!.textContent = cgpa.toFixed(2);
-    document.getElementById('cp-cgpa-label')!.textContent = `${pct}% ÷ ${divisor} = CGPA ${cgpa.toFixed(2)}`;
-    document.getElementById('cp-grade2')!.textContent = gradeStr(pct);
-    document.getElementById('cp-result2')!.style.display = '';
-  });
+    const numEl = document.getElementById('cp-result-num');
+    const lblEl = document.getElementById('cp-result-label');
+    const grdEl = document.getElementById('cp-result-grade');
 
-  document.getElementById('cp-convert')?.click();
+    if (numEl) numEl.textContent = cgpa.toFixed(2);
+    if (lblEl) lblEl.textContent = `${pct.toFixed(2)}% ÷ ${divisor} = CGPA ${cgpa.toFixed(2)}`;
+    if (grdEl) grdEl.textContent = gradeStr(pct);
+  }
+
+  document.getElementById('cp-convert')?.addEventListener('click', convertCgpa);
+  document.getElementById('cp-cgpa')?.addEventListener('input', convertCgpa);
+  document.getElementById('cp-convert2')?.addEventListener('click', convertPct);
+  document.getElementById('cp-pct')?.addEventListener('input', convertPct);
+
+  // Initial calculation
+  convertCgpa();
 </script>

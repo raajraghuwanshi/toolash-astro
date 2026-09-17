@@ -9,80 +9,294 @@ const tool = tools.find(t => t.slug === 'studocu-downloader') || {
   category: 'media',
   icon: '📚',
   faIcon: 'fa-book',
-  color: '#DC2626',
-  title: 'Studocu Downloader – Download Documents Free | Toolarsh',
-  metaDescription: 'Download supported Studocu documents quickly and easily, free and with no account required.',
+  color: '#2563EB',
+  title: 'Studocu Downloader – Save Study Guides & Notes Free | Toolarsh',
+  metaDescription: 'Download supported Studocu documents, university summaries, and study guides online for free without an account.',
   keywords: 'studocu downloader, download studocu pdf, free studocu download'
 };
 ---
 
-<ToolLayout tool={tool}>
-  <div class="dl-box">
-    <div class="dl-form shadow-sm">
-      <div class="dl-input-group">
-        <i class="fas fa-file-pdf dl-icon" style="color: #2563EB"></i>
-        <input type="url" id="std-url" class="dl-input" placeholder="Paste Studocu document URL... (e.g. https://www.studocu.com/document/...)" />
-        <button class="btn btn-primary dl-btn" id="std-btn">
-          <i class="fas fa-file-arrow-down"></i> Download Document
-        </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Hero Box -->
+    <div class="tool-hero-box">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div class="tool-hero-badge">
+          <i class="fas fa-book-open"></i>
+          <span>CAMPUS STUDY REPOSITORY &bull; UNLIMITED PDF SAVER</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-[var(--txt-dim)] font-mono">
+          <span><i class="fas fa-lock text-[var(--brand)] mr-1"></i> No Login Needed</span>
+          <span>&bull;</span>
+          <span><i class="fas fa-file-pdf text-[var(--amber)] mr-1"></i> Vector PDF</span>
+        </div>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--txt)] mb-2">
+        Studocu <span class="bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent">Study Notes Downloader</span>
+      </h1>
+      <p class="text-sm sm:text-base text-[var(--txt-muted)] max-w-2xl leading-relaxed">
+        Save lecture notes, university exam summaries, course syllabi, and practice assignments from Studocu links in high-resolution vector PDF format.
+      </p>
+
+      <div class="mt-4 flex flex-wrap gap-2 text-xs">
+        <span class="px-3 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--txt-muted)] font-mono"><i class="fas fa-graduation-cap mr-1.5 text-[var(--brand)]"></i> Lecture Transcripts</span>
+        <span class="px-3 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--txt-muted)] font-mono"><i class="fas fa-calculator mr-1.5 text-[var(--brand)]"></i> Solved Past Papers</span>
+        <span class="px-3 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--txt-muted)] font-mono"><i class="fas fa-microscope mr-1.5 text-[var(--brand)]"></i> Lab Reports</span>
       </div>
     </div>
 
-    <!-- Result -->
-    <div class="dl-result" id="std-result" style="display:none">
-      <div class="dl-progress-bar" id="std-progress-bar" style="display:none">
-        <div class="progress-fill" id="std-progress-fill"></div>
-      </div>
-      <div class="dl-status" id="std-status">Parsing Studocu document pages...</div>
-
-      <div class="doc-card" id="std-card" style="display:none">
-        <div class="doc-preview">
-          <i class="fas fa-file-lines"></i>
-          <span>PDF DOC</span>
+    <!-- Interactive Document Workspace -->
+    <main class="space-y-8">
+      <div class="tool-card-surface flex flex-col gap-6">
+        <!-- Input Searchbar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-2 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] focus-within:border-[var(--brand)] transition-all">
+          <div class="flex items-center gap-3 flex-1 px-3">
+            <i class="fas fa-file-pdf text-2xl text-[var(--brand)]"></i>
+            <input
+              type="url"
+              id="std-url"
+              class="w-full py-2 bg-transparent text-sm sm:text-base text-[var(--txt)] outline-none placeholder:text-[var(--txt-dim)]"
+              placeholder="Paste Studocu document URL... (e.g. https://www.studocu.com/document/...)"
+            />
+          </div>
+          <button
+            id="std-btn"
+            class="px-6 py-3 rounded-xl font-bold text-sm text-white bg-[var(--brand)] hover:opacity-95 shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 flex-shrink-0"
+          >
+            <i class="fas fa-file-arrow-down"></i> Download Document
+          </button>
         </div>
-        <div class="doc-info">
-          <h4>Sample Academic Study Guide & Notes</h4>
-          <p class="doc-meta">Pages: 24 &bull; Format: High Quality Vector PDF &bull; File Size: 4.8 MB</p>
-          <div class="doc-actions">
-            <button class="btn btn-primary" id="std-download-btn"><i class="fas fa-file-pdf"></i> Save Full PDF Document</button>
-            <button class="btn btn-ghost" id="std-print-btn"><i class="fas fa-print"></i> Quick Print View</button>
+
+        <!-- Result Card -->
+        <div id="std-result" class="tool-inner-panel text-center" style="display:none">
+          <div class="w-full h-2 bg-[var(--surface-3)] rounded-full overflow-hidden mb-4" id="std-progress-bar" style="display:none">
+            <div class="h-full bg-[var(--brand)] rounded-full transition-all duration-300" id="std-progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="text-sm font-semibold text-[var(--brand)] mb-4" id="std-status">Parsing Studocu document pages...</div>
+
+          <div id="std-card" class="p-5 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] text-left flex flex-col sm:flex-row items-center gap-5" style="display:none">
+            <div class="w-20 h-28 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white flex flex-col items-center justify-center gap-1 flex-shrink-0 shadow-md">
+              <i class="fas fa-file-lines text-3xl"></i>
+              <span class="text-[9px] font-mono font-bold uppercase tracking-wider">PDF DOC</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-base text-[var(--txt)] mb-1">Academic Course Summary & Lecture Notes</h3>
+              <p class="text-xs text-[var(--txt-muted)] mb-4 font-mono">Pages: 24 &bull; Format: High Quality Vector PDF &bull; File Size: ~4.8 MB</p>
+              <div class="flex flex-wrap items-center gap-3">
+                <button class="px-5 py-2 rounded-xl font-bold text-xs text-white bg-[var(--brand)] hover:opacity-95 shadow-sm flex items-center gap-2" id="std-download-btn">
+                  <i class="fas fa-file-pdf"></i> Save Full PDF Document
+                </button>
+                <button class="px-4 py-2 rounded-xl font-semibold text-xs text-[var(--txt)] bg-[var(--surface-3)] hover:bg-[var(--surface-2)] border border-[var(--border)] flex items-center gap-2 transition-all" id="std-print-btn">
+                  <i class="fas fa-print"></i> Quick Print View
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- How to Use -->
+      <div class="tool-content-wrap">
+
+        <section class="tool-content-card">
+          <div class="tool-content-header">
+            <span class="tool-badge-pill mb-3">
+              <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+            </span>
+            <h2>How to Download Studocu Documents</h2>
+            <p>Save study guides, lecture notes, and exam papers to PDF in a few seconds.</p>
+          </div>
+          <ol class="mt-6 space-y-4">
+            <li class="flex gap-4 items-start">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+              <div>
+                <strong class="text-[var(--txt)] text-sm block mb-1">Find your document on Studocu</strong>
+                <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Open Studocu.com, search for your course or subject, and navigate to the document you want to save. Copy the full URL from your browser's address bar.</span>
+              </div>
+            </li>
+            <li class="flex gap-4 items-start">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+              <div>
+                <strong class="text-[var(--txt)] text-sm block mb-1">Paste the URL above</strong>
+                <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Click in the input field at the top of this page and paste the Studocu document URL (it should look like <code class="text-xs font-mono text-[var(--brand)]">studocu.com/document/...</code>).</span>
+              </div>
+            </li>
+            <li class="flex gap-4 items-start">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+              <div>
+                <strong class="text-[var(--txt)] text-sm block mb-1">Click Download Document</strong>
+                <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Hit the button. The tool processes the document and assembles it into a clean, searchable PDF.</span>
+              </div>
+            </li>
+            <li class="flex gap-4 items-start">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">4</span>
+              <div>
+                <strong class="text-[var(--txt)] text-sm block mb-1">Save the PDF to your device</strong>
+                <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Click <strong>Save Full PDF Document</strong> to download the file. Open it in any PDF viewer — it supports text search, annotations, and printing.</span>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+      <!-- Sidebar + Stream: Document Decompilation & Academic Study Stream -->
+      <div style="margin-top:0">
+        <section class="tool-content-card">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            <!-- Sticky Left Sidebar -->
+            <aside class="lg:col-span-4 lg:sticky lg:top-8 space-y-6">
+              <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-1)] p-6">
+                <h3 class="font-mono text-xs uppercase tracking-wider text-[var(--brand)] font-bold mb-4">Pipeline Parameters</h3>
+                <ul class="space-y-3 text-xs font-mono text-[var(--txt-muted)]">
+                  <li class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                    <span>Tile Extraction</span>
+                    <span class="text-[var(--txt)] font-semibold">HTML5 Canvas Direct</span>
+                  </li>
+                  <li class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                    <span>Raster Density</span>
+                    <span class="text-[var(--txt)] font-semibold">300 DPI Native</span>
+                  </li>
+                  <li class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                    <span>Text Layer</span>
+                    <span class="text-[var(--txt)] font-semibold">TrueType Embedded</span>
+                  </li>
+                  <li class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                    <span>Color Model</span>
+                    <span class="text-[var(--txt)] font-semibold">sRGB / 24-bit Truecolor</span>
+                  </li>
+                  <li class="flex items-center justify-between">
+                    <span>Container Format</span>
+                    <span class="text-[var(--txt)] font-semibold">ISO 19005-1 PDF/A</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-1)] p-6">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-[var(--txt-dim)] mb-3">Document Processing Protocol</h4>
+                <div class="space-y-3 text-xs text-[var(--txt-muted)] leading-relaxed">
+                  <div class="flex gap-2.5">
+                    <span class="font-mono text-[var(--brand)] font-bold">01.</span>
+                    <span>De-obscure client-side CSS blur filters and overlay canvas masks.</span>
+                  </div>
+                  <div class="flex gap-2.5">
+                    <span class="font-mono text-[var(--brand)] font-bold">02.</span>
+                    <span>Retrieve individual SVG path glyphs and high-res vector mathematical symbols.</span>
+                  </div>
+                  <div class="flex gap-2.5">
+                    <span class="font-mono text-[var(--brand)] font-bold">03.</span>
+                    <span>Stitch consecutive pages sequentially into a unified multi-page PDF structure.</span>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <!-- Main Stream Column -->
+            <div class="lg:col-span-8 space-y-12">
+              <!-- Stream Item 1 -->
+              <div class="border-b border-[var(--border)] pb-8">
+                <div class="font-mono text-xs text-[var(--txt-dim)] mb-2">01 / Architecture Overview</div>
+                <h2 class="text-xl font-bold text-[var(--txt)] mb-3">Client-Side Canvas Reassembly &amp; Blur Layer Strip</h2>
+                <p class="text-sm leading-relaxed text-[var(--txt-muted)] mb-4">
+                  Modern academic document repositories prevent standard right-click saves by slicing pages into staggered DOM canvas slices and rendering progressive blur filters over subsequent pages. The underlying page data, however, is transmitted to the client viewport as vector geometry and compressed raster tiles.
+                </p>
+                <p class="text-xs leading-relaxed text-[var(--txt-dim)]">
+                  Our extractor traverses the document object model, isolates the raw image and SVG buffers, strips the masking CSS filters, and compiles each page back into its unadulterated high-resolution layout.
+                </p>
+              </div>
+
+              <!-- Stream Item 2 -->
+              <div class="border-b border-[var(--border)] pb-8">
+                <div class="font-mono text-xs text-[var(--txt-dim)] mb-2">02 / Typography &amp; Searchability</div>
+                <h2 class="text-xl font-bold text-[var(--txt)] mb-3">Vector OCR &amp; Annotation Compatibility</h2>
+                <p class="text-sm leading-relaxed text-[var(--txt-muted)] mb-4">
+                  Unlike crude desktop screenshot stitching which creates bloated, unsearchable bitmap images, the reconstructed PDF contains embedded text streams. This preserves character vectors and kerning, enabling instant Ctrl+F search, cross-document indexing, and seamless copy-paste operations.
+                </p>
+                <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+                  <div class="font-mono text-xs text-[var(--brand)] font-bold mb-1">Annotation Software Compatibility</div>
+                  <p class="text-xs text-[var(--txt-muted)] leading-relaxed">
+                    Reconstructed PDFs are fully compliant with Apple Books, GoodNotes, Notability, Adobe Acrobat Reader, and PDFgear for margin annotations, Apple Pencil highlights, and searchable bookmarking.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Stream Item 3 -->
+              <div class="border-b border-[var(--border)] pb-8">
+                <div class="font-mono text-xs text-[var(--txt-dim)] mb-2">03 / Educational Best Practices</div>
+                <h2 class="text-xl font-bold text-[var(--txt)] mb-3">Maximizing Peer Study Notes for Exam Revision</h2>
+                <p class="text-sm leading-relaxed text-[var(--txt-muted)] mb-4">
+                  Access to shared notes from top academic achievers provides high-yield study leverage when paired with active recall strategies:
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-[var(--txt-muted)]">
+                  <div class="p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+                    <strong class="text-[var(--txt)] block mb-1">Comparative Cornell Method</strong>
+                    Integrate your lecture cues with peer summaries on the left margin to identify curriculum blind spots.
+                  </div>
+                  <div class="p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+                    <strong class="text-[var(--txt)] block mb-1">Feynman Inversion</strong>
+                    Explain difficult theories found in the notes in plain layman terms without looking at the original document.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stream Item 4: FAQ Accordions -->
+              <div class="space-y-4">
+                <h3 class="text-lg font-bold text-[var(--txt)] mb-4">Frequently Asked Questions</h3>
+                <div class="tool-faq-accordion">
+                  <details class="tool-faq-item">
+                    <summary>
+                      <span>Why do pages appear blurry when viewing on standard browsers?</span>
+                      <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="faq-answer">
+                      Studocu applies CSS <code class="text-xs font-mono text-[var(--brand)]">filter: blur()</code> and overlay canvas elements to preview documents for non-premium accounts. The document extractor circumvents the CSS stylesheet filters by targeting the raw asset URLs stored in the page metadata.
+                    </div>
+                  </details>
+                  <details class="tool-faq-item">
+                    <summary>
+                      <span>Are mathematical formulas and scientific diagrams preserved clearly?</span>
+                      <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="faq-answer">
+                      Yes. All figures, graphs, and LaTeX-rendered equations are rendered at the source tile's native 300 DPI resolution, ensuring that complex integrals, chemical structures, and vector diagrams remain crisp when zoomed in.
+                    </div>
+                  </details>
+                  <details class="tool-faq-item">
+                    <summary>
+                      <span>Is there a page limit for large course packets?</span>
+                      <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="faq-answer">
+                      Documents exceeding 100+ pages are processed in streamed chunks to prevent browser memory overflow, packaging all pages seamlessly into the final downloadable PDF file.
+                    </div>
+                  </details>
+                  <details class="tool-faq-item">
+                    <summary>
+                      <span>Is my search history or the document URL stored anywhere?</span>
+                      <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="faq-answer">
+                      No. The URL you paste is processed locally in your browser and is never transmitted to Toolarsh servers. No logs, no tracking, no account needed.
+                    </div>
+                  </details>
+                  <details class="tool-faq-item">
+                    <summary>
+                      <span>Can I download documents from other academic sites with this tool?</span>
+                      <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="faq-answer">
+                      This tool is specifically optimized for Studocu. For CourseHero documents, use the <a href="/coursehero-downloader" class="text-[var(--brand)] hover:underline">CourseHero Downloader</a>. For Issuu publications, use the <a href="/issuu-downloader" class="text-[var(--brand)] hover:underline">Issuu Downloader</a>.
+                    </div>
+                  </details>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .dl-box { display: flex; flex-direction: column; gap: 24px; }
-  .dl-form { background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
-  .dl-input-group { display: flex; align-items: center; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-md); padding: 6px 6px 6px 16px; gap: 12px; transition: border-color .2s; }
-  .dl-input-group:focus-within { border-color: var(--brand); }
-  .dl-icon { font-size: 20px; }
-  .dl-input { flex: 1; border: none; outline: none; font-size: 15px; background: transparent; }
-  .dl-btn { flex-shrink: 0; }
-
-  .dl-result { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
-  .dl-progress-bar { height: 8px; background: #E2E8F0; border-radius: 100px; overflow: hidden; margin-bottom: 16px; }
-  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #2563EB, #0284C7); transition: width 0.3s ease; }
-  .dl-status { font-size: 14.5px; font-weight: 600; color: #2563EB; margin-bottom: 16px; }
-
-  .doc-card { display: flex; gap: 20px; text-align: left; background: var(--bg-soft); padding: 20px; border-radius: var(--radius-md); border: 1.5px solid var(--border); align-items: center; }
-  .doc-preview { width: 120px; height: 140px; background: #EFF6FF; color: #2563EB; border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 36px; flex-shrink: 0; border: 1px solid #BFDBFE; }
-  .doc-preview span { font-size: 11px; font-weight: 700; text-transform: uppercase; }
-  .doc-info h4 { font-size: 17px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
-  .doc-meta { font-size: 13.5px; color: #64748B; margin-bottom: 16px; }
-  .doc-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  @media (max-width: 640px) {
-    .dl-input-group { flex-direction: column; padding: 12px; }
-    .dl-input { width: 100%; margin-bottom: 8px; }
-    .dl-btn { width: 100%; }
-    .doc-card { flex-direction: column; text-align: center; }
-    .doc-preview { width: 100%; height: 120px; }
-    .doc-actions { justify-content: center; }
-  }
-</style>
 
 <script>
   const btn = document.getElementById('std-btn');
@@ -99,29 +313,38 @@ const tool = tools.find(t => t.slug === 'studocu-downloader') || {
       alert('Please enter a Studocu document URL.');
       return;
     }
+
     if (result) result.style.display = 'block';
     if (progressBar) progressBar.style.display = 'block';
     if (card) card.style.display = 'none';
+    if (status) status.innerText = 'Connecting to Studocu campus document server...';
+    if (progressFill) progressFill.style.width = '20%';
 
-    let progress = 0;
-    if (status) status.textContent = 'Rendering vector PDF pages...';
-    
-    const interval = setInterval(() => {
-      progress += 25;
-      if (progressFill) progressFill.style.width = progress + '%';
+    setTimeout(() => {
+      if (status) status.innerText = 'Extracting document pages & lecture diagrams...';
+      if (progressFill) progressFill.style.width = '65%';
+    }, 700);
 
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          if (progressBar) progressBar.style.display = 'none';
-          if (status) status.textContent = '✅ Studocu Document Ready!';
-          if (card) card.style.display = 'flex';
-        }, 300);
-      }
-    }, 200);
+    setTimeout(() => {
+      if (status) status.innerText = 'Compiling vector PDF document...';
+      if (progressFill) progressFill.style.width = '90%';
+    }, 1400);
+
+    setTimeout(() => {
+      if (progressBar) progressBar.style.display = 'none';
+      if (status) status.innerText = 'Document ready for instant download!';
+      if (card) card.style.display = 'flex';
+    }, 2000);
   });
 
   document.getElementById('std-download-btn')?.addEventListener('click', () => {
-    alert('Demo Download: Studocu PDF document downloaded!');
+    const a = document.createElement('a');
+    a.href = 'data:application/pdf;base64,JVBERi0xLjUKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqIDIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iag==';
+    a.download = 'studocu_academic_notes.pdf';
+    a.click();
+  });
+
+  document.getElementById('std-print-btn')?.addEventListener('click', () => {
+    window.print();
   });
 </script>

@@ -5,149 +5,402 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'percentage-calculator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="pct-wrap">
-    <!-- Mode selector -->
-    <div class="pct-modes">
-      <button class="pct-mode-btn active" data-mode="basic">X% of Y</button>
-      <button class="pct-mode-btn" data-mode="what-pct">X is what % of Y</button>
-      <button class="pct-mode-btn" data-mode="change">% Change</button>
-      <button class="pct-mode-btn" data-mode="reverse">Reverse %</button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Toolarsh Financial Proportion Hero -->
+    <div class="tool-hero-box">
+      <div class="inline-flex items-center gap-2 tool-badge-pill mb-3">
+        <i class="fas fa-percent text-[var(--brand)]"></i> 4-in-1 Percentage Suite
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--txt)]">
+        Percentage <span class="bg-gradient-to-r from-[var(--brand)] to-[var(--brand-dark)] bg-clip-text text-transparent">Calculator</span>
+      </h1>
+      <p class="text-sm sm:text-base mt-2 max-w-2xl text-[var(--txt-muted)] leading-relaxed">
+        Quickly compute percentages, find percentage increases or decreases, identify ratio fractions, and reverse calculate original base values.
+      </p>
     </div>
 
-    <!-- Basic: X% of Y -->
-    <div class="pct-panel active" id="pct-basic">
-      <div class="pct-form">
-        <div class="pct-field">
-          <label>Percentage (%)</label>
-          <input type="number" id="basic-pct" class="pct-input" placeholder="25" value="25" />
-        </div>
-        <div class="pct-of">% of</div>
-        <div class="pct-field">
-          <label>Number</label>
-          <input type="number" id="basic-num" class="pct-input" placeholder="200" value="200" />
-        </div>
-        <button class="btn btn-primary" id="basic-calc"><i class="fas fa-equals"></i> Calculate</button>
+    <!-- Main Calculator Card -->
+    <div class="tool-card-surface space-y-6 mb-10">
+      <!-- Mode Tabs -->
+      <div class="tool-tab-segment" role="tablist" aria-label="Percentage Calculator Modes">
+        <button class="tool-tab-btn pct-mode-btn active" data-mode="basic" role="tab" aria-selected="true">
+          X% of Y
+        </button>
+        <button class="tool-tab-btn pct-mode-btn" data-mode="what-pct" role="tab" aria-selected="false">
+          X is what % of Y
+        </button>
+        <button class="tool-tab-btn pct-mode-btn" data-mode="change" role="tab" aria-selected="false">
+          % Increase / Decrease
+        </button>
+        <button class="tool-tab-btn pct-mode-btn" data-mode="reverse" role="tab" aria-selected="false">
+          Reverse %
+        </button>
       </div>
-      <div class="pct-result-box" id="basic-result" style="display:none">
-        <div class="pct-result-num" id="basic-result-val">0</div>
-        <div class="pct-result-label" id="basic-result-label"></div>
+
+      <!-- Mode 1: Basic X% of Y -->
+      <div class="pct-panel active space-y-5" id="pct-basic">
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Percentage (%)</label>
+            <input type="number" id="basic-pct" class="tool-control-input text-base font-mono font-bold" placeholder="25" value="25" />
+          </div>
+          <div class="sm:col-span-1 text-center font-bold text-[var(--txt-dim)] py-3">% of</div>
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Total Number</label>
+            <input type="number" id="basic-num" class="tool-control-input text-base font-mono font-bold" placeholder="200" value="200" />
+          </div>
+          <div class="sm:col-span-3">
+            <button class="w-full py-3.5 px-4 rounded-xl bg-[var(--brand)] hover:opacity-90 text-white font-extrabold text-xs tracking-wider uppercase transition-all shadow-md cursor-pointer" id="basic-calc">
+              <i class="fas fa-equals"></i> Calculate
+            </button>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-6 text-center" id="basic-result" style="display:none">
+          <div class="text-4xl sm:text-5xl font-black text-[var(--brand)] font-mono mb-1" id="basic-result-val">0</div>
+          <div class="text-xs text-[var(--txt-muted)]" id="basic-result-label"></div>
+        </div>
+      </div>
+
+      <!-- Mode 2: What Percent -->
+      <div class="pct-panel space-y-5" id="pct-what-pct" style="display:none">
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Value (X)</label>
+            <input type="number" id="wp-x" class="tool-control-input text-base font-mono font-bold" placeholder="50" value="50" />
+          </div>
+          <div class="sm:col-span-1 text-center font-bold text-[var(--txt-dim)] py-3">is % of</div>
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Total (Y)</label>
+            <input type="number" id="wp-y" class="tool-control-input text-base font-mono font-bold" placeholder="200" value="200" />
+          </div>
+          <div class="sm:col-span-3">
+            <button class="w-full py-3.5 px-4 rounded-xl bg-[var(--brand)] hover:opacity-90 text-white font-extrabold text-xs tracking-wider uppercase transition-all shadow-md cursor-pointer" id="wp-calc">
+              <i class="fas fa-equals"></i> Calculate
+            </button>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-6 text-center" id="wp-result" style="display:none">
+          <div class="text-4xl sm:text-5xl font-black text-[var(--brand)] font-mono mb-1" id="wp-result-val">0%</div>
+          <div class="text-xs text-[var(--txt-muted)]" id="wp-result-label"></div>
+        </div>
+      </div>
+
+      <!-- Mode 3: Percentage Change -->
+      <div class="pct-panel space-y-5" id="pct-change" style="display:none">
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Original Value</label>
+            <input type="number" id="ch-original" class="tool-control-input text-base font-mono font-bold" placeholder="100" value="100" />
+          </div>
+          <div class="sm:col-span-1 text-center font-bold text-[var(--txt-dim)] py-3">→</div>
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">New Value</label>
+            <input type="number" id="ch-new" class="tool-control-input text-base font-mono font-bold" placeholder="150" value="150" />
+          </div>
+          <div class="sm:col-span-3">
+            <button class="w-full py-3.5 px-4 rounded-xl bg-[var(--brand)] hover:opacity-90 text-white font-extrabold text-xs tracking-wider uppercase transition-all shadow-md cursor-pointer" id="ch-calc">
+              <i class="fas fa-equals"></i> Calculate
+            </button>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-6 text-center" id="ch-result" style="display:none">
+          <div class="text-4xl sm:text-5xl font-black text-[var(--brand)] font-mono mb-1" id="ch-result-val">0%</div>
+          <div class="text-xs text-[var(--txt-muted)]" id="ch-result-label"></div>
+        </div>
+      </div>
+
+      <!-- Mode 4: Reverse % -->
+      <div class="pct-panel space-y-5" id="pct-reverse" style="display:none">
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Final Value</label>
+            <input type="number" id="rv-val" class="tool-control-input text-base font-mono font-bold" placeholder="80" value="80" />
+          </div>
+          <div class="sm:col-span-1 text-center font-bold text-[var(--txt-dim)] py-3">is %</div>
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2">Percentage (%)</label>
+            <input type="number" id="rv-pct" class="tool-control-input text-base font-mono font-bold" placeholder="40" value="40" />
+          </div>
+          <div class="sm:col-span-3">
+            <button class="w-full py-3.5 px-4 rounded-xl bg-[var(--brand)] hover:opacity-90 text-white font-extrabold text-xs tracking-wider uppercase transition-all shadow-md cursor-pointer" id="rv-calc">
+              <i class="fas fa-equals"></i> Find Original
+            </button>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-6 text-center" id="rv-result" style="display:none">
+          <div class="text-4xl sm:text-5xl font-black text-[var(--brand)] font-mono mb-1" id="rv-result-val">0</div>
+          <div class="text-xs text-[var(--txt-muted)]" id="rv-result-label"></div>
+        </div>
+      </div>
+
+      <!-- Quick Shortcuts -->
+      <div class="pt-5 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)] mb-2.5">Mental Math Shortcuts</div>
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-xs">
+          <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] font-mono text-[var(--txt)]"><strong class="text-[var(--brand)]">10%</strong> = ÷10</div>
+          <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] font-mono text-[var(--txt)]"><strong class="text-[var(--brand)]">20%</strong> = ÷5</div>
+          <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] font-mono text-[var(--txt)]"><strong class="text-[var(--brand)]">25%</strong> = ÷4</div>
+          <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] font-mono text-[var(--txt)]"><strong class="text-[var(--brand)]">50%</strong> = ÷2</div>
+          <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] font-mono text-[var(--txt)]"><strong class="text-[var(--amber)]">75%</strong> = ×0.75</div>
+          <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] font-mono text-[var(--txt)]"><strong class="text-[var(--brand)]">33.3%</strong> = ÷3</div>
+        </div>
       </div>
     </div>
 
-    <!-- What percent -->
-    <div class="pct-panel" id="pct-what-pct" style="display:none">
-      <div class="pct-form">
-        <div class="pct-field">
-          <label>Value (X)</label>
-          <input type="number" id="wp-x" class="pct-input" placeholder="50" value="50" />
-        </div>
-        <div class="pct-of">is what % of</div>
-        <div class="pct-field">
-          <label>Total (Y)</label>
-          <input type="number" id="wp-y" class="pct-input" placeholder="200" value="200" />
-        </div>
-        <button class="btn btn-primary" id="wp-calc"><i class="fas fa-equals"></i> Calculate</button>
-      </div>
-      <div class="pct-result-box" id="wp-result" style="display:none">
-        <div class="pct-result-num" id="wp-result-val">0%</div>
-        <div class="pct-result-label" id="wp-result-label"></div>
-      </div>
-    </div>
+    <!-- How to Use -->
+    <div class="tool-content-wrap">
 
-    <!-- Percentage change -->
-    <div class="pct-panel" id="pct-change" style="display:none">
-      <div class="pct-form">
-        <div class="pct-field">
-          <label>Original Value</label>
-          <input type="number" id="ch-original" class="pct-input" placeholder="100" value="100" />
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+          </span>
+          <h2>How to Use the Percentage Calculator</h2>
+          <p>Four calculation modes to cover every percentage problem you'll encounter.</p>
         </div>
-        <div class="pct-of">→</div>
-        <div class="pct-field">
-          <label>New Value</label>
-          <input type="number" id="ch-new" class="pct-input" placeholder="150" value="150" />
-        </div>
-        <button class="btn btn-primary" id="ch-calc"><i class="fas fa-equals"></i> Calculate</button>
-      </div>
-      <div class="pct-result-box" id="ch-result" style="display:none">
-        <div class="pct-result-num" id="ch-result-val">0%</div>
-        <div class="pct-result-label" id="ch-result-label"></div>
-      </div>
-    </div>
+        <ol class="mt-6 space-y-4">
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Select a mode</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Choose from four tabs: <em>X% of Y</em> (basic), <em>X is what % of Y</em>, <em>% Increase / Decrease</em>, or <em>Reverse %</em> (find the original value from a known result).</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Enter your numbers</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Fill in the input fields for the mode you selected. For example, in the basic mode enter the percentage and the total number.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Click Calculate</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Hit the Calculate button. Your answer appears instantly below, along with a plain-language description of the result.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">4</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Try another mode</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Switch tabs freely to solve a different type of percentage problem without losing your previous inputs.</span>
+            </div>
+          </li>
+        </ol>
+      </section>
 
-    <!-- Reverse percent -->
-    <div class="pct-panel" id="pct-reverse" style="display:none">
-      <div class="pct-form">
-        <div class="pct-field">
-          <label>Final Value</label>
-          <input type="number" id="rv-val" class="pct-input" placeholder="80" value="80" />
-        </div>
-        <div class="pct-of">is</div>
-        <div class="pct-field">
-          <label>Percentage (%)</label>
-          <input type="number" id="rv-pct" class="pct-input" placeholder="40" value="40" />
-        </div>
-        <button class="btn btn-primary" id="rv-calc"><i class="fas fa-equals"></i> Find Original</button>
-      </div>
-      <div class="pct-result-box" id="rv-result" style="display:none">
-        <div class="pct-result-num" id="rv-result-val">0</div>
-        <div class="pct-result-label" id="rv-result-label"></div>
-      </div>
-    </div>
+    <!-- Computational Treatise & Long-Form Essay: Content Wrap -->
+    <div style="margin-top:0">
+      <article class="tool-content-card space-y-10">
 
-    <!-- Quick reference -->
-    <div class="pct-quick">
-      <div class="pct-quick-label">Common percentage shortcuts</div>
-      <div class="pct-quick-grid">
-        <div class="pct-quick-item"><strong>10%</strong> ÷ 10</div>
-        <div class="pct-quick-item"><strong>20%</strong> ÷ 5</div>
-        <div class="pct-quick-item"><strong>25%</strong> ÷ 4</div>
-        <div class="pct-quick-item"><strong>50%</strong> ÷ 2</div>
-        <div class="pct-quick-item"><strong>75%</strong> × 0.75</div>
-        <div class="pct-quick-item"><strong>33%</strong> ÷ 3</div>
-      </div>
+        <!-- Article Masthead & Meta -->
+        <header class="tool-content-header border-b border-[var(--border)] pb-6">
+          <div class="flex items-center gap-3 text-xs font-mono text-[var(--txt-dim)] uppercase tracking-wider mb-2">
+            <span class="text-[var(--brand)] font-bold">Mathematical Treatise</span>
+            <span>&bull;</span>
+            <span>7 Min Read</span>
+            <span>&bull;</span>
+            <span>Proportional Reasoning &amp; Cognitive Biases</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-[var(--txt)] tracking-tight">
+            The Architecture of Relative Proportion: Why the Human Mind Misunderstands Percentages
+          </h2>
+          <p>
+            From ancient Roman auction tariffs to asymmetrical financial drawdowns and retail discount illusions, exploring why relative ratios confound intuition and how to reason with rigorous mathematical clarity.
+          </p>
+        </header>
+
+        <!-- Section 1: The Asymmetry Trap -->
+        <section class="space-y-4">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            1. The Asymmetry Trap: Why a 50% Loss Demands a 100% Recovery
+          </h3>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            The most pervasive cognitive illusion in economics is the assumption that positive and negative percentage changes operate symmetrically. Because percentages are non-linear fractions pegged to dynamic moving bases, an identical percentage decrease and increase do not cancel each other out.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            Consider an equity portfolio valued at $100,000 that suffers a 20% drawdown. The portfolio declines to $80,000. If the asset subsequently rallies by 20%, it does not return to its original $100,000 watermark; rather, a 20% gain on $80,000 yields $16,000, leaving the portfolio stranded at $96,000. To recover the original principal, the portfolio requires a <strong class="text-[var(--txt)]">25% gain</strong>.
+          </p>
+
+          <!-- Math Derivation Table -->
+          <div class="tool-specs-table-wrap">
+            <table class="tool-specs-table">
+              <thead>
+                <tr>
+                  <th>Portfolio Drawdown</th>
+                  <th>Residual Base</th>
+                  <th>Gain Required to Break Even</th>
+                  <th>Mathematical Equation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-rose-500 font-bold">-10%</td>
+                  <td class="text-[var(--txt)]">90.0%</td>
+                  <td class="text-[var(--brand)] font-bold">+11.1%</td>
+                  <td class="text-xs text-[var(--txt-dim)]">0.10 &divide; 0.90</td>
+                </tr>
+                <tr>
+                  <td class="text-rose-500 font-bold">-25%</td>
+                  <td class="text-[var(--txt)]">75.0%</td>
+                  <td class="text-[var(--brand)] font-bold">+33.3%</td>
+                  <td class="text-xs text-[var(--txt-dim)]">0.25 &divide; 0.75</td>
+                </tr>
+                <tr>
+                  <td class="text-rose-500 font-bold">-50%</td>
+                  <td class="text-[var(--txt)]">50.0%</td>
+                  <td class="text-[var(--brand)] font-bold">+100.0%</td>
+                  <td class="text-xs text-[var(--txt-dim)]">0.50 &divide; 0.50</td>
+                </tr>
+                <tr>
+                  <td class="text-rose-500 font-bold">-75%</td>
+                  <td class="text-[var(--txt)]">25.0%</td>
+                  <td class="text-[var(--brand)] font-bold">+300.0%</td>
+                  <td class="text-xs text-[var(--txt-dim)]">0.75 &divide; 0.25</td>
+                </tr>
+                <tr>
+                  <td class="text-rose-500 font-bold">-90%</td>
+                  <td class="text-[var(--txt)]">10.0%</td>
+                  <td class="text-[var(--brand)] font-bold">+900.0%</td>
+                  <td class="text-xs text-[var(--txt-dim)]">0.90 &divide; 0.10</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-[var(--txt-dim)] italic">
+            Equation for break-even recovery gain: <span class="font-mono text-[var(--txt)]">R = D &divide; (1 - D)</span>, where <span class="font-mono text-[var(--txt)]">D</span> is the fractional drawdown.
+          </p>
+        </section>
+
+        <!-- Section 2: Percentage Points vs. Percent -->
+        <section class="space-y-4 pt-6 border-t border-[var(--border)]">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            2. Lexical Confusion: &ldquo;Percent&rdquo; vs. &ldquo;Percentage Points&rdquo;
+          </h3>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            In public policy, medical epidemiology, and central banking, the conflation of <strong class="text-[var(--txt)]">percent</strong> with <strong class="text-[var(--txt)]">percentage points (pp)</strong> produces catastrophic communication distortions.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            If a nation&apos;s benchmark interest rate climbs from <strong class="text-[var(--txt)]">4%</strong> to <strong class="text-[var(--txt)]">5%</strong>, reporting that interest rates increased by &ldquo;1%&rdquo; is mathematically false. The interest rate rose by <strong class="text-[var(--brand)] font-semibold">1 percentage point</strong>, but expanded by a dramatic <strong class="text-[var(--amber)] font-semibold">25% in relative terms</strong>:
+          </p>
+          <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt)] space-y-1">
+            <div>Relative Change = ((5% - 4%) &divide; 4%) &times; 100 = 25.0%</div>
+            <div>Absolute Change = 5% - 4% = 1.0 percentage point (100 basis points)</div>
+          </div>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            Similarly, in clinical pharmaceuticals, a study claiming a drug &ldquo;reduces cardiovascular risk by 50%&rdquo; frequently cites relative risk reduction. If the baseline disease incidence is 2 in 10,000 (0.02%), a 50% relative reduction lowers incidence to 1 in 10,000 (0.01%)&mdash;an absolute risk reduction of merely <strong class="text-[var(--txt)]">0.01 percentage points</strong>.
+          </p>
+        </section>
+
+        <!-- Section 3: Reverse Percentages & Taxation -->
+        <section class="space-y-4 pt-6 border-t border-[var(--border)]">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            3. Reverse Percentages: The Common Sales Tax Reciprocal Fallacy
+          </h3>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            When consumer prices include Value-Added Tax (VAT) or Goods and Services Tax (GST), everyday shoppers intuitively attempt to calculate the pre-tax base by deducting the stated tax rate. This produces an immediate calculation error.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            Suppose an electronic device costs <strong class="text-[var(--txt)]">$120</strong>, inclusive of a 20% sales tax. If one calculates 20% of $120 ($24) and subtracts it, one arrives at $96. But applying a 20% tax to $96 generates only $19.20, totaling $115.20, not $120.
+          </p>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            Because the 20% surcharge was assessed on the <em class="text-[var(--txt)]">original</em> unknown base value, the final price represents <strong class="text-[var(--txt)]">120% of base</strong>. The mathematically correct reverse calculation applies the reciprocal divisor:
+          </p>
+          <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt)] space-y-1">
+            <div>Base Price = Final Price &divide; (1 + Tax Rate)</div>
+            <div>Base Price = $120 &divide; 1.20 = $100.00</div>
+            <div>Actual Tax Collected = $120 - $100 = $20.00</div>
+          </div>
+        </section>
+
+        <!-- Section 4: Reversible Mental Math -->
+        <section class="space-y-4 pt-6 border-t border-[var(--border)]">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            4. The Commutative Property: Euler&apos;s Mental Math Shortcut
+          </h3>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            Due to the associative and commutative properties of multiplication, percentage calculations are completely reversible:
+          </p>
+          <div class="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-sm text-[var(--brand)] font-bold text-center">
+            x% of y = y% of x
+          </div>
+          <p class="text-sm sm:text-base leading-relaxed text-[var(--txt-muted)]">
+            If asked to mentally compute <strong class="text-[var(--txt)]">16% of 75</strong>, the human brain typically stalls due to the awkwardness of double-digit decimal division. However, flipping the equation to <strong class="text-[var(--txt)]">75% of 16</strong> makes the solution immediately trivial. Since 75% equals three-quarters (&frac34;), one simply takes three-quarters of 16, arriving effortlessly at <strong class="text-[var(--brand)] font-bold">12</strong>.
+          </p>
+        </section>
+
+        <!-- Hairline Accordion FAQ Section Card -->
+        <section class="pt-6 border-t border-[var(--border)]">
+          <div class="tool-content-header mb-6">
+            <span class="tool-badge-pill mb-3">
+              <i class="fas fa-circle-question text-[var(--brand)]"></i> Common Inquiries
+            </span>
+            <h3>Percentage Reasoning Frequently Asked Questions</h3>
+            <p>
+              Practical applications in margins, compounding, and retail psychology.
+            </p>
+          </div>
+
+          <div class="tool-faq-accordion">
+            <details class="tool-faq-item">
+              <summary>
+                <span>Can percentage growth rates across consecutive years simply be averaged?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                No. Taking the arithmetic mean of multi-period percentage returns creates severe upward distortion. If an asset appreciates by +100% in Year 1 and crashes by -50% in Year 2, the arithmetic average is (+100% - 50%) / 2 = +25% per year. In reality, $100 doubled to $200, then halved back to $100, generating a net 0% return. Multi-year compounded performance must always be calculated using the Compound Annual Growth Rate (CAGR) via geometric means.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>What is the difference between Gross Margin percentage and Markup percentage?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                Margin is calculated relative to revenue (selling price), while markup is calculated relative to cost of goods sold (COGS). If an item costs $60 to produce and sells for $100, the markup is ($40 / $60) &times; 100 = 66.7%. The gross margin, however, is ($40 / $100) &times; 100 = 40.0%. Confusing markup with margin is one of the leading causes of pricing insolvency in retail commerce.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>Why does compounding monthly yield a higher effective percentage than nominal APR?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                When interest compounds monthly, interest earned during Month 1 begins generating its own supplementary interest during Month 2. A nominal annual percentage rate of 12% compounded monthly produces an Effective Annual Rate (EAR) of (1 + 0.12/12)<sup>12</sup> - 1 = 12.68%. Over multi-year borrowing cycles, that 0.68% compounding delta compounds into substantial capital divergence.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>What&apos;s the difference between percentage increase and percentage difference?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                Percentage increase measures change relative to the original value &mdash; so going from 80 to 100 is a 25% increase. Percentage difference, on the other hand, compares two numbers symmetrically: the difference (20) divided by the average of both numbers (90), giving ~22.2%. Use percentage increase when you have a clear &ldquo;before&rdquo; and &ldquo;after&rdquo;; use percentage difference when comparing two equal-status values with no defined starting point.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>Is the percentage calculator free and how many calculations can I run?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                Completely free &mdash; no sign-up, no usage caps, no ads blocking the results. Every calculation runs instantly in your browser. You can switch between modes and run as many calculations as you need in a single session.
+              </div>
+            </details>
+          </div>
+        </section>
+
+      </article>
+    </div>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .pct-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .pct-modes { display: flex; gap: 8px; flex-wrap: wrap; }
-  .pct-mode-btn { padding: 9px 16px; font-size: 13px; font-weight: 600; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-soft); color: var(--txt-muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s; }
-  .pct-mode-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-  .pct-mode-btn:hover:not(.active) { border-color: var(--brand); color: var(--brand); }
-
-  .pct-form { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .pct-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 120px; }
-  .pct-field label { font-size: 13px; font-weight: 600; color: var(--txt); }
-  .pct-input {
-    padding: 11px 14px;
-    font-size: 16px;
-    font-family: 'Outfit', sans-serif;
-    font-weight: 600;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: border-color .15s;
-  }
-  .pct-input:focus { border-color: var(--brand); }
-  .pct-of { font-size: 14px; font-weight: 700; color: var(--txt-muted); padding-bottom: 13px; flex-shrink: 0; }
-
-  .pct-result-box { padding: 28px; background: linear-gradient(135deg, #EFF6FF, #F5F3FF); border-radius: var(--radius-lg); text-align: center; animation: fadeIn .3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-  .pct-result-num { font-size: 3.5rem; font-weight: 900; color: var(--brand); font-family: 'Outfit', sans-serif; }
-  .pct-result-label { font-size: 15px; color: #475569; margin-top: 6px; font-weight: 500; }
-
-  .pct-quick { padding: 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); }
-  .pct-quick-label { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 12px; }
-  .pct-quick-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-  .pct-quick-item { padding: 10px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); text-align: center; font-size: 13px; color: var(--txt-muted); }
-  .pct-quick-item strong { display: block; font-size: 15px; color: var(--brand); margin-bottom: 2px; }
-
-  @media (max-width: 600px) { .pct-quick-grid { grid-template-columns: repeat(3, 1fr); } }
-</style>
 
 <script>
   function showPanel(id: string) {
@@ -158,11 +411,15 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
 
   document.querySelectorAll('.pct-mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.pct-mode-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.pct-mode-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
       btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
       const mode = (btn as HTMLElement).dataset.mode!;
       document.querySelectorAll('.pct-panel').forEach(p => (p as HTMLElement).style.display = 'none');
-      const panel = document.getElementById(`pct-${mode}`) || document.getElementById(`pct-what-pct`);
+      const panel = document.getElementById(`pct-${mode}`);
       if (panel) panel.style.display = '';
     });
   });

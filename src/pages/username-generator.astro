@@ -5,97 +5,262 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'username-generator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="ug-wrap">
-    <div class="ug-controls">
-      <div class="ug-field">
-        <label for="ug-keyword">Keyword or name (optional)</label>
-        <input type="text" id="ug-keyword" class="ug-input" placeholder="e.g. gaming, ninja, shadow…" maxlength="20" />
-      </div>
-      <div class="ug-options-grid">
-        <div class="ug-check-group">
-          <label class="ug-label-sm">Style</label>
-          <div class="ug-checks">
-            <label class="ug-check"><input type="radio" name="ug-style" value="mixed" checked /> Mixed</label>
-            <label class="ug-check"><input type="radio" name="ug-style" value="gamer" /> Gamer</label>
-            <label class="ug-check"><input type="radio" name="ug-style" value="professional" /> Professional</label>
-            <label class="ug-check"><input type="radio" name="ug-style" value="social" /> Social Media</label>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Header Hero -->
+    <div class="tool-hero-box">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="tool-badge-pill mb-3">
+            <i class="fas fa-gamepad text-[var(--brand)]"></i> Esports & Social Handle Generator
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--txt)] tracking-tight">
+            Username & Gamer Tag <span class="shimmer-text">Generator</span>
+          </h1>
+          <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
+            Generate clean, memorable, and available handles for Twitch, Discord, Steam, TikTok, Instagram, and competitive esports leagues.
+          </p>
+        </div>
+
+        <!-- Clearance Badge -->
+        <div class="tool-inner-panel flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[var(--brand-soft)] border border-[var(--border)] flex items-center justify-center text-[var(--brand)] text-base">
+            <i class="fas fa-user-tag"></i>
+          </div>
+          <div>
+            <span class="text-[10.5px] font-mono text-[var(--txt-dim)] uppercase block tracking-wider font-semibold">Platform Ready</span>
+            <span class="text-xs font-bold text-[var(--txt)]">Discord, Steam, TikTok, X</span>
           </div>
         </div>
-        <div class="ug-check-group">
-          <label class="ug-label-sm">Options</label>
-          <div class="ug-checks">
-            <label class="ug-check"><input type="checkbox" id="ug-numbers" checked /> Add numbers</label>
-            <label class="ug-check"><input type="checkbox" id="ug-underscores" /> Allow underscores</label>
-          </div>
-        </div>
       </div>
-      <button class="btn btn-primary" id="ug-generate">
-        <i class="fas fa-user"></i> Generate Usernames
-      </button>
     </div>
 
-    <div class="ug-results" id="ug-results">
-      <div class="ug-results-header">
-        <span class="ug-results-label">Generated Usernames</span>
-        <button class="btn btn-ghost btn-sm" id="ug-copy-all"><i class="fas fa-copy"></i> Copy All</button>
+    <!-- Main Generator Console -->
+    <div class="tool-card-surface space-y-6 mb-12">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+        <!-- Keyword Input (6 cols) -->
+        <div class="md:col-span-6 space-y-2">
+          <label for="ug-keyword" class="text-xs font-mono font-bold text-[var(--txt-dim)] uppercase tracking-wider block">
+            Base Keyword or Alias (Optional)
+          </label>
+          <div class="flex items-center tool-inner-panel p-2 focus-within:border-[var(--brand)] transition-all">
+            <i class="fas fa-at text-[var(--brand)] pl-2 pr-2 text-sm"></i>
+            <input type="text" id="ug-keyword" value="Shadow" placeholder="e.g. shadow, ninja, vortex, apex…" maxlength="20" class="flex-1 bg-transparent text-[var(--txt)] font-mono text-base font-bold outline-none px-2 placeholder:text-[var(--txt-dim)]" />
+          </div>
+        </div>
+
+        <!-- Style Mode Selector (6 cols) -->
+        <div class="md:col-span-6 space-y-2">
+          <span class="text-xs font-mono font-bold text-[var(--txt-dim)] uppercase tracking-wider block">Persona Archetype:</span>
+          <div class="flex flex-wrap gap-2" id="ug-style-pills">
+            <label class="filter-chip ug-style-label active">
+              <input type="radio" name="ug-style" value="gamer" checked class="hidden" />
+              <span>🎮 Pro Gamer</span>
+            </label>
+            <label class="filter-chip ug-style-label">
+              <input type="radio" name="ug-style" value="social" class="hidden" />
+              <span>✨ TikTok / Aesthetic</span>
+            </label>
+            <label class="filter-chip ug-style-label">
+              <input type="radio" name="ug-style" value="professional" class="hidden" />
+              <span>💼 Brand / Pro</span>
+            </label>
+            <label class="filter-chip ug-style-label">
+              <input type="radio" name="ug-style" value="mixed" class="hidden" />
+              <span>⚡ Mixed</span>
+            </label>
+          </div>
+        </div>
       </div>
-      <div class="ug-grid" id="ug-grid">
-        <div class="ug-placeholder">Click "Generate Usernames" to get started.</div>
+
+      <!-- Modifier Checkboxes & Generate CTA -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[var(--border)]">
+        <div class="flex items-center gap-5 text-xs text-[var(--txt-muted)] font-medium">
+          <label class="flex items-center gap-2 cursor-pointer hover:text-[var(--txt)]">
+            <input type="checkbox" id="ug-numbers" checked class="w-4 h-4 rounded text-[var(--brand)] accent-[var(--brand)]" />
+            <span>Append Numbers</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer hover:text-[var(--txt)]">
+            <input type="checkbox" id="ug-underscores" class="w-4 h-4 rounded text-[var(--brand)] accent-[var(--brand)]" />
+            <span>Allow Underscores (_)</span>
+          </label>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="ug-copy-all" class="btn btn-secondary text-xs font-mono">
+            <i class="fas fa-copy"></i> Copy All
+          </button>
+          <button id="ug-generate" class="btn btn-primary text-xs font-mono uppercase tracking-wider">
+            <i class="fas fa-rotate"></i> Generate Fresh Tags
+          </button>
+        </div>
       </div>
+
+      <!-- Generated Handles Matrix -->
+      <div class="pt-6 border-t border-[var(--border)]">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--brand)]">Live Tag Roster (18 Handles)</span>
+          <span class="text-xs font-mono text-[var(--txt-dim)]">Click copy icon to copy handle</span>
+        </div>
+        <div id="ug-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <!-- Populated via script -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Digital Identity Architecture: Single Long-Form Article Archetype -->
+    <div class="tool-content-wrap">
+      <article class="tool-content-card space-y-10">
+        <!-- Article Header & Byline -->
+        <header class="tool-content-header border-b border-[var(--border)] pb-6">
+          <div class="flex items-center gap-3 text-xs font-mono text-[var(--txt-muted)] mb-3">
+            <span class="px-2 py-0.5 rounded bg-[var(--brand)]/10 text-[var(--brand)] font-bold border border-[var(--brand)]/20 uppercase tracking-wider">
+              Digital Anthropology
+            </span>
+            <span>&bull;</span>
+            <span>6 Min Read</span>
+            <span>&bull;</span>
+            <span class="text-[var(--brand)] font-bold">Platform Culture</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--txt)] tracking-tight leading-tight">
+            The Semiotics of the Pseudonym: How Handles Shape Digital Identity, Memorability &amp; Platform OPSEC
+          </h2>
+        </header>
+
+        <!-- Chapter I: Historical Evolution -->
+        <section class="space-y-4">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            I. The Evolution of the Screen Name: From CB Radio to Namespace Exhaustion
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            The concept of an online alias traces its genealogy directly to 1970s Citizens Band (CB) radio operators, who adopted colorful "handles" to navigate shared airwaves without surrendering legal anonymity. As computing migrated into early bulletin board systems (BBS), IRC chat channels, and multiplayer LAN communities in the late 1980s and 1990s, the pseudonym transformed into an essential digital avatar.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            In the contemporary era of multi-billion-user social graphs, humanity has entered an era of catastrophic namespace exhaustion. Single-word dictionary identifiers ("OG handles" such as <code class="font-mono text-xs text-[var(--txt)]">@nova</code> or <code class="font-mono text-xs text-[var(--txt)]">@shadow</code>) have become digital scarcity assets, frequently targeted by SIM-swapping cartels and underground marketplaces. For modern creators and competitive gamers, securing a memorable identity now requires algorithmic syllable recombination—pairing kinetic verbs, evocative chromatic adjectives, and crisp nouns to produce punchy, unrepeated digital handles.
+          </p>
+        </section>
+
+        <!-- Chapter II: Phonetics and The Bouba/Kiki Effect -->
+        <section class="space-y-4">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            II. Phonetic Friction: The Cognitive Science of Gamer Tag Memorability
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Not all usernames resonate equally in human auditory memory. Cognitive psychologists have long documented the <em>Bouba/Kiki effect</em>, a non-arbitrary mapping between speech sounds and the visual shape of objects. In competitive esports (such as Valorant, Counter-Strike 2, or Apex Legends), dominant player tags disproportionately leverage voiceless plosive consonants—sharp, percussive phonemes like /k/, /p/, /t/, and hard /x/. Names like <em>Apex</em>, <em>Vortex</em>, or <em>Striker</em> project kinetic speed, precision, and authority.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Conversely, community vloggers, Discord moderators, and aesthetic TikTok creators gravitate toward continuants and liquid sonorants—soft /m/, /l/, /s/, and /v/ sounds (e.g., <em>Velvet</em>, <em>Lunar</em>, <em>Solace</em>) that communicate warmth, approachability, and atmospheric presence. Regardless of aesthetic target, trailing random numbers (such as <code class="font-mono text-xs text-[var(--txt)]">Shadow98412</code>) introduce severe cognitive friction: listeners cannot recall numeric sequences after hearing a stream shoutout, instantly breaking viral word-of-mouth discovery.
+          </p>
+        </section>
+
+        <!-- Chapter III: Cross-Platform Cohesion Matrix -->
+        <section class="space-y-4">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            III. Cross-Platform Cohesion: Navigating Disparate Namespace Protocols
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            A critical strategic hurdle in modern handle selection is the divergent syntax enforced across major web ecosystems. Securing cross-platform brand parity demands a handle that satisfies the most restrictive common denominator:
+          </p>
+
+          <div class="tool-specs-table-wrap my-6">
+            <table class="tool-specs-table">
+              <thead>
+                <tr>
+                  <th>Platform</th>
+                  <th>Length Boundary</th>
+                  <th>Syntax &amp; Normalization Rules</th>
+                </tr>
+              </thead>
+              <tbody class="font-mono text-xs">
+                <tr>
+                  <td class="font-bold text-[var(--txt)]">YouTube Handle</td>
+                  <td class="text-[var(--brand)] font-bold">3 – 30 Chars</td>
+                  <td class="text-[var(--txt-muted)] font-sans">Alphanumerics, dots, underscores, dashes; case-insensitive.</td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-[var(--txt)]">Discord Username</td>
+                  <td class="text-[var(--brand)] font-bold">2 – 32 Chars</td>
+                  <td class="text-[var(--txt-muted)] font-sans">Strictly lowercase a–z, 0–9, dots, underscores; zero discriminators.</td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-[var(--txt)]">TikTok Handle</td>
+                  <td class="text-[var(--brand)] font-bold">2 – 24 Chars</td>
+                  <td class="text-[var(--txt-muted)] font-sans">Letters, numbers, underscores, periods; cannot end with a period.</td>
+                </tr>
+                <tr>
+                  <td class="font-bold text-[var(--txt)]">X (Twitter)</td>
+                  <td class="text-[var(--brand)] font-bold">4 – 15 Chars</td>
+                  <td class="text-[var(--txt-muted)] font-sans">Alphanumeric and underscores only; 15 character hard ceiling.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            Because X enforces an aggressive 15-character ceiling, creators targeting broad distribution should optimize their foundational handle to 15 characters or fewer. This eliminates awkward truncations or mismatched handles when expanding from Twitch or YouTube into microblogging and sponsor outreach.
+          </p>
+        </section>
+
+        <!-- Chapter IV: OPSEC and Namespace Hygiene -->
+        <section class="space-y-4">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            IV. Operational Security (OPSEC): The Perils of Handle Re-Use
+          </h3>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            In cybersecurity and open-source intelligence (OSINT), handle correlation represents one of the most potent recon methodologies. When an individual uses the exact same handle across gaming platforms, technical GitHub repositories, personal social accounts, and enthusiast hobby forums, malicious actors can map an entire digital persona in minutes using automated scraping tools like Sherlock or Maigret.
+          </p>
+          <p class="text-sm sm:text-base text-[var(--txt-muted)] leading-relaxed">
+            A handle used on an unvetted Minecraft forum in 2014 could be tied to an exfiltrated plaintext password hash, which is subsequently leveraged to compromise your professional email or developer credentials. Practicing deliberate identity compartmentalization—maintaining isolated pseudonyms for gaming, open-source development, and private communications—is essential digital hygiene in an era of persistent corporate breaches.
+          </p>
+        </section>
+      </article>
+
+      <!-- Hairline Accordion FAQ Section -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <h3 class="text-xl sm:text-2xl font-bold text-[var(--txt)] tracking-tight">
+            Username Generation &amp; Trademark FAQ
+          </h3>
+          <p class="text-sm text-[var(--txt-muted)] mt-1">
+            Legal boundaries, availability checks, and handle change protocols.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>Can I face legal action for choosing a handle matching a registered company?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              If your handle infringes on a trademark within the same commercial class or attempts to impersonate an existing enterprise or public figure, platforms will unilaterally revoke the username under the Uniform Domain-Name Dispute-Resolution Policy (UDRP) or terms of service. For personal gaming and creative streaming, combining common dictionary words with unique prefixes ensures distinct, unencumbered intellectual property.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>How can I verify if a generated handle is available across all platforms?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              Once you identify a handle you like in the generator roster, check availability on major platforms like YouTube, Twitch, TikTok, Steam, and Instagram. Many platforms allow you to search the direct URL profile endpoint (e.g., `instagram.com/yourhandle`) to quickly confirm whether an account is active or dormant.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Does this username generator store or claim generated aliases?</span>
+              <span class="faq-chevron">&#9660;</span>
+            </summary>
+            <div class="faq-content">
+              No. All handle permutations are computed locally in your web browser utilizing randomized array shuffles and phonetic templates. Toolarsh maintains no central registry or claiming mechanism—every generated name is immediately available for your unrestricted personal and commercial use.
+            </div>
+          </details>
+        </div>
+      </section>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .ug-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .ug-controls { display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .ug-field { display: flex; flex-direction: column; gap: 8px; }
-  .ug-field label { font-size: 14px; font-weight: 600; color: var(--txt); }
-  .ug-input {
-    padding: 11px 14px;
-    font-size: 15px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: border-color .15s;
-  }
-  .ug-input:focus { border-color: var(--brand); }
-  .ug-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .ug-check-group { display: flex; flex-direction: column; gap: 8px; }
-  .ug-label-sm { font-size: 12px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
-  .ug-checks { display: flex; flex-direction: column; gap: 6px; }
-  .ug-check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--txt); cursor: pointer; }
-  .ug-check input { accent-color: var(--brand); width: 14px; height: 14px; }
-
-  .ug-results { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .ug-results-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); }
-  .ug-results-label { font-size: 13px; font-weight: 700; color: var(--txt); }
-  .btn-sm { padding: 6px 14px; font-size: 12px; }
-  .ug-grid { padding: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .ug-placeholder { padding: 24px; text-align: center; color: var(--txt-dim); font-style: italic; font-size: 14px; grid-column: 1/-1; }
-  .ug-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 12px;
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    color: var(--txt);
-    transition: border-color .15s, background .15s;
-  }
-  .ug-item:hover { border-color: var(--brand); background: var(--brand-light); }
-  .ug-copy-btn { background: none; border: none; cursor: pointer; color: var(--txt-muted); padding: 2px 6px; border-radius: 4px; font-size: 11px; flex-shrink: 0; }
-  .ug-copy-btn:hover { color: var(--brand); }
-
-  @media (max-width: 500px) { .ug-grid { grid-template-columns: 1fr 1fr; } .ug-options-grid { grid-template-columns: 1fr; } }
-</style>
 
 <script>
   const gamerWords = ['dark','shadow','neon','blaze','frost','void','steel','phantom','storm','viper','rogue','cyber','pixel','glitch','ultra'];
@@ -131,7 +296,7 @@ const tool = tools.find(t => t.slug === 'username-generator')!;
 
   function generate() {
     const keyword = (document.getElementById('ug-keyword') as HTMLInputElement).value.trim();
-    const style = (document.querySelector('input[name="ug-style"]:checked') as HTMLInputElement).value;
+    const style = (document.querySelector('input[name="ug-style"]:checked') as HTMLInputElement)?.value || 'gamer';
     const useNumbers = (document.getElementById('ug-numbers') as HTMLInputElement).checked;
     const useUnder = (document.getElementById('ug-underscores') as HTMLInputElement).checked;
 
@@ -139,11 +304,15 @@ const tool = tools.find(t => t.slug === 'username-generator')!;
     while (names.size < 18) names.add(gen(style, keyword, useNumbers, useUnder));
     const arr = Array.from(names);
 
-    const grid = document.getElementById('ug-grid')!;
+    const grid = document.getElementById('ug-grid');
+    if (!grid) return;
+
     grid.innerHTML = arr.map(n => `
-      <div class="ug-item">
-        <span>${n}</span>
-        <button class="ug-copy-btn" data-name="${n}"><i class="fas fa-copy"></i></button>
+      <div class="ug-item p-3.5 rounded-xl tool-inner-panel flex items-center justify-between group hover:border-[var(--brand)] transition-colors">
+        <span class="font-mono text-sm font-bold text-[var(--txt)] group-hover:text-[var(--brand)] transition-colors">${n}</span>
+        <button class="ug-copy-btn btn btn-secondary px-2.5 py-1 text-xs font-mono" data-name="${n}">
+          <i class="fas fa-copy"></i>
+        </button>
       </div>
     `).join('');
 
@@ -151,21 +320,35 @@ const tool = tools.find(t => t.slug === 'username-generator')!;
       btn.addEventListener('click', async () => {
         const name = (btn as HTMLElement).dataset.name!;
         await navigator.clipboard.writeText(name);
-        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i>';
         setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 1500);
       });
     });
   }
 
+  document.querySelectorAll('input[name="ug-style"]').forEach(input => {
+    input.addEventListener('change', () => {
+      document.querySelectorAll('.ug-style-label').forEach(lbl => lbl.classList.remove('active'));
+      const parent = input.closest('.ug-style-label');
+      if (parent) parent.classList.add('active');
+      generate();
+    });
+  });
+
   document.getElementById('ug-generate')?.addEventListener('click', generate);
+  document.getElementById('ug-keyword')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') generate();
+  });
+
   document.getElementById('ug-copy-all')?.addEventListener('click', async () => {
     const items = document.querySelectorAll('.ug-item span');
     if (!items.length) return;
     await navigator.clipboard.writeText(Array.from(items).map(i => i.textContent).join('\n'));
     const btn = document.getElementById('ug-copy-all')!;
-    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i> Copied!';
     setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy All', 2000);
   });
 
+  // Run on mount
   generate();
 </script>

@@ -5,390 +5,565 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'pdf-converter')!;
 ---
 
-<ToolLayout tool={tool}>
-  <!-- Load libraries from CDN -->
+<ToolLayout tool={tool} customLayout={true}>
+  <!-- External CDN Libraries for Client-Side PDF Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" is:inline></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" is:inline></script>
 
-  <div class="pc-wrap">
-    <!-- Mode tabs -->
-    <div class="pc-modes">
-      <button class="pc-mode active" data-mode="img-to-pdf">
-        <i class="fas fa-images"></i>
-        <span>Images → PDF</span>
-      </button>
-      <button class="pc-mode" data-mode="pdf-to-img">
-        <i class="fas fa-file-pdf"></i>
-        <span>PDF → Images</span>
-      </button>
-      <button class="pc-mode" data-mode="text-to-pdf">
-        <i class="fas fa-font"></i>
-        <span>Text → PDF</span>
-      </button>
-    </div>
+  <div class="tool-page-wrap">
+    <!-- Hero Box -->
+    <div class="tool-hero-box">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div class="tool-hero-badge">
+          <i class="fas fa-file-pdf"></i>
+          <span>ISO 32000 PDF WORKBENCH &bull; 100% CLIENT-SIDE</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-[var(--txt-dim)] font-mono">
+          <span><i class="fas fa-lock text-[var(--brand)] mr-1"></i> Zero Cloud Storage</span>
+          <span>&bull;</span>
+          <span><i class="fas fa-microchip text-[var(--brand)] mr-1"></i> PDF.js + jsPDF</span>
+        </div>
+      </div>
 
-    <!-- ── Images → PDF ─────────────────────────── -->
-    <div class="pc-panel" id="panel-img-to-pdf">
-      <div class="pc-upload" id="img-upload-area">
-        <input type="file" id="img-files" accept="image/*" multiple class="pc-file-input" />
-        <div class="pc-upload-content">
-          <div class="pc-upload-icon"><i class="fas fa-images"></i></div>
-          <div class="pc-upload-title">Drop images here or click to browse</div>
-          <div class="pc-upload-sub">JPG, PNG, WEBP, BMP, GIF • Multiple files supported</div>
-        </div>
-      </div>
-      <div class="pc-options">
-        <div class="pc-opt">
-          <label class="pc-opt-label">Page Size</label>
-          <select id="img-page-size" class="pc-select">
-            <option value="a4" selected>A4</option>
-            <option value="letter">Letter (US)</option>
-            <option value="a3">A3</option>
-            <option value="a5">A5</option>
-          </select>
-        </div>
-        <div class="pc-opt">
-          <label class="pc-opt-label">Orientation</label>
-          <select id="img-orientation" class="pc-select">
-            <option value="portrait" selected>Portrait</option>
-            <option value="landscape">Landscape</option>
-          </select>
-        </div>
-        <div class="pc-opt">
-          <label class="pc-opt-label">Image Fit</label>
-          <select id="img-fit" class="pc-select">
-            <option value="fit" selected>Fit to page</option>
-            <option value="fill">Fill page (crop)</option>
-            <option value="center">Center (original size)</option>
-          </select>
-        </div>
-        <div class="pc-opt">
-          <label class="pc-opt-label">Margin (mm)</label>
-          <input type="number" id="img-margin" class="pc-input-sm" value="10" min="0" max="50" />
-        </div>
-      </div>
-      <div id="img-queue" class="pc-queue" style="display:none">
-        <div class="pc-queue-header">
-          <span class="pc-queue-count"><span id="img-count">0</span> image(s) selected</span>
-          <div class="pc-queue-actions">
-            <button class="btn btn-ghost btn-sm" id="img-clear">Clear</button>
-            <button class="btn btn-primary btn-sm" id="img-to-pdf-btn"><i class="fas fa-file-pdf"></i> Convert to PDF</button>
-          </div>
-        </div>
-        <div class="pc-thumbs" id="img-thumbs"></div>
-      </div>
-      <div class="pc-progress" id="img-progress" style="display:none">
-        <div class="pc-progress-bar"><div class="pc-progress-fill" id="img-progress-fill"></div></div>
-        <div class="pc-progress-label" id="img-progress-label">Processing…</div>
-      </div>
-    </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--txt)] mb-2">
+        Online <span class="bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent">PDF Converter & Toolkit</span>
+      </h1>
+      <p class="text-sm sm:text-base text-[var(--txt-muted)] max-w-2xl leading-relaxed">
+        Convert images to formatted PDFs, extract PDF pages into crystal-clear PNG images, or render structured documents directly in your browser with zero document uploads.
+      </p>
 
-    <!-- ── PDF → Images ─────────────────────────── -->
-    <div class="pc-panel" id="panel-pdf-to-img" style="display:none">
-      <div class="pc-upload" id="pdf-upload-area">
-        <input type="file" id="pdf-file" accept="application/pdf" class="pc-file-input" />
-        <div class="pc-upload-content">
-          <div class="pc-upload-icon" style="color:#EF4444"><i class="fas fa-file-pdf"></i></div>
-          <div class="pc-upload-title">Drop a PDF here or click to browse</div>
-          <div class="pc-upload-sub">Converts each PDF page to a PNG image</div>
-        </div>
-      </div>
-      <div class="pc-options">
-        <div class="pc-opt">
-          <label class="pc-opt-label">Output Format</label>
-          <select id="pdf-out-format" class="pc-select">
-            <option value="png" selected>PNG</option>
-            <option value="jpeg">JPG</option>
-          </select>
-        </div>
-        <div class="pc-opt">
-          <label class="pc-opt-label">Scale / Quality</label>
-          <select id="pdf-scale" class="pc-select">
-            <option value="1">1× (72 DPI)</option>
-            <option value="2" selected>2× (144 DPI)</option>
-            <option value="3">3× (216 DPI)</option>
-          </select>
-        </div>
-      </div>
-      <div id="pdf-progress" class="pc-progress" style="display:none">
-        <div class="pc-progress-bar"><div class="pc-progress-fill" id="pdf-progress-fill"></div></div>
-        <div class="pc-progress-label" id="pdf-progress-label">Reading PDF…</div>
-      </div>
-      <div id="pdf-pages" class="pc-pages-grid" style="display:none"></div>
-      <div id="pdf-dl-all" style="display:none;text-align:center;margin-top:12px">
-        <button class="btn btn-primary" id="pdf-dl-all-btn"><i class="fas fa-download"></i> Download All as ZIP</button>
-      </div>
-    </div>
-
-    <!-- ── Text → PDF ────────────────────────────── -->
-    <div class="pc-panel" id="panel-text-to-pdf" style="display:none">
-      <div class="pc-text-form">
-        <div class="pc-field">
-          <label class="pc-opt-label">Document Title</label>
-          <input type="text" id="txt-title" class="pc-input-full" placeholder="My Document" value="My Document" />
-        </div>
-        <div class="pc-text-options">
-          <div class="pc-opt">
-            <label class="pc-opt-label">Font Size</label>
-            <input type="number" id="txt-font-size" class="pc-input-sm" value="12" min="8" max="36" />
-          </div>
-          <div class="pc-opt">
-            <label class="pc-opt-label">Page Size</label>
-            <select id="txt-page-size" class="pc-select">
-              <option value="a4" selected>A4</option>
-              <option value="letter">Letter</option>
-            </select>
-          </div>
-          <div class="pc-opt">
-            <label class="pc-opt-label">Line Spacing</label>
-            <select id="txt-spacing" class="pc-select">
-              <option value="1">Single</option>
-              <option value="1.5" selected>1.5×</option>
-              <option value="2">Double</option>
-            </select>
-          </div>
-        </div>
-        <div class="pc-field">
-          <label class="pc-opt-label">Content</label>
-          <textarea id="txt-content" class="pc-textarea" rows="10" placeholder="Type or paste your text content here…
-
-You can use multiple paragraphs. Each paragraph will be wrapped and paginated automatically."></textarea>
-        </div>
-        <button class="btn btn-primary" id="txt-to-pdf-btn" style="align-self:flex-start">
-          <i class="fas fa-file-pdf"></i> Generate PDF
+      <!-- Mode Switcher Tabs in Hero -->
+      <div class="mt-5 tool-tab-segment" role="tablist" aria-label="PDF Conversion Modes">
+        <button class="tool-tab-btn pc-mode active" data-mode="img-to-pdf" role="tab" aria-selected="true">
+          <i class="fas fa-images"></i> Images &rarr; PDF
+        </button>
+        <button class="tool-tab-btn pc-mode" data-mode="pdf-to-img" role="tab" aria-selected="false">
+          <i class="fas fa-file-image"></i> PDF &rarr; Images
+        </button>
+        <button class="tool-tab-btn pc-mode" data-mode="text-to-pdf" role="tab" aria-selected="false">
+          <i class="fas fa-font"></i> Text &rarr; PDF
         </button>
       </div>
     </div>
+
+    <!-- Interactive Document Studio -->
+    <main class="space-y-8">
+      <div class="tool-card-surface">
+        
+        <!-- MODE 1: Images to PDF -->
+        <div class="pc-panel flex flex-col gap-6" id="panel-img-to-pdf">
+          <div class="relative border-2 border-dashed border-[var(--border)] hover:border-[var(--brand)] rounded-3xl p-8 sm:p-12 text-center bg-[var(--surface-2)]/50 transition-all group cursor-pointer" id="img-upload-area">
+            <input type="file" id="img-files" accept="image/*" multiple class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10" />
+            <div class="w-14 h-14 rounded-2xl bg-[var(--brand)] text-white flex items-center justify-center text-xl mx-auto mb-3 group-hover:scale-105 shadow-md shadow-emerald-500/20 transition-transform">
+              <i class="fas fa-images"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-[var(--txt)] mb-1">
+              Drop images to compile into a PDF, or <span class="text-[var(--brand)] underline">browse files</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)]">
+              JPG, PNG, WEBP, BMP &bull; Multiple files combined in selected order
+            </p>
+          </div>
+
+          <!-- Conversion Options -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Page Size</label>
+              <select id="img-page-size" class="tool-control-input text-xs font-semibold">
+                <option value="a4" selected>A4 (210 &times; 297 mm)</option>
+                <option value="letter">Letter (8.5 &times; 11 in)</option>
+                <option value="a3">A3 (297 &times; 420 mm)</option>
+                <option value="a5">A5 (148 &times; 210 mm)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Orientation</label>
+              <select id="img-orientation" class="tool-control-input text-xs font-semibold">
+                <option value="portrait" selected>Portrait</option>
+                <option value="landscape">Landscape</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Image Fit</label>
+              <select id="img-fit" class="tool-control-input text-xs font-semibold">
+                <option value="fit" selected>Fit to page (maintain aspect)</option>
+                <option value="fill">Fill page (crop margins)</option>
+                <option value="center">Center (original scale)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2" for="img-margin">Margin (mm)</label>
+              <input type="number" id="img-margin" class="tool-control-input text-xs font-mono" value="10" min="0" max="50" />
+            </div>
+          </div>
+
+          <!-- Image Selection Queue -->
+          <div id="img-queue" class="rounded-2xl border border-[var(--border)] overflow-hidden" style="display:none">
+            <div class="px-5 py-3.5 bg-[var(--surface-2)] border-b border-[var(--border)] flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[var(--txt)]">
+                Selected Images (<span id="img-count" class="text-[var(--brand)]">0</span>)
+              </span>
+              <div class="flex items-center gap-2">
+                <button class="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--txt-muted)] hover:bg-[var(--surface-3)] transition-all" id="img-clear">Clear</button>
+                <button class="px-4 py-1.5 rounded-xl font-bold text-xs text-white bg-[var(--brand)] hover:opacity-95 shadow-sm flex items-center gap-1.5" id="img-to-pdf-btn">
+                  <i class="fas fa-file-pdf"></i> Compile PDF
+                </button>
+              </div>
+            </div>
+            <div class="p-4 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3" id="img-thumbs"></div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="p-4 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] flex flex-col gap-2" id="img-progress" style="display:none">
+            <div class="w-full h-2 bg-[var(--surface-3)] rounded-full overflow-hidden">
+              <div class="h-full bg-[var(--brand)] rounded-full transition-all duration-300" id="img-progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="text-xs text-center font-mono text-[var(--txt-dim)]" id="img-progress-label">Processing…</div>
+          </div>
+        </div>
+
+        <!-- MODE 2: PDF to Images -->
+        <div class="pc-panel flex flex-col gap-6" id="panel-pdf-to-img" style="display:none">
+          <div class="relative border-2 border-dashed border-[var(--border)] hover:border-[var(--brand)] rounded-3xl p-8 sm:p-12 text-center bg-[var(--surface-2)]/50 transition-all group cursor-pointer" id="pdf-upload-area">
+            <input type="file" id="pdf-file" accept="application/pdf" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10" />
+            <div class="w-14 h-14 rounded-2xl bg-[var(--brand)] text-white flex items-center justify-center text-xl mx-auto mb-3 group-hover:scale-105 shadow-md shadow-emerald-500/20 transition-transform">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-[var(--txt)] mb-1">
+              Drop a PDF document to extract pages, or <span class="text-[var(--brand)] underline">browse file</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-[var(--txt-muted)]">
+              Converts each vector PDF page into a high-DPI raster PNG or JPG image
+            </p>
+          </div>
+
+          <div class="p-4 sm:p-5 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[150px]">
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Output Format</label>
+              <select id="pdf-out-format" class="tool-control-input text-xs font-semibold">
+                <option value="png" selected>PNG (Lossless Sharpness)</option>
+                <option value="jpeg">JPG (Compressed)</option>
+              </select>
+            </div>
+            <div class="flex-1 min-w-[150px]">
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Rendering Scale</label>
+              <select id="pdf-scale" class="tool-control-input text-xs font-semibold">
+                <option value="1">1&times; (72 DPI Web Preview)</option>
+                <option value="2" selected>2&times; (144 DPI Crisp Retina)</option>
+                <option value="3">3&times; (216 DPI Ultra Print Quality)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Rendered Pages Grid -->
+          <div id="pdf-progress" class="p-4 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] flex flex-col gap-2" style="display:none">
+            <div class="w-full h-2 bg-[var(--surface-3)] rounded-full overflow-hidden">
+              <div class="h-full bg-[var(--brand)] rounded-full transition-all duration-300" id="pdf-progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="text-xs text-center font-mono text-[var(--txt-dim)]" id="pdf-progress-label">Reading PDF…</div>
+          </div>
+
+          <div id="pdf-pages" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" style="display:none"></div>
+
+          <div id="pdf-dl-all" class="text-center pt-2" style="display:none">
+            <button class="px-6 py-2.5 rounded-xl font-bold text-sm text-white bg-[var(--brand)] hover:opacity-95 shadow-md shadow-emerald-500/20 transition-all inline-flex items-center gap-2" id="pdf-dl-all-btn">
+              <i class="fas fa-download"></i> Save All Rendered Pages
+            </button>
+          </div>
+        </div>
+
+        <!-- MODE 3: Text to PDF -->
+        <div class="pc-panel flex flex-col gap-5" id="panel-text-to-pdf" style="display:none">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 sm:p-5 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)]">
+            <div>
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Document Title</label>
+              <input type="text" id="txt-title" class="tool-control-input text-xs font-semibold" value="My Document" />
+            </div>
+            <div>
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Font Size (pt)</label>
+              <input type="number" id="txt-font-size" class="tool-control-input text-xs font-mono" value="12" min="8" max="36" />
+            </div>
+            <div>
+              <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Line Spacing</label>
+              <select id="txt-spacing" class="tool-control-input text-xs font-semibold">
+                <option value="1">Single (1.0&times;)</option>
+                <option value="1.5" selected>1.5&times; (Academic standard)</option>
+                <option value="2">Double (2.0&times;)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-mono font-bold uppercase text-[var(--txt-dim)] mb-2">Document Body Content</label>
+            <textarea
+              id="txt-content"
+              class="tool-textarea h-60 text-xs sm:text-sm font-serif"
+              placeholder="Type or paste your report, essay, notes, or contract text here...
+Automatic text wrapping and multi-page pagination will be computed on the fly."
+            ></textarea>
+          </div>
+
+          <button class="px-6 py-2.5 rounded-xl font-bold text-sm text-white bg-[var(--brand)] hover:opacity-95 shadow-md shadow-emerald-500/20 transition-all self-start flex items-center gap-2" id="txt-to-pdf-btn">
+            <i class="fas fa-file-pdf"></i> Generate Printable PDF
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ISO 32000 Document Architecture: Content Wrap -->
+      <div class="tool-content-wrap">
+
+        <!-- Editorial Split Architecture Card -->
+        <section class="tool-content-card">
+          <div class="tool-content-header">
+            <span class="tool-badge-pill mb-3">
+              <i class="fas fa-file-shield text-[var(--brand)]"></i> ISO 32000-2 Specification
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-black text-[var(--txt)] tracking-tight">
+              The PostScript Lineage &amp; Declarative Geometry of PDF
+            </h2>
+            <p>
+              In 1991, Adobe co-founder John Warnock initiated &ldquo;The Camelot Project&rdquo; with a singular engineering ambition: to render complex vector graphics, typographic glyphs, and raster halftones with mathematical device-independence across every computer architecture on Earth.
+            </p>
+          </div>
+
+          <!-- Editorial Split Grid (5 cols Left / 7 cols Right) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-2">
+
+            <!-- Left Column: Vector Geometry & Archival Law (5 cols) -->
+            <div class="lg:col-span-5 space-y-6">
+
+              <div class="space-y-3">
+                <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--brand)]">The PostScript Abstract</span>
+                <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+                  From Turing-Complete PostScript to Declarative Objects
+                </h3>
+                <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+                  Before PDF, desktop publishing relied on PostScript—a full Turing-complete programming language with loops, conditionals, and stack memory operators. While versatile, rendering a PostScript file required running an untrusted software interpreter on the printer itself, creating endless security vulnerabilities and performance freezes.
+                </p>
+                <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+                  PDF eliminated active scripting, transforming pages into a static, cross-referenced graph of immutable indirect objects: a <code>Catalog</code> pointing to a hierarchical <code>Pages</code> tree, which maps individual <code>Page</code> dictionaries, content streams, and resource dictionaries defining font tables and external raster XObjects.
+                </p>
+              </div>
+
+              <!-- Archival Compliance Box -->
+              <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)] space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                  <span class="font-mono text-xs font-bold text-[var(--amber)] uppercase tracking-wider">ISO 19005 (PDF/A)</span>
+                  <span class="text-[11px] font-mono text-[var(--txt-dim)]">Century Preservation</span>
+                </div>
+                <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                  For legal affidavits, medical records, and municipal blueprints to remain readable 100 years from now, PDF/A imposes draconian structural constraints:
+                </p>
+                <ul class="space-y-1.5 text-xs sm:text-sm text-[var(--txt-muted)] list-disc pl-4">
+                  <li><strong class="text-[var(--txt)]">100% Embedded Fonts:</strong> Every typographic glyph outline must be physically embedded; reliance on system fonts is illegal.</li>
+                  <li><strong class="text-[var(--txt)]">Device-Independent Color:</strong> Mandatory ICC color profiles ensuring exact physical calibration.</li>
+                  <li><strong class="text-[var(--txt)]">Zero Active Code:</strong> Javascript execution, external XML hyperlinks, and audio/video containers are strictly forbidden.</li>
+                </ul>
+              </div>
+
+              <!-- Client-Side Sandbox Guarantee -->
+              <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)] space-y-2">
+                <span class="text-xs font-mono uppercase tracking-wider text-[var(--brand)] font-bold block">
+                  Local Memory Sandbox
+                </span>
+                <p class="text-xs sm:text-sm text-[var(--txt-muted)] leading-relaxed">
+                  By rendering documents locally through Mozilla&apos;s <code>pdf.js</code> rasterizer and compiling files through <code>jsPDF</code>, your sensitive corporate tax returns, confidential contracts, and photo IDs never traverse the public web.
+                </p>
+              </div>
+
+            </div>
+
+            <!-- Right Column: Algorithmic Rasterization & PDF Compression (7 cols) -->
+            <div class="lg:col-span-7 space-y-6 lg:border-l lg:border-[var(--border)] lg:pl-8">
+
+              <div class="space-y-4">
+                <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--brand)]">Rasterization Engine</span>
+                <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+                  The Geometry of Viewport Scaling &amp; Sub-Pixel Anti-Aliasing
+                </h3>
+                <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+                  A PDF page has no native pixel resolution. All coordinates are recorded in vector User Space units, where <strong>1 unit equals 1/72 of an international inch</strong> (the historical typographic &ldquo;point&rdquo;). When extracting pages to raster images (PNG or JPEG):
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+                  <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]">
+                    <span class="text-[var(--txt-muted)] block mb-1">1&times; Scale</span>
+                    <span class="text-sm font-bold text-[var(--txt)]">72 DPI</span>
+                    <span class="text-[10px] text-[var(--txt-dim)] block mt-1">Fast Thumbnails</span>
+                  </div>
+                  <div class="p-3 rounded-xl border border-[var(--brand)]/30 bg-[var(--surface-2)]">
+                    <span class="text-[var(--brand)] block mb-1">2&times; Scale</span>
+                    <span class="text-sm font-bold text-[var(--brand)]">144 DPI</span>
+                    <span class="text-[10px] text-[var(--txt-dim)] block mt-1">Retina Crisp</span>
+                  </div>
+                  <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]">
+                    <span class="text-[var(--amber)] block mb-1">3&times; Scale</span>
+                    <span class="text-sm font-bold text-[var(--amber)]">216 DPI</span>
+                    <span class="text-[10px] text-[var(--txt-dim)] block mt-1">Prepress Schematics</span>
+                  </div>
+                </div>
+                <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+                  The rasterizer traverses cubic B&eacute;zier curves, applies 2D transformation matrices (scaling, skewing, and rotation), and executes coverage-based sub-pixel anti-aliasing to render hairline vector architectural blueprints without jagged staircase stepping.
+                </p>
+              </div>
+
+              <!-- Heterogeneous Stream Compression -->
+              <div class="space-y-4">
+                <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--brand)]">Binary Stream Encoding</span>
+                <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)]">
+                  FlateDecode, JBIG2, and DCTDecode: Inside PDF Compression
+                </h3>
+                <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+                  A single PDF container seamlessly integrates disparate compression algorithms matched to specific content types:
+                </p>
+                <div class="space-y-3 text-xs sm:text-sm text-[var(--txt-muted)]">
+                  <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]">
+                    <strong class="text-[var(--txt)] block mb-1">FlateDecode (zlib/DEFLATE):</strong>
+                    Applied to vector drawing instructions, operator streams, and character font tables. Replaces repetitive coordinates and text characters with sliding-window LZ77 back-references.
+                  </div>
+                  <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]">
+                    <strong class="text-[var(--txt)] block mb-1">JBIG2Decode (Bi-Level Scans &amp; Text):</strong>
+                    An advanced standard for black-and-white documents. Uses symbol dictionary recognition to substitute repeating letterforms with pointer tokens, shrinking scanned files by up to 80%.
+                  </div>
+                  <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--surface-2)]">
+                    <strong class="text-[var(--txt)] block mb-1">DCTDecode &amp; JPXDecode (Raster Photography):</strong>
+                    Stores continuous-tone photography using JPEG or wavelet-based JPEG 2000 algorithms without altering vector typography.
+                  </div>
+                </div>
+              </div>
+
+              <!-- The √2 Lichtenberg Ratio -->
+              <div class="border border-[var(--border)] rounded-2xl p-5 bg-[var(--surface-2)] font-mono text-xs space-y-2">
+                <div class="text-[var(--txt)] font-bold">
+                  The Lichtenberg Mathematical Ratio: Aspect Ratio = 1 : &radic;2
+                </div>
+                <p class="text-xs text-[var(--txt-muted)] font-sans leading-relaxed">
+                  Standardized in 1922 as DIN 476 and later ISO 216, A4 paper (210 &times; 297 mm) is mathematically unique: dividing or folding an A4 sheet in half produces an A5 sheet with the <em>exact same proportions</em> (1 : 1.4142). This allows vector documents to scale up to A3 posters or down to A5 booklets with zero margin distortion or awkward aspect ratio stretching.
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Hairline Accordion Document Engineering FAQs Card -->
+        <section class="tool-content-card">
+          <div class="tool-content-header">
+            <span class="tool-badge-pill mb-3">
+              <i class="fas fa-circle-question text-[var(--brand)]"></i> Common Inquiries
+            </span>
+            <h3>Document Engineering &amp; Conversion Frequently Asked Questions</h3>
+            <p>
+              Details on font embedding, vector vs. raster distinction, and client-side privacy.
+            </p>
+          </div>
+
+          <div class="tool-faq-accordion">
+            <details class="tool-faq-item">
+              <summary>
+                <span>Why does text copied from some PDFs paste as random unreadable gibberish?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                PDF does not render text as strings—it places visual glyph IDs from an embedded font subset onto coordinate offsets. If the PDF authoring tool failed to include a <code>ToUnicode</code> CMap (character mapping table), the operating system clipboard cannot reverse-engineer the relationship between visual glyph index #42 and the ASCII character &ldquo;a&rdquo;, producing meaningless character substitutions upon pasting.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>What is the functional difference between a &ldquo;vector PDF&rdquo; and a &ldquo;raster PDF&rdquo;?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                A true vector PDF (generated by Word, LaTeX, InDesign, or our Text &rarr; PDF tool) stores words as searchable Unicode text strings and lines as geometric B&eacute;zier coordinates that can be zoomed to 6400% without loss of sharpness. A raster PDF (such as flat office scanner output or an image compilation) merely wraps full-page JPEG/PNG bitmaps inside a PDF wrapper; its text is unsearchable unless processed through Optical Character Recognition (OCR).
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>Why is client-side browser PDF compilation safer than cloud converters?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                Cloud conversion portals stream your uploaded binary files to remote Linux VPS servers, buffer them on physical disk drives, and execute server-side headless conversions. This creates risks of data persistence, third-party server compromise, and automated data scraping. Toolarsh compiles your document entirely within your local browser sandbox via JavaScript and WebAssembly; your files never touch an external server.
+              </div>
+            </details>
+
+            <details class="tool-faq-item">
+              <summary>
+                <span>How should I choose between &ldquo;Fit to page&rdquo; and &ldquo;Fill page&rdquo; when compiling images?</span>
+                <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+              </summary>
+              <div class="faq-answer">
+                &ldquo;Fit to page&rdquo; calculates the exact aspect ratio of the image relative to the usable print area, adding white letterbox margins where necessary to ensure that 100% of the photograph or invoice is visible. &ldquo;Fill page&rdquo; scales the image to completely saturate the printable rectangle, which crops the outer edges of images whose aspect ratio doesn&apos;t match the paper standard (such as square 1:1 photos on 1:1.414 A4 paper).
+              </div>
+            </details>
+          </div>
+        </section>
+
+      </div>
+    </main>
   </div>
 </ToolLayout>
 
-<style>
-  .pc-wrap { display: flex; flex-direction: column; gap: 20px; }
-
-  /* Modes */
-  .pc-modes { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .pc-mode {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 13px 16px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--txt-muted);
-    background: var(--bg-soft);
-    border: none;
-    border-right: 1.5px solid var(--border);
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all .15s;
-  }
-  .pc-mode:last-child { border-right: none; }
-  .pc-mode.active { background: var(--brand); color: #fff; }
-  .pc-mode:hover:not(.active) { background: #EFF6FF; color: var(--brand); }
-
-  /* Upload area */
-  .pc-upload {
-    position: relative;
-    border: 2px dashed var(--border);
-    border-radius: var(--radius-lg);
-    padding: 52px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all .2s;
-    background: var(--bg-soft);
-  }
-  .pc-upload:hover, .pc-upload.drag-over { border-color: var(--brand); background: var(--brand-light); }
-  .pc-file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .pc-upload-icon { font-size: 44px; color: var(--brand); margin-bottom: 14px; }
-  .pc-upload-title { font-size: 16px; font-weight: 700; color: var(--txt); margin-bottom: 6px; }
-  .pc-upload-sub { font-size: 13px; color: var(--txt-muted); }
-
-  /* Options row */
-  .pc-options { display: flex; gap: 14px; flex-wrap: wrap; padding: 16px 18px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); }
-  .pc-opt { display: flex; flex-direction: column; gap: 6px; }
-  .pc-opt-label { font-size: 11px; font-weight: 700; color: var(--txt-muted); text-transform: uppercase; letter-spacing: .04em; }
-  .pc-select { padding: 8px 12px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--txt); background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; cursor: pointer; transition: border-color .15s; }
-  .pc-select:focus { border-color: var(--brand); }
-  .pc-input-sm { padding: 8px 10px; width: 80px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--txt); background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; }
-
-  /* Queue */
-  .pc-queue { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .pc-queue-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-soft); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
-  .pc-queue-count { font-size: 13px; font-weight: 700; color: var(--txt); }
-  .pc-queue-actions { display: flex; gap: 8px; }
-  .btn-sm { padding: 7px 14px; font-size: 12px; }
-  .pc-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 14px; }
-  .pc-thumb { position: relative; border-radius: 6px; overflow: hidden; border: 1.5px solid var(--border); }
-  .pc-thumb img { width: 100%; height: 80px; object-fit: cover; display: block; }
-  .pc-thumb-name { font-size: 10px; color: var(--txt-muted); padding: 4px 6px; background: var(--bg-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pc-thumb-del { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; background: rgba(0,0,0,.6); color: #fff; border: none; border-radius: 50%; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
-
-  /* Progress */
-  .pc-progress { padding: 16px; background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 8px; }
-  .pc-progress-bar { height: 8px; background: var(--border); border-radius: 100px; overflow: hidden; }
-  .pc-progress-fill { height: 100%; background: var(--brand); border-radius: 100px; transition: width .3s ease; width: 0; }
-  .pc-progress-label { font-size: 13px; color: var(--txt-muted); text-align: center; }
-
-  /* PDF → Images grid */
-  .pc-pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
-  .pc-page-card { border: 1.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .pc-page-card canvas { width: 100%; display: block; }
-  .pc-page-footer { padding: 8px 12px; background: var(--bg-soft); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .pc-page-label { font-size: 12px; color: var(--txt-muted); font-weight: 600; }
-  .pc-dl-btn { padding: 5px 10px; background: var(--brand); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; font-family: 'Inter', sans-serif; }
-
-  /* Text → PDF form */
-  .pc-text-form { display: flex; flex-direction: column; gap: 16px; }
-  .pc-field { display: flex; flex-direction: column; gap: 8px; }
-  .pc-input-full { width: 100%; padding: 11px 14px; font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 600; color: var(--txt); background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-sm); outline: none; transition: border-color .2s; }
-  .pc-input-full:focus { border-color: var(--brand); }
-  .pc-text-options { display: flex; gap: 14px; flex-wrap: wrap; }
-  .pc-textarea { width: 100%; padding: 12px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--txt); background: var(--bg-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); outline: none; transition: border-color .2s; resize: vertical; line-height: 1.6; }
-  .pc-textarea:focus { border-color: var(--brand); }
-
-  .pc-panel { display: flex; flex-direction: column; gap: 16px; }
-</style>
-
 <script>
-  // ── Mode switching ───────────────────────────────────────────
-  document.querySelectorAll('.pc-mode').forEach(btn => {
+  // Mode Switcher
+  const modeBtns = document.querySelectorAll('.pc-mode');
+  const panels: Record<string, HTMLElement | null> = {
+    'img-to-pdf': document.getElementById('panel-img-to-pdf'),
+    'pdf-to-img': document.getElementById('panel-pdf-to-img'),
+    'text-to-pdf': document.getElementById('panel-text-to-pdf'),
+  };
+
+  modeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const mode = (btn as HTMLElement).dataset.mode!;
-      document.querySelectorAll('.pc-mode').forEach(b => b.classList.remove('active'));
+      modeBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
       btn.classList.add('active');
-      document.querySelectorAll('.pc-panel').forEach(p => (p as HTMLElement).style.display = 'none');
-      document.getElementById(`panel-${mode}`)!.style.display = '';
+      btn.setAttribute('aria-selected', 'true');
+
+      Object.entries(panels).forEach(([m, el]) => {
+        if (el) el.style.display = m === mode ? '' : 'none';
+      });
     });
   });
 
-  // ══════════════════════════════════════════════════════════════
   // MODE 1: Images → PDF
-  // ══════════════════════════════════════════════════════════════
-  let imgFiles: { file: File; url: string }[] = [];
+  let selectedImages: { file: File; url: string; id: number }[] = [];
+  let imgCounter = 0;
 
-  function setupDragDrop(area: HTMLElement, onFiles: (files: FileList) => void) {
-    area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag-over'); });
-    area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
-    area.addEventListener('drop', (e: DragEvent) => {
-      e.preventDefault(); area.classList.remove('drag-over');
+  function setupDragDrop(el: HTMLElement, onFiles: (files: FileList) => void) {
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('border-rose-500'); });
+    el.addEventListener('dragleave', () => el.classList.remove('border-rose-500'));
+    el.addEventListener('drop', (e: DragEvent) => {
+      e.preventDefault();
+      el.classList.remove('border-rose-500');
       if (e.dataTransfer?.files) onFiles(e.dataTransfer.files);
     });
   }
 
-  setupDragDrop(document.getElementById('img-upload-area')!, (files) => addImgFiles(files));
+  setupDragDrop(document.getElementById('img-upload-area')!, (files) => {
+    addImages(files);
+  });
 
   document.getElementById('img-files')?.addEventListener('change', (e) => {
     const input = e.target as HTMLInputElement;
-    if (input.files) addImgFiles(input.files);
+    if (input.files) addImages(input.files);
   });
 
-  function addImgFiles(files: FileList) {
+  function addImages(files: FileList) {
     for (const f of Array.from(files)) {
       if (!f.type.startsWith('image/')) continue;
-      imgFiles.push({ file: f, url: URL.createObjectURL(f) });
+      const id = imgCounter++;
+      const url = URL.createObjectURL(f);
+      selectedImages.push({ file: f, url, id });
+      renderImgThumb(f, url, id);
     }
-    renderImgQueue();
-  }
-
-  function renderImgQueue() {
-    if (imgFiles.length === 0) { document.getElementById('img-queue')!.style.display = 'none'; return; }
-    document.getElementById('img-count')!.textContent = String(imgFiles.length);
-    const thumbs = document.getElementById('img-thumbs')!;
-    thumbs.innerHTML = imgFiles.map((item, i) => `
-      <div class="pc-thumb" id="pc-thumb-${i}">
-        <img src="${item.url}" alt="${item.file.name}" loading="lazy" />
-        <div class="pc-thumb-name">${item.file.name}</div>
-        <button class="pc-thumb-del" data-idx="${i}">✕</button>
-      </div>
-    `).join('');
-    thumbs.querySelectorAll('.pc-thumb-del').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = parseInt((btn as HTMLElement).dataset.idx!);
-        URL.revokeObjectURL(imgFiles[idx].url);
-        imgFiles.splice(idx, 1);
-        renderImgQueue();
-      });
-    });
+    updateImgCount();
     document.getElementById('img-queue')!.style.display = '';
   }
 
+  function renderImgThumb(file: File, url: string, id: number) {
+    const container = document.getElementById('img-thumbs')!;
+    const div = document.createElement('div');
+    div.className = 'relative rounded-xl border border-[var(--border)] overflow-hidden group bg-[var(--surface-2)]';
+    div.id = `img-thumb-${id}`;
+    div.innerHTML = `
+      <img src="${url}" class="w-full h-24 object-cover" alt="${file.name}" />
+      <div class="p-1.5 bg-[var(--surface-3)] text-[10px] font-mono text-[var(--txt-muted)] truncate">${file.name}</div>
+      <button class="absolute top-1 right-1 w-6 h-6 rounded-full bg-[var(--surface-1)]/90 text-[var(--txt)] flex items-center justify-center text-[10px] hover:bg-rose-600 hover:text-white transition-colors border border-[var(--border)]" data-id="${id}">
+        <i class="fas fa-xmark"></i>
+      </button>
+    `;
+    div.querySelector('button')!.addEventListener('click', () => {
+      selectedImages = selectedImages.filter(x => x.id !== id);
+      div.remove();
+      URL.revokeObjectURL(url);
+      updateImgCount();
+      if (selectedImages.length === 0) document.getElementById('img-queue')!.style.display = 'none';
+    });
+    container.appendChild(div);
+  }
+
+  function updateImgCount() {
+    document.getElementById('img-count')!.textContent = String(selectedImages.length);
+  }
+
   document.getElementById('img-clear')?.addEventListener('click', () => {
-    imgFiles.forEach(f => URL.revokeObjectURL(f.url));
-    imgFiles = [];
-    renderImgQueue();
-    (document.getElementById('img-files') as HTMLInputElement).value = '';
+    selectedImages.forEach(x => URL.revokeObjectURL(x.url));
+    selectedImages = [];
+    document.getElementById('img-thumbs')!.innerHTML = '';
+    document.getElementById('img-queue')!.style.display = 'none';
+    updateImgCount();
   });
 
   document.getElementById('img-to-pdf-btn')?.addEventListener('click', async () => {
-    if (imgFiles.length === 0) { alert('Please add at least one image.'); return; }
-
-    const pageSize = (document.getElementById('img-page-size') as HTMLSelectElement).value;
-    const orientation = (document.getElementById('img-orientation') as HTMLSelectElement).value as 'portrait' | 'landscape';
-    const fit = (document.getElementById('img-fit') as HTMLSelectElement).value;
-    const margin = parseInt((document.getElementById('img-margin') as HTMLInputElement).value) || 10;
-
+    if (selectedImages.length === 0) return;
     const progress = document.getElementById('img-progress')!;
     const fill = document.getElementById('img-progress-fill')!;
     const label = document.getElementById('img-progress-label')!;
     progress.style.display = '';
+
+    const pageSize = (document.getElementById('img-page-size') as HTMLSelectElement).value;
+    const orientation = (document.getElementById('img-orientation') as HTMLSelectElement).value as 'portrait' | 'landscape';
+    const fit = (document.getElementById('img-fit') as HTMLSelectElement).value;
+    const margin = parseFloat((document.getElementById('img-margin') as HTMLInputElement).value) || 0;
 
     const { jsPDF } = (window as any).jspdf;
     const doc = new jsPDF({ orientation, unit: 'mm', format: pageSize });
 
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
-    const maxW = pageW - margin * 2;
-    const maxH = pageH - margin * 2;
+    const usableW = pageW - margin * 2;
+    const usableH = pageH - margin * 2;
 
-    for (let i = 0; i < imgFiles.length; i++) {
-      label.textContent = `Processing image ${i + 1} of ${imgFiles.length}…`;
-      fill.style.width = `${((i / imgFiles.length) * 100)}%`;
-
+    for (let i = 0; i < selectedImages.length; i++) {
       if (i > 0) doc.addPage(pageSize, orientation);
 
+      fill.style.width = `${((i + 1) / selectedImages.length) * 100}%`;
+      label.textContent = `Processing image ${i + 1} of ${selectedImages.length}…`;
+
+      const item = selectedImages[i];
       await new Promise<void>((resolve) => {
         const img = new Image();
+        img.src = item.url;
         img.onload = () => {
-          let imgW = img.naturalWidth, imgH = img.naturalHeight;
-          // Convert px to mm (assuming 96dpi): 1px = 0.2646mm
-          const pxToMm = 0.2646;
-          let drawW = imgW * pxToMm, drawH = imgH * pxToMm;
+          let drawW = usableW;
+          let drawH = usableH;
+          let drawX = margin;
+          let drawY = margin;
 
-          if (fit === 'fit' || fit === 'fill') {
-            const scale = fit === 'fit'
-              ? Math.min(maxW / drawW, maxH / drawH)
-              : Math.max(maxW / drawW, maxH / drawH);
-            drawW *= scale; drawH *= scale;
+          if (fit === 'fit') {
+            const aspect = img.naturalWidth / img.naturalHeight;
+            const pageAspect = usableW / usableH;
+            if (aspect > pageAspect) {
+              drawW = usableW;
+              drawH = usableW / aspect;
+              drawY = margin + (usableH - drawH) / 2;
+            } else {
+              drawH = usableH;
+              drawW = usableH * aspect;
+              drawX = margin + (usableW - drawW) / 2;
+            }
           }
 
-          const x = margin + (maxW - Math.min(drawW, maxW)) / 2;
-          const y = margin + (maxH - Math.min(drawH, maxH)) / 2;
-
-          const canvas = document.createElement('canvas');
-          canvas.width = imgW; canvas.height = imgH;
-          const ctx = canvas.getContext('2d')!;
-          ctx.fillStyle = '#fff';
-          ctx.fillRect(0, 0, imgW, imgH);
-          ctx.drawImage(img, 0, 0);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-          doc.addImage(dataUrl, 'JPEG', x, y, Math.min(drawW, maxW), Math.min(drawH, maxH));
+          doc.addImage(img, 'JPEG', drawX, drawY, drawW, drawH);
           resolve();
         };
-        img.src = imgFiles[i].url;
       });
     }
 
     fill.style.width = '100%';
-    label.textContent = 'Done! Downloading…';
-    doc.save('converted.pdf');
-    setTimeout(() => { progress.style.display = 'none'; }, 2000);
+    label.textContent = 'Document compiled! Downloading…';
+    doc.save('compiled-document.pdf');
+    setTimeout(() => { progress.style.display = 'none'; }, 2500);
   });
 
-  // ══════════════════════════════════════════════════════════════
-  // MODE 2: PDF → Images (using PDF.js)
-  // ══════════════════════════════════════════════════════════════
+  // MODE 2: PDF → Images
   setupDragDrop(document.getElementById('pdf-upload-area')!, (files) => {
     const f = Array.from(files).find(f => f.type === 'application/pdf');
     if (f) processPDF(f);
@@ -419,7 +594,6 @@ You can use multiple paragraphs. Each paragraph will be wrapped and paginated au
     const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
     const numPages = pdfDoc.numPages;
 
-    label.textContent = `Found ${numPages} page(s). Rendering…`;
     const pagesContainer = document.getElementById('pdf-pages')!;
     pagesContainer.innerHTML = '';
     renderedCanvases.length = 0;
@@ -433,16 +607,24 @@ You can use multiple paragraphs. Each paragraph will be wrapped and paginated au
       const canvas = document.createElement('canvas');
       canvas.width = Math.round(viewport.width);
       canvas.height = Math.round(viewport.height);
+      canvas.className = 'w-full rounded-t-xl bg-white shadow-sm';
       const ctx = canvas.getContext('2d')!;
       await page.render({ canvasContext: ctx, viewport }).promise;
 
       renderedCanvases.push(canvas);
 
       const card = document.createElement('div');
-      card.className = 'pc-page-card';
-      card.innerHTML = `<div class="pc-page-footer"><span class="pc-page-label">Page ${i}</span><button class="pc-dl-btn" data-page="${i}" data-fmt="${outFmt}"><i class="fas fa-download"></i> Save</button></div>`;
+      card.className = 'rounded-2xl border border-[var(--border)] overflow-hidden bg-[var(--surface-2)] flex flex-col justify-between';
+      card.innerHTML = `
+        <div class="p-2 border-t border-[var(--border)] flex items-center justify-between">
+          <span class="text-xs font-mono font-bold text-[var(--txt-muted)]">Page ${i}</span>
+          <button class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-[var(--brand)] hover:opacity-95 flex items-center gap-1 transition-all">
+            <i class="fas fa-download"></i> Save
+          </button>
+        </div>
+      `;
       card.insertBefore(canvas, card.firstChild);
-      card.querySelector('.pc-dl-btn')!.addEventListener('click', () => downloadPage(canvas, i, outFmt));
+      card.querySelector('button')!.addEventListener('click', () => downloadPage(canvas, i, outFmt));
       pagesContainer.appendChild(card);
     }
 
@@ -460,47 +642,45 @@ You can use multiple paragraphs. Each paragraph will be wrapped and paginated au
 
   document.getElementById('pdf-dl-all-btn')?.addEventListener('click', async () => {
     const fmt = (document.getElementById('pdf-out-format') as HTMLSelectElement).value;
-    // If JSZip available via window, use it; otherwise download individually
     for (let i = 0; i < renderedCanvases.length; i++) {
       downloadPage(renderedCanvases[i], i + 1, fmt);
-      await new Promise(r => setTimeout(r, 300)); // stagger downloads
+      await new Promise(r => setTimeout(r, 300));
     }
   });
 
-  // ══════════════════════════════════════════════════════════════
   // MODE 3: Text → PDF
-  // ══════════════════════════════════════════════════════════════
   document.getElementById('txt-to-pdf-btn')?.addEventListener('click', () => {
     const title = (document.getElementById('txt-title') as HTMLInputElement).value || 'Document';
     const content = (document.getElementById('txt-content') as HTMLTextAreaElement).value;
     const fontSize = parseInt((document.getElementById('txt-font-size') as HTMLInputElement).value) || 12;
-    const pageSize = (document.getElementById('txt-page-size') as HTMLSelectElement).value;
     const spacing = parseFloat((document.getElementById('txt-spacing') as HTMLSelectElement).value) || 1.5;
 
     if (!content.trim()) { alert('Please enter some text content.'); return; }
 
     const { jsPDF } = (window as any).jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: pageSize });
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
     const margin = 20;
     const maxW = pageW - margin * 2;
-    const lineH = fontSize * 0.352778 * spacing; // pt to mm
+    const lineH = fontSize * 0.352778 * spacing;
 
-    // Title
-    doc.setFontSize(fontSize + 4);
+    doc.setFontSize(fontSize + 6);
     doc.setFont('helvetica', 'bold');
     doc.text(title, margin, margin + 5);
     doc.setFontSize(fontSize);
     doc.setFont('helvetica', 'normal');
 
-    let y = margin + 14;
+    let y = margin + 18;
     const lines = content.split('\n');
 
     for (const line of lines) {
       const wrapped = doc.splitTextToSize(line || ' ', maxW);
       for (const wl of wrapped) {
-        if (y + lineH > pageH - margin) { doc.addPage(); y = margin; }
+        if (y + lineH > pageH - margin) {
+          doc.addPage();
+          y = margin;
+        }
         doc.text(wl, margin, y);
         y += lineH;
       }

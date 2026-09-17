@@ -5,88 +5,312 @@ import { tools } from '../data/tools';
 const tool = tools.find(t => t.slug === 'uuid-generator')!;
 ---
 
-<ToolLayout tool={tool}>
-  <div class="uuid-wrap">
-    <div class="uuid-output-group">
-      <div class="uuid-count-row">
-        <label class="uuid-label">Generate how many UUIDs?</label>
-        <select id="uuid-count" class="uuid-select">
-          <option value="1">1 UUID</option>
-          <option value="5">5 UUIDs</option>
-          <option value="10" selected>10 UUIDs</option>
-          <option value="25">25 UUIDs</option>
-          <option value="50">50 UUIDs</option>
-          <option value="100">100 UUIDs</option>
-        </select>
-      </div>
-      <div class="uuid-output-wrap">
-        <textarea id="uuid-output" class="uuid-output" readonly rows="8" placeholder="UUIDs will appear here…"></textarea>
-        <div class="uuid-actions">
-          <button class="btn btn-primary" id="uuid-generate">
-            <i class="fas fa-bolt"></i> Generate UUIDs
-          </button>
-          <button class="btn btn-ghost" id="uuid-copy">
-            <i class="fas fa-copy"></i> Copy All
-          </button>
-          <button class="btn btn-ghost" id="uuid-clear">
-            <i class="fas fa-trash-alt"></i> Clear
-          </button>
+<ToolLayout tool={tool} customLayout={true}>
+  <div class="tool-page-wrap">
+    <!-- Header Hero -->
+    <div class="tool-hero-box">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="tool-badge-pill mb-3">
+            <i class="fas fa-fingerprint text-[var(--amber)]"></i> RFC 4122 Version 4 Engine
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[var(--txt)] tracking-tight">
+            CSPRNG <span class="shimmer-text">UUID Generator</span>
+          </h1>
+          <p class="text-[var(--txt-muted)] text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
+            Generate cryptographically secure, collision-resistant 128-bit Version 4 UUIDs & GUIDs powered by hardware-level <code class="text-[var(--amber)]">crypto.getRandomValues()</code>.
+          </p>
+        </div>
+
+        <!-- Security Badge -->
+        <div class="tool-inner-panel flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[var(--amber-soft)] border border-[var(--border)] flex items-center justify-center text-[var(--amber)] text-base">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+          <div>
+            <span class="text-[10.5px] font-mono text-[var(--txt-dim)] uppercase block tracking-wider font-semibold">Collision Risk</span>
+            <span class="text-xs font-bold text-[var(--txt)]">1 in 2.71 Quintillion</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="uuid-info">
-      <i class="fas fa-circle-info"></i>
-      UUIDs are generated using <strong>crypto.getRandomValues()</strong> — cryptographically secure, version 4 format.
+    <!-- Main Terminal Vault Console -->
+    <div class="tool-card-surface space-y-6 mb-12">
+      <!-- Toolbar Header -->
+      <div class="tool-inner-panel flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <label for="uuid-count" class="text-xs font-mono font-bold text-[var(--txt-dim)] uppercase tracking-wider">
+            Batch Quantity:
+          </label>
+          <select id="uuid-count" class="bg-[var(--surface-solid)] border border-[var(--border-mid)] rounded-xl px-3.5 py-2 text-[var(--txt)] font-mono text-xs font-bold outline-none cursor-pointer focus:border-[var(--brand)]">
+            <option value="1">1 UUID</option>
+            <option value="5">5 UUIDs</option>
+            <option value="10" selected>10 UUIDs</option>
+            <option value="25">25 UUIDs</option>
+            <option value="50">50 UUIDs</option>
+            <option value="100">100 UUIDs</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="uuid-generate" class="btn btn-primary text-xs font-mono uppercase tracking-wider">
+            <i class="fas fa-bolt"></i> Generate Batch
+          </button>
+          <button id="uuid-copy" class="btn btn-secondary text-xs font-mono uppercase tracking-wider">
+            <i class="fas fa-copy"></i> Copy All
+          </button>
+          <button id="uuid-clear" class="btn btn-secondary px-3.5 py-2 text-xs font-mono text-[var(--txt-dim)] hover:text-red-500" title="Clear Canvas">
+            <i class="fas fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Monospace Code Output Terminal -->
+      <div class="relative">
+        <textarea id="uuid-output" readonly rows="10" class="tool-control-output text-sm sm:text-base text-[var(--brand)] leading-loose selection:bg-[var(--brand-soft)] resize-y" placeholder="CSPRNG tokens will render here…"></textarea>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs font-mono text-[var(--txt-dim)]">
+        <i class="fas fa-circle-check text-[var(--brand)]"></i>
+        <span>Entropy Source: Client-side CSPRNG (zero network transmission, 100% private in-browser computation).</span>
+      </div>
+    </div>
+
+    <!-- How to Use -->
+    <div class="tool-content-wrap">
+
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-list-ol text-[var(--brand)]"></i> Step-by-Step Guide
+          </span>
+          <h2>How to Generate UUIDs</h2>
+          <p>Create cryptographically secure UUID v4 identifiers in seconds, ready to copy.</p>
+        </div>
+        <ol class="mt-6 space-y-4">
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">1</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Select a batch size</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Use the dropdown to choose how many UUIDs to generate at once: 1, 5, 10, 25, 50, or 100.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">2</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Click Generate Batch</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Hit the button and your UUIDs appear instantly in the terminal output below. Each one is a unique, cryptographically secure v4 identifier.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">3</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Copy or clear</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Click <strong>Copy All</strong> to copy the full list to your clipboard, or use the trash icon to clear the output and start fresh.</span>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--brand-soft)] border border-[var(--brand)]/30 flex items-center justify-center text-[var(--brand)] font-black text-sm font-mono">4</span>
+            <div>
+              <strong class="text-[var(--txt)] text-sm block mb-1">Paste into your project</strong>
+              <span class="text-sm text-[var(--txt-muted)] leading-relaxed">Use the copied UUIDs directly in your database, API, config file, or test suite. Each UUID is guaranteed to be unique.</span>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+    <!-- Distributed Systems Architecture: Content Wrap -->
+    <div style="margin-top:0">
+      
+      <!-- Evolution Timeline Card -->
+      <section class="tool-content-card space-y-10">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-network-wired text-[var(--brand)]"></i> Distributed Systems Architecture
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black text-[var(--txt)] tracking-tight">
+            The 40-Year Evolution of the Universally Unique Identifier
+          </h2>
+          <p>
+            From Apollo workstations in the mid-1980s to the 2024 ratification of RFC 9562, explore the chronological engineering milestones that transformed 128-bit identifiers into the foundational backbone of distributed computing.
+          </p>
+        </div>
+
+        <!-- Chronological Vertical Timeline Spine -->
+        <div class="timeline-track">
+
+          <!-- Timeline Node 01: 1980s Apollo NCS -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin"></div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">Circa 1987</span>
+              <span class="text-xs text-[var(--txt-dim)]">&bull;</span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">Apollo Network Computing System (NCS)</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              The Genesis: Decentralized Object Identification Without Central Authority
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              In distributed heterogeneous computing, coordinating a central integer counter across independent network nodes created catastrophic latency bottlenecks. Apollo Computer designed the original UUID schema within the Network Computing Architecture (NCA) to enable autonomous nodes to generate universally collision-free object IDs without a central coordinator.
+            </p>
+          </div>
+
+          <!-- Timeline Node 02: 1990 OSF DCE 1.1 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin" style="border-color: var(--amber);"></div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--amber)]">1990 – 1993</span>
+              <span class="text-xs text-[var(--txt-dim)]">&bull;</span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">OSF DCE 1.1 Standard</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              UUID Version 1 &amp; Version 2: Hardware MACs &amp; Privacy Vulnerability
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              The Open Software Foundation (OSF) standardized UUIDv1: a 60-bit timestamp (measured in 100-nanosecond intervals since October 15, 1582) combined with the physical 48-bit IEEE 802 MAC address of the generating network interface. While this guaranteed temporal uniqueness, it inadvertently leaked the creator&apos;s exact physical hardware address and precise creation timestamp into public document metadata.
+            </p>
+          </div>
+
+          <!-- Timeline Node 03: 1998 Microsoft COM GUIDs -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin"></div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)]">1998</span>
+              <span class="text-xs text-[var(--txt-dim)]">&bull;</span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">Enterprise Adoption</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              Microsoft COM &amp; The GUID Nomenclature Divergence
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Microsoft adopted the OSF specification across the Windows NT ecosystem under the label <em>Globally Unique Identifier (GUID)</em>. Used to identify Component Object Model (COM) interfaces, ActiveX controls, and Windows Registry keys, GUIDs share identical 128-bit binary layouts with UUIDs, differing solely in proprietary Microsoft byte-endian serialization nuances.
+            </p>
+          </div>
+
+          <!-- Timeline Node 04: 2005 RFC 4122 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin" style="border-color: var(--amber);"></div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--amber)]">July 2005</span>
+              <span class="text-xs text-[var(--txt-dim)]">&bull;</span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">IETF RFC 4122 Ratification</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              The Canonical Era: UUIDv4 Dominance &amp; Cryptographic Entropy
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              Paul Leach, Michael Mealling, and Rich Salz published RFC 4122, enshrining Version 4 as the web&apos;s primary primary-key standard. By allocating 122 bits to pure pseudorandomness and retaining 6 bits for version (<code class="font-mono text-xs text-[var(--txt)]">0100</code>) and Leach-Salz variant (<code class="font-mono text-xs text-[var(--txt)]">10xx</code>) headers, UUIDv4 established a keyspace of 2<sup>122</sup> (5.3 &times; 10<sup>36</sup>) combinations, eliminating MAC hardware leakage forever.
+            </p>
+            <div class="p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] font-mono text-xs text-[var(--txt-muted)]">
+              RFC 4122 v4 Layout: <span class="text-[var(--brand)]">xxxxxxxx</span>-<span class="text-[var(--txt)]">xxxx</span>-<span class="text-[var(--amber)] font-bold">4xxx</span>-<span class="text-[var(--brand)] font-bold">yxxx</span>-<span class="text-[var(--txt)]">xxxxxxxxxxxx</span> (y &isin; [8, 9, a, b])
+            </div>
+          </div>
+
+          <!-- Timeline Node 05: 2010s B-Tree Index Fragmentation -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin"></div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--txt-muted)]">2012 – 2020</span>
+              <span class="text-xs text-[var(--txt-dim)]">&bull;</span>
+              <span class="text-xs font-mono text-[var(--txt-dim)]">Database Scaling Bottleneck</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              The B-Tree Crisis: Why Random UUIDs Cripple Relational Databases
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              As web applications scaled past tens of millions of rows, database administrators discovered severe performance penalties when using UUIDv4 as primary keys in PostgreSQL (B-Tree), MySQL (InnoDB clustered indexes), and SQLite. Because v4 keys are completely random, new inserts land arbitrarily throughout the index, triggering chronic page splits, cache misses, and massive write amplification.
+            </p>
+          </div>
+
+          <!-- Timeline Node 06: May 2024 RFC 9562 -->
+          <div class="timeline-item space-y-2">
+            <div class="timeline-pin" style="border-color: var(--brand);"></div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--brand)] font-bold">May 2024</span>
+              <span class="text-xs text-[var(--txt-dim)]">&bull;</span>
+              <span class="text-xs font-mono text-[var(--brand)]">IETF RFC 9562 Standard (Current)</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-[var(--txt)] tracking-tight">
+              RFC 9562 Standardized: UUIDv7 &amp; Monotonic Time-Ordered Keys
+            </h3>
+            <p class="text-sm text-[var(--txt-muted)] leading-relaxed">
+              The IETF officially rendered RFC 4122 obsolete with the release of RFC 9562, standardizing Version 7 (UUIDv7). UUIDv7 embeds a 48-bit Unix millisecond timestamp at the most significant bits, followed by 74 bits of sub-millisecond precision and cryptographically secure entropy. This delivers the holy grail: perfect append-only B-Tree index locality without lock coordination across distributed clusters.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Hairline Accordion FAQ Card -->
+      <section class="tool-content-card">
+        <div class="tool-content-header">
+          <span class="tool-badge-pill mb-3">
+            <i class="fas fa-circle-question text-[var(--brand)]"></i> Common Inquiries
+          </span>
+          <h3>UUID Architecture Frequently Asked Questions</h3>
+          <p>
+            RFC conformance, collision probabilities, and database indexing strategies.
+          </p>
+        </div>
+
+        <div class="tool-faq-accordion">
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is the mathematical probability of two UUIDv4 collisions?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              With 122 bits of cryptographic entropy, the total count of distinct UUIDv4 values is 2<sup>122</sup> (~5.31 &times; 10<sup>36</sup>). Under the birthday paradox, to reach a 50% probability of a single collision, a system would have to generate 2.71 quintillion (2.71 &times; 10<sup>18</sup>) UUIDs. Generating 1 billion UUIDs per second continuously for 85 years yields a collision chance of under one in a billion.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Should modern systems migrate from UUIDv4 to UUIDv7?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Yes, for any database where UUIDs serve as clustered primary keys or sorted index references. UUIDv7 eliminates random index fragmentation, reducing write latency by up to 40% on high-throughput database workloads while maintaining identical 128-bit serialization compatibility. For ephemeral session tokens where creation timestamps must remain obscured, UUIDv4 remains ideal.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Are generated UUIDs in this tool generated on a server or locally?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              100% locally in your browser. The tool utilizes <code>crypto.getRandomValues()</code> directly from your operating system&apos;s kernel entropy pool. No network packets are transmitted, guaranteeing complete privacy and zero data leakage.
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>What is the difference between a UUID and a GUID?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              They are technically the same thing. GUID (Globally Unique Identifier) is Microsoft's terminology used across Windows, COM, and .NET. UUID (Universally Unique Identifier) is the IETF standard term used in the broader tech industry. Both refer to the same 128-bit identifier format defined by RFC 4122 (now superseded by RFC 9562).
+            </div>
+          </details>
+
+          <details class="tool-faq-item">
+            <summary>
+              <span>Are UUIDs generated here safe to use in a production database?</span>
+              <span class="faq-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="faq-answer">
+              Yes. This tool uses the browser's native <code>crypto.getRandomValues()</code> API, which draws from your OS's cryptographically secure random number generator — the same source used by security-sensitive applications. The UUIDs produced are RFC 4122 compliant and production-ready.
+            </div>
+          </details>
+        </div>
+      </section>
+
+    </div>
     </div>
   </div>
 </ToolLayout>
-
-<style>
-  .uuid-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .uuid-count-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
-  .uuid-label { font-size: 14px; font-weight: 600; color: var(--txt); }
-  .uuid-select {
-    padding: 8px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    color: var(--txt);
-    background: var(--bg-soft);
-    cursor: pointer;
-    outline: none;
-    transition: border-color .15s;
-  }
-  .uuid-select:focus { border-color: var(--brand); }
-  .uuid-output-wrap { display: flex; flex-direction: column; gap: 12px; }
-  .uuid-output {
-    width: 100%;
-    padding: 16px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    color: var(--txt);
-    background: var(--bg-soft);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    resize: vertical;
-    outline: none;
-    line-height: 1.9;
-  }
-  .uuid-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-  .uuid-info {
-    font-size: 13px;
-    color: var(--txt-muted);
-    background: var(--bg-soft);
-    padding: 12px 16px;
-    border-radius: var(--radius-sm);
-    border-left: 3px solid var(--brand);
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .uuid-info i { color: var(--brand); margin-top: 2px; flex-shrink: 0; }
-</style>
 
 <script>
   function generateUUID(): string {
@@ -99,7 +323,8 @@ const tool = tools.find(t => t.slug === 'uuid-generator')!;
   function generate() {
     const count = parseInt((document.getElementById('uuid-count') as HTMLSelectElement).value);
     const uuids = Array.from({ length: count }, generateUUID).join('\n');
-    (document.getElementById('uuid-output') as HTMLTextAreaElement).value = uuids;
+    const out = document.getElementById('uuid-output') as HTMLTextAreaElement;
+    if (out) out.value = uuids;
   }
 
   document.getElementById('uuid-generate')?.addEventListener('click', generate);
@@ -108,14 +333,18 @@ const tool = tools.find(t => t.slug === 'uuid-generator')!;
     const val = (document.getElementById('uuid-output') as HTMLTextAreaElement).value;
     if (!val) return;
     await navigator.clipboard.writeText(val);
-    const btn = document.getElementById('uuid-copy')!;
-    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy All', 2000);
+    const btn = document.getElementById('uuid-copy');
+    if (btn) {
+      btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i> Copied!';
+      setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copy All', 2000);
+    }
   });
 
   document.getElementById('uuid-clear')?.addEventListener('click', () => {
-    (document.getElementById('uuid-output') as HTMLTextAreaElement).value = '';
+    const out = document.getElementById('uuid-output') as HTMLTextAreaElement;
+    if (out) out.value = '';
   });
 
+  // Run on mount
   generate();
 </script>
